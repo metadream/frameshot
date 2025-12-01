@@ -1,15 +1,10 @@
-window.$ = function(selector) {
-    selector = selector.replace("/\n/mg", "").trim();
-    if (selector.startsWith("<")) {
-        return document.createRange().createContextualFragment(selector).firstChild;
-    }
-    return document.querySelector(selector);
-}
+import { $ } from "../main/utils.js";
+import { list } from "./thumb.js";
 
 $("#open-btn").onclick = async function() {
     const { canceled, filePaths } = await electron.openFileDialog();
     if (!canceled && filePaths && filePaths.length >= 1) {
-        console.log(filePaths);
+        list(filePaths);
 
         // const buffer = await electron.getThumbnail(filePaths[0]);
         //
