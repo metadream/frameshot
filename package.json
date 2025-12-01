@@ -1,0 +1,41 @@
+{
+    "name": "image-scope",
+    "productName": "ImageScope",
+    "version": "1.2.0",
+    "description": "Image Viewer and Duplicate Finder",
+    "author": "Marco Chan",
+    "repository": "github:metadream/image-scope",
+    "copyright": "Copyright (c) 2025",
+    "license": "MIT",
+    "type": "module",
+    "main": "src/main/index.js",
+    "scripts": {
+        "start": "electron .",
+        "build:linux": "electron-builder -l",
+        "build:win": "electron-builder -w",
+        "build:mac": "electron-builder -m"
+    },
+    "build": {
+        "appId": "image-scope",
+        "win": {
+            "target": [ "nsis" ],
+            "icon": "assets/build/icon.ico"
+        },
+        "linux": {
+            "target": [ "deb" ],
+            "icon": "assets/build/icon.png"
+        },
+        "mac": {
+            "target": [ "dmg" ],
+            "icon": "assets/build/icon.icns",
+            "category": "public.app-category.utilities"
+        }
+    },
+    "devDependencies": {
+        "electron": "^39.2.2",
+        "electron-builder": "^26.0.12"
+    },
+    "dependencies": {
+        "sharp": "^0.34.5"
+    }
+}
