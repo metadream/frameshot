@@ -28,9 +28,7 @@ ipcMain.handle("read-file-paths", async (event, filePaths) => {
             if (stat.isDirectory()) {
                 dirs.push(filePath);
 
-                let files = fs.readdirSync(filePath);
-                files = files.filter(file => imageExpr.test(file));
-                files = files.map(file => path.join(filePath, file));
+                const files = fs.readdirSync(filePath).filter(file => imageExpr.test(file)).map(file => path.join(filePath, file));
                 images.push(...files);
             } else {
                 images.push(filePath);
