@@ -1,4 +1,5 @@
 import { app, dialog, ipcMain, shell } from "electron";
+import { getConfig, updateConfig } from "./config.js";
 import path from "path";
 import fs from "fs";
 import sharp from "sharp";
@@ -8,9 +9,10 @@ const imageExpr = new RegExp(`\\.(${imageTypes.join("|")})$`, "i");
 
 ipcMain.handle("get-app-name", () => app.getName());
 ipcMain.handle("get-app-path", () => app.getAppPath());
-ipcMain.handle("get-picture-path", () => app.getPath("pictures"));
+ipcMain.handle("get-picture-paths", () => getConfig("picture_paths") || [app.getPath("pictures")]);
 ipcMain.handle("get-temp-path", () => app.getPath("temp"));
 ipcMain.handle("open-external", (event, url) => shell.openExternal(url));
+ipcMain.handle("update-config", (event, key, value) => updateConfig(key, value));
 
 /** 打开原生文件选择对话框 (支持文件和目录多选) */
 ipcMain.handle("open-file-dialog", () => {
