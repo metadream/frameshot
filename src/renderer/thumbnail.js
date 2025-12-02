@@ -1,12 +1,22 @@
 import { $ } from "../main/utils.js";
+import preview from "./preview.js";
 
 function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+const appName = await electron.getAppName();
+
 export default new class Thumbnail {
     constructor() {
         this.container = $("main");
+        this.container.addEventListener("click", e => {
+            if (e.target === e.currentTarget) {
+                this.#unselect();
+                document.title = appName;
+            }
+        });
+
         this.observer = new IntersectionObserver(entries => {
             entries.forEach(async entry => {
                 if (entry.isIntersecting) {
@@ -29,6 +39,7 @@ export default new class Thumbnail {
         const entry = await electron.readFilePaths(filePaths);
         entry.images.forEach(url => {
             const item = $(`<div class="thumb"><img data-original="${url}"/></div>`);
+            item.url = url;
             this.#bindEvents(item);
             fragment.append(item);
         });
@@ -42,11 +53,23 @@ export default new class Thumbnail {
     }
 
     #bindEvents(item) {
-        item.onclick = () => {
-            const selected = this.container.querySelector(".selected");
-            if (selected) selected.classList.remove("selected");
+        item.addEventListener("click", async () => {
+            this.#unselect();
             item.classList.add("selected");
-        }
+
+            const filename = item.url.split(/[\\/]/).pop();
+            document.title = appName + "  |  " + filename;
+        });
+
+        const thumbnail = item.querySelector("img");
+        thumbnail.addEventListener("click", () => {
+            preview.render(thumbnail);
+        });
+    }
+
+    #unselect() {
+        const selected = this.container.querySelector(".selected");
+        if (selected) selected.classList.remove("selected");
     }
 
     async #loadImage(img) {

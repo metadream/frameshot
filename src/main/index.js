@@ -16,6 +16,7 @@ function createWindow() {
 
     mainWindow = new BrowserWindow({
         icon: appIcon,
+        frame: false,
         webPreferences: {
             nodeIntegration: false,
             contextIsolation: true,
