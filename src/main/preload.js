@@ -3,7 +3,8 @@ const { contextBridge, ipcRenderer, webUtils } = require("electron");
 contextBridge.exposeInMainWorld("electron", {
     getAppName: () => ipcRenderer.invoke("get-app-name"),
     getAppPath: () => ipcRenderer.invoke("get-app-path"),
-    getDesktop: () => ipcRenderer.invoke("get-desktop"),
+    getPicturePath: () => ipcRenderer.invoke("get-picture-path"),
+    getTempPath: () => ipcRenderer.invoke("get-temp-path"),
     getFilePath: file => webUtils.getPathForFile(file),
 
     openFileDialog: () => ipcRenderer.invoke("open-file-dialog"),

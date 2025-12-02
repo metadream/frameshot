@@ -8,7 +8,8 @@ const imageExpr = new RegExp(`\\.(${imageTypes.join("|")})$`, "i");
 
 ipcMain.handle("get-app-name", () => app.getName());
 ipcMain.handle("get-app-path", () => app.getAppPath());
-ipcMain.handle("get-desktop", () => app.getPath("desktop"));
+ipcMain.handle("get-picture-path", () => app.getPath("pictures"));
+ipcMain.handle("get-temp-path", () => app.getPath("temp"));
 ipcMain.handle("open-external", (event, url) => shell.openExternal(url));
 
 /** 打开原生文件选择对话框 (支持文件和目录多选) */
