@@ -6,14 +6,15 @@ function delay(ms) {
 }
 
 const appName = await electron.getAppName();
+const infos = $(".infos");
 
 export default new class Thumbnail {
     constructor() {
-        this.container = $("main");
+        this.container = $(".thumbnails");
         this.container.addEventListener("click", e => {
             if (e.target === e.currentTarget) {
                 this.#unselect();
-                document.title = appName;
+                infos.innerHTML = "";
             }
         });
 
@@ -58,11 +59,11 @@ export default new class Thumbnail {
             item.classList.add("selected");
 
             const filename = item.url.split(/[\\/]/).pop();
-            document.title = appName + "  |  " + filename;
+            infos.innerHTML = `2000x3000　|　1.4MB　|　${filename}`;
         });
 
         const thumbnail = item.querySelector("img");
-        thumbnail.addEventListener("click", () => {
+        thumbnail.addEventListener("dblclick", () => {
             preview.render(thumbnail);
         });
     }
