@@ -28,7 +28,7 @@ body {
 aside {
     display: flex;
     flex-direction: column;
-    min-width: 280px;
+    min-width: 260px;
     max-width: 50%;
     height: 100%;
     border-right: #d6d6d6 1px solid;
@@ -57,8 +57,8 @@ aside > .infos {
 }
 
 main {
-    display: grid;
-    grid-template-columns: repeat(8, 1fr);
+    display: flex;
+    flex-wrap: wrap;
     flex: 1;
     height: 100%;
     padding: 30px;
@@ -69,9 +69,11 @@ main {
 }
 
 main .thumb {
-    position: relative;
-    padding-top: 100%;
-    min-width: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 108px;
+    height: 108px;
     border-radius: 5px;
     border: #d6d6d6 1px solid;
     background: #ddd;
@@ -83,12 +85,8 @@ main .thumb.selected {
 }
 
 main .thumb img {
-    position: absolute;
     max-width: 100%;
     max-height: 100%;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
 }
 
 /* --------------------------------------------------------
@@ -99,9 +97,8 @@ button {
     font: inherit;
     cursor: pointer;
     outline: 0;
-    border: 0;
     width: 100%;
-    padding: 10px 20px;
+    padding: 10px 15px;
     opacity: 0.8;
     background-repeat: no-repeat;
     background-position: center;
