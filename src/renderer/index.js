@@ -4,11 +4,11 @@ import thumbnail from "./thumbnail.js";
 const dragger = $(".dragger");
 const sidebar = $('aside');
 const openBtn = $('#open-btn');
-const toggleBtn = $('#toggle-btn');
+const sidebarBtn = $('#sidebar-btn');
 const closeBtn = $("#close-btn");
 const minimizeBtn = $("#minimize-btn");
 const maximizeBtn = $("#maximize-btn");
-const infoBar = $(".info-bar");
+const header = $("header");
 
 const picturePaths = await electron.getPicturePaths();
 thumbnail.render(picturePaths);
@@ -16,7 +16,7 @@ thumbnail.render(picturePaths);
 closeBtn.onclick = () => electron.closeWindow();
 minimizeBtn.onclick = () => electron.minimizeWindow();
 maximizeBtn.onclick = () => electron.toggleWindow();
-infoBar.ondblclick = () => electron.toggleWindow();
+header.ondblclick = () => electron.toggleWindow();
 
 openBtn.onclick = async function() {
     const { filePaths } = await electron.openFileDialog();
@@ -26,7 +26,7 @@ openBtn.onclick = async function() {
     }
 }
 
-toggleBtn.onclick = function() {
+sidebarBtn.onclick = function() {
     sidebar.style.transition = "all .2s"
     sidebar.classList.toggle("hidden");
     sidebar.ontransitionend = function() {
