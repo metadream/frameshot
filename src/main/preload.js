@@ -1,6 +1,10 @@
 const { contextBridge, ipcRenderer, webUtils } = require("electron");
 
 contextBridge.exposeInMainWorld("electron", {
+    closeWindow: () => ipcRenderer.send('window-control', 'close'),
+    minimizeWindow: () => ipcRenderer.send('window-control', 'minimize'),
+    toggleWindow: () => ipcRenderer.send('window-control', 'toggle'),
+
     getAppName: () => ipcRenderer.invoke("get-app-name"),
     getAppPath: () => ipcRenderer.invoke("get-app-path"),
     getPicturePaths: () => ipcRenderer.invoke("get-picture-paths"),

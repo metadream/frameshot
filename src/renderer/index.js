@@ -5,9 +5,16 @@ const dragger = $(".dragger");
 const sidebar = $('aside');
 const openBtn = $('#open-btn');
 const toggleBtn = $('#toggle-btn');
+const closeBtn = $("#close-btn");
+const minimizeBtn = $("#minimize-btn");
+const maximizeBtn = $("#maximize-btn");
 
 const picturePaths = await electron.getPicturePaths();
 thumbnail.render(picturePaths);
+
+closeBtn.onclick = () => electron.closeWindow();
+minimizeBtn.onclick = () => electron.minimizeWindow();
+maximizeBtn.onclick = () => electron.toggleWindow();
 
 openBtn.onclick = async function() {
     const { filePaths } = await electron.openFileDialog();

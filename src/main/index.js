@@ -1,4 +1,4 @@
-import { app, BrowserWindow, Menu } from "electron";
+import { app, BrowserWindow, ipcMain, Menu } from "electron";
 import path from "path";
 import "./ipc.js";
 
@@ -17,6 +17,8 @@ function createWindow() {
     mainWindow = new BrowserWindow({
         icon: appIcon,
         frame: false,
+        width: 800,
+        height: 600,
         webPreferences: {
             nodeIntegration: false,
             contextIsolation: true,
@@ -35,3 +37,20 @@ function createWindow() {
 
     mainWindow.maximize();
 }
+
+ipcMain.on('window-control', (event, action) => {
+    const win = BrowserWindow.fromWebContents(event.sender)
+    if (!win) return
+
+    switch (action) {
+        case 'close':
+            win.close();
+            break
+        case 'minimize':
+            win.minimize();
+            break
+        case 'toggle':
+            win.isMaximized() ? win.unmaximize() : win.maximize();
+            break
+    }
+})
