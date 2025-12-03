@@ -5,8 +5,9 @@ function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-const appName = await electron.getAppName();
 const infoBar = $(".info-bar");
+const thumbElements = [];
+let currentIndex = -1;
 
 export default new class Thumbnail {
     constructor() {
@@ -17,6 +18,17 @@ export default new class Thumbnail {
                 infoBar.innerHTML = "";
             }
         });
+
+        document.addEventListener("keyup", e => {
+            switch (e.code) {
+                case "ArrowLeft":
+                    this.#selectIndex(--currentIndex);
+                    break;
+                case "ArrowRight":
+                    this.#selectIndex(++currentIndex);
+                    break;
+            }
+        })
 
         this.observer = new IntersectionObserver(entries => {
             entries.forEach(async entry => {
@@ -32,15 +44,37 @@ export default new class Thumbnail {
         });
     }
 
+    #selectIndex(index) {
+        if (index < 0) {
+            currentIndex = 0;
+            return;
+        }
+        if (index > thumbElements.length - 1) {
+            currentIndex = thumbElements.length - 1;
+            return;
+        }
+
+        this.#unselect();
+        currentIndex = index;
+        const item = thumbElements[index];
+        item.classList.add("selected");
+
+        const filename = item.url.split(/[\\/]/).pop();
+        infoBar.innerHTML = `2000x3000　|　1.4MB　|　${filename}`;
+    }
+
     async render(filePaths) {
         this.observer.disconnect();
         this.container.innerHTML = "";
 
         const fragment = document.createDocumentFragment();
         const entry = await electron.readFilePaths(filePaths);
+        let index = 0;
         entry.images.forEach(url => {
             const item = $(`<div class="thumb"><img data-original="${url}"/></div>`);
             item.url = url;
+            item.index = index++;
+            thumbElements.push(item);
             this.#bindEvents(item);
             fragment.append(item);
         });
@@ -55,11 +89,7 @@ export default new class Thumbnail {
 
     #bindEvents(item) {
         item.addEventListener("click", async () => {
-            this.#unselect();
-            item.classList.add("selected");
-
-            const filename = item.url.split(/[\\/]/).pop();
-            infoBar.innerHTML = `2000x3000　|　1.4MB　|　${filename}`;
+            this.#selectIndex(item.index);
         });
 
         const thumbnail = item.querySelector("img");

@@ -7,17 +7,17 @@ export default new class Preview {
             this.container.classList.remove("show");
         });
 
-        document.addEventListener("keyup", e => {
-            e.preventDefault();
-            switch (e.code) {
-                case "ArrowLeft":
-                    console.log("left")
-                    break;
-                case "ArrowRight":
-                    console.log("right")
-                    break;
-            }
-        });
+        // document.addEventListener("keyup", e => {
+        //     e.preventDefault();
+        //     switch (e.code) {
+        //         case "ArrowLeft":
+        //             console.log("left")
+        //             break;
+        //         case "ArrowRight":
+        //             console.log("right")
+        //             break;
+        //     }
+        // });
     }
 
     render(thumbnail) {
