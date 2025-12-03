@@ -35,6 +35,12 @@ aside {
     height: 100%;
     border-right: #ddd 1px solid;
     background: #eee;
+    overflow: hidden;
+}
+
+aside.hidden {
+    width: 0 !important;
+    min-width: 0;
 }
 
 .dragger {
@@ -60,7 +66,7 @@ aside {
     transition: all .3s
 }
 
-.dragger:hover:before {
+.dragger:hover:before, .dragger.dragging:before {
     width: 4px;
 }
 
