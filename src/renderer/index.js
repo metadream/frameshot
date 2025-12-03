@@ -8,6 +8,7 @@ const toggleBtn = $('#toggle-btn');
 const closeBtn = $("#close-btn");
 const minimizeBtn = $("#minimize-btn");
 const maximizeBtn = $("#maximize-btn");
+const infoBar = $(".infos");
 
 const picturePaths = await electron.getPicturePaths();
 thumbnail.render(picturePaths);
@@ -15,6 +16,7 @@ thumbnail.render(picturePaths);
 closeBtn.onclick = () => electron.closeWindow();
 minimizeBtn.onclick = () => electron.minimizeWindow();
 maximizeBtn.onclick = () => electron.toggleWindow();
+infoBar.ondblclick = () => electron.toggleWindow();
 
 openBtn.onclick = async function() {
     const { filePaths } = await electron.openFileDialog();

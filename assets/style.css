@@ -22,6 +22,8 @@ body {
     display: flex;
     align-items: flex-start;
     height: 100vh;
+    border: red 1px solid;
+    border-radius: 10px;
     overflow: hidden;
 }
 
