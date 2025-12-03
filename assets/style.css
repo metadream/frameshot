@@ -183,7 +183,13 @@ button {
     transition: all .3s;
 }
 
-button:hover {
+button.window-control {
+    cursor: default;
+    width: 28px;
+    height: 28px;
+}
+
+button:not(.window-control):hover {
     background: rgba(0, 0, 0, .1);
 }
 
