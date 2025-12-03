@@ -8,7 +8,7 @@ const toggleBtn = $('#toggle-btn');
 const closeBtn = $("#close-btn");
 const minimizeBtn = $("#minimize-btn");
 const maximizeBtn = $("#maximize-btn");
-const infoBar = $(".infos");
+const infoBar = $(".info-bar");
 
 const picturePaths = await electron.getPicturePaths();
 thumbnail.render(picturePaths);

@@ -6,7 +6,7 @@ function delay(ms) {
 }
 
 const appName = await electron.getAppName();
-const infos = $(".infos");
+const infoBar = $(".info-bar");
 
 export default new class Thumbnail {
     constructor() {
@@ -14,7 +14,7 @@ export default new class Thumbnail {
         this.container.addEventListener("click", e => {
             if (e.target === e.currentTarget) {
                 this.#unselect();
-                infos.innerHTML = "";
+                infoBar.innerHTML = "";
             }
         });
 
@@ -59,7 +59,7 @@ export default new class Thumbnail {
             item.classList.add("selected");
 
             const filename = item.url.split(/[\\/]/).pop();
-            infos.innerHTML = `2000x3000　|　1.4MB　|　${filename}`;
+            infoBar.innerHTML = `2000x3000　|　1.4MB　|　${filename}`;
         });
 
         const thumbnail = item.querySelector("img");
