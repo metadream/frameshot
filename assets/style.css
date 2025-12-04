@@ -10,7 +10,7 @@
 :root {
     --font-color: #333;
     --bg-color: #f6f6f6;
-    --text-size: 15px;
+    --text-size: 14px;
 }
 
 html {
@@ -151,7 +151,7 @@ aside .dragger {
 }
 
 /* --------------------------------------------------------
- * Components
+ * Native Components
  * ----------------------------------------------------- */
 
 button {
@@ -186,4 +186,58 @@ img {
     display: block;
     max-width: 100%;
     max-height: 100%;
+}
+
+/* --------------------------------------------------------
+ * Custom Components
+ * ----------------------------------------------------- */
+
+.tree-root {
+    list-style: none;
+    user-select: none;
+    margin: 0;
+    padding: 0;
+}
+
+.tree-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 8px 0;
+    cursor: pointer;
+    transition: all .3s;
+}
+
+.tree-item:hover, .tree-item.actived {
+    color: blue;
+}
+
+.tree-toggle-icon {
+    width: 18px;
+    height: 18px;
+    transition: transform 0.3s ease;
+}
+
+.tree-toggle-icon.collapsed {
+    transform: rotate(0deg);
+}
+
+.tree-toggle-icon.expanded {
+    transform: rotate(90deg);
+}
+
+.tree-toggle-icon.hidden {
+    visibility: hidden;
+}
+
+.tree-node-icon {
+    width: 18px;
+    height: 18px;
+}
+
+.tree-children {
+    list-style: none;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    padding-left: 24px;
 }
