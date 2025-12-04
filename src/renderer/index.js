@@ -25,9 +25,9 @@ tree.render(data);
 closeBtn.onclick = () => electron.closeWindow();
 minimizeBtn.onclick = () => electron.minimizeWindow();
 maximizeBtn.onclick = () => electron.toggleWindow();
-header.ondblclick = e => {
-    if (e.target.closest('button')) return;
-    electron.toggleWindow();
+
+if (electron.platform !== "darwin") {
+    document.body.classList.add("rounded-border");
 }
 
 openBtn.onclick = async function() {

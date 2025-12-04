@@ -23,12 +23,15 @@ body {
     background: var(--bg-color);
     font-size: var(--text-size);
     font-family: "Saira";
-    border: red 1px solid;
-    border-radius: 10px;
     display: flex;
     flex-direction: column;
     height: 100vh;
     overflow: hidden;
+}
+
+body.rounded-border {
+    border: red 1px solid;
+    border-radius: 10px;
 }
 
 body.dragging {
@@ -37,7 +40,7 @@ body.dragging {
 }
 
 header {
-    -webkit-app-region: drag;
+    app-region: drag;
     display: flex;
     gap: 30px;
     padding: 10px;
@@ -58,7 +61,7 @@ header .info-bar {
 }
 
 header button {
-    -webkit-app-region: no-drag;
+    app-region: no-drag;
 }
 
 main {

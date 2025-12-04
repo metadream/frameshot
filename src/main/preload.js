@@ -5,6 +5,7 @@ contextBridge.exposeInMainWorld("electron", {
     minimizeWindow: () => ipcRenderer.send('window-control', 'minimize'),
     toggleWindow: () => ipcRenderer.send('window-control', 'toggle'),
 
+    platform: process.platform,
     getAppName: () => ipcRenderer.invoke("get-app-name"),
     getAppPath: () => ipcRenderer.invoke("get-app-path"),
     getPicturePaths: () => ipcRenderer.invoke("get-picture-paths"),
