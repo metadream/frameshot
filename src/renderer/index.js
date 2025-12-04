@@ -16,7 +16,10 @@ thumbnail.render(picturePaths);
 closeBtn.onclick = () => electron.closeWindow();
 minimizeBtn.onclick = () => electron.minimizeWindow();
 maximizeBtn.onclick = () => electron.toggleWindow();
-header.ondblclick = () => electron.toggleWindow();
+header.ondblclick = e => {
+    if (e.target.closest('button')) return;
+    electron.toggleWindow();
+}
 
 openBtn.onclick = async function() {
     const { filePaths } = await electron.openFileDialog();
@@ -37,7 +40,7 @@ sidebarBtn.onclick = function() {
 dragger.onmousedown = function(e) {
     const clientX = e.clientX;
     const offsetLeft = dragger.offsetLeft;
-    dragger.classList.add("dragging");
+    document.body.classList.add("dragging");
 
     document.onmousemove = function(e) {
         const distance = offsetLeft + (e.clientX - clientX);
@@ -48,7 +51,7 @@ dragger.onmousedown = function(e) {
     document.onmouseup = function() {
         document.onmousemove = null;
         document.onmouseup = null;
-        dragger.classList.remove("dragging");
+        document.body.classList.remove("dragging");
     };
     return false;
 };
