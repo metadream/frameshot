@@ -1,7 +1,7 @@
 import { app, dialog, ipcMain, shell } from "electron";
 import { getConfig, updateConfig } from "./config.js";
-import path from "path";
 import fs from "fs";
+import path from "path";
 import sharp from "sharp";
 
 const imageTypes = ["avif", "bmp", "gif", "heic", "jpg", "jpeg", "png", "raw", "svg", "tiff", "webp"];
@@ -27,27 +27,42 @@ ipcMain.handle("open-file-dialog", () => {
 
 /** 将路径数组解析为纯目录和目录下包含的图片 */
 ipcMain.handle("read-file-paths", async (event, filePaths) => {
-    const dirs = [];
+    const folders = [];
     const images = [];
 
     if (filePaths && filePaths.length) {
         for (const filePath of filePaths) {
-            if (!fs.existsSync(filePath)) continue;
-
-            const stat = fs.statSync(filePath);
-            if (stat.isDirectory()) {
-                dirs.push(filePath);
-                const files = fs.readdirSync(filePath)
-                                .filter(file => imageExpr.test(file))
-                                .map(file => path.join(filePath, file));
-                images.push(...files);
-            } else {
-                images.push(filePath);
+            if (fs.existsSync(filePath)) {
+                fs.statSync(filePath).isDirectory()
+                    ? folders.push(filePath) : images.push(filePath);
             }
         }
     }
-    return { dirs, images };
+    return { folders, images };
 });
+
+ipcMain.handle("build-tree-data", async (event, folders) => {
+    return folders
+    .filter(p => fs.existsSync(p) && fs.statSync(p).isDirectory())
+    .map(dir => {
+        const build = p => {
+            const node = { name: path.basename(p), path: p };
+            const children = fs.readdirSync(p)
+                               .map(item => path.join(p, item))
+                               .filter(fullPath => fs.statSync(fullPath).isDirectory())
+                               .map(child => build(child))
+                               .sort((a, b) => a.name.localeCompare(b.name));
+            if (children.length > 0) node.children = children;
+            return node;
+        };
+        return build(dir);
+    });
+});
+
+// const files = fs.readdirSync(filePath)
+//                 .filter(file => imageExpr.test(file))
+//                 .map(file => path.join(filePath, file));
+// images.push(...files);
 
 /** 创建缩略图 */
 ipcMain.handle("create-thumbnail", async (event, filePath) => {
