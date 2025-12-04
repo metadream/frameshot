@@ -1,7 +1,7 @@
-import { app, dialog, ipcMain, shell } from "electron";
+import { app, BrowserWindow, dialog, ipcMain, shell } from "electron";
 import { getConfig, updateConfig } from "./config.js";
-import fs from "fs";
 import path from "path";
+import fs from "fs";
 import sharp from "sharp";
 
 const imageTypes = ["avif", "bmp", "gif", "heic", "jpg", "jpeg", "png", "raw", "svg", "tiff", "webp"];
@@ -9,9 +9,10 @@ const imageExpr = new RegExp(`\\.(${imageTypes.join("|")})$`, "i");
 
 ipcMain.handle("get-app-name", () => app.getName());
 ipcMain.handle("get-app-path", () => app.getAppPath());
-ipcMain.handle("get-picture-paths", () => getConfig("picture_paths") || [app.getPath("pictures")]);
 ipcMain.handle("get-temp-path", () => app.getPath("temp"));
 ipcMain.handle("open-external", (event, url) => shell.openExternal(url));
+
+ipcMain.handle("get-default-folders", () => getConfig("picture_folders") || [app.getPath("pictures")]);
 ipcMain.handle("update-config", (event, key, value) => updateConfig(key, value));
 
 /** 打开原生文件选择对话框 (支持文件和目录多选) */
@@ -25,22 +26,24 @@ ipcMain.handle("open-file-dialog", () => {
     });
 });
 
-/** 将路径数组解析为纯目录和目录下包含的图片 */
+/** 将路径数组解析为文件夹和图片两个数组 */
 ipcMain.handle("read-file-paths", async (event, filePaths) => {
     const folders = [];
     const images = [];
 
-    if (filePaths && filePaths.length) {
-        for (const filePath of filePaths) {
-            if (fs.existsSync(filePath)) {
-                fs.statSync(filePath).isDirectory()
-                    ? folders.push(filePath) : images.push(filePath);
-            }
+    if (filePaths) filePaths
+    .filter(p => fs.existsSync(p))
+    .forEach(p => {
+        if (fs.statSync(p).isDirectory()) {
+            folders.push(p);
+        } else if (imageExpr.test(p)) {
+            images.push(p);
         }
-    }
+    });
     return { folders, images };
 });
 
+/** 将文件夹数组构建成树形组件所需数据结构 */
 ipcMain.handle("build-tree-data", async (event, folders) => {
     return folders
     .filter(p => fs.existsSync(p) && fs.statSync(p).isDirectory())
@@ -59,13 +62,24 @@ ipcMain.handle("build-tree-data", async (event, folders) => {
     });
 });
 
-// const files = fs.readdirSync(filePath)
-//                 .filter(file => imageExpr.test(file))
-//                 .map(file => path.join(filePath, file));
-// images.push(...files);
-
-/** 创建缩略图 */
-ipcMain.handle("create-thumbnail", async (event, filePath) => {
-    const buffer = await sharp(filePath).resize(128, 128, { fit: 'inside' }).toBuffer();
+/** 创建缩略图并缓存到系统临时目录 */
+ipcMain.handle("create-thumbnail", async (event, imagePath) => {
+    const buffer = await sharp(imagePath).resize(128, 128, { fit: "inside" }).toBuffer();
     return buffer;
+});
+
+/** 窗口控制 */
+ipcMain.on("window-control", (event, action) => {
+    const win = BrowserWindow.fromWebContents(event.sender);
+    if (win) switch (action) {
+        case "close":
+            win.close();
+            break;
+        case "minimize":
+            win.minimize();
+            break;
+        case "toggle":
+            win.isMaximized() ? win.unmaximize() : win.maximize();
+            break;
+    }
 });

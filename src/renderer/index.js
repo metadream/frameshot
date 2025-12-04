@@ -11,7 +11,7 @@ const minimizeBtn = $("#minimize-btn");
 const maximizeBtn = $("#maximize-btn");
 const header = $("header");
 
-const picturePaths = await electron.getPicturePaths();
+const picturePaths = await electron.getDefaultFolders();
 thumbnail.render(picturePaths);
 
 const entry = await electron.readFilePaths(picturePaths);
@@ -34,7 +34,7 @@ openBtn.onclick = async function() {
     const { filePaths } = await electron.openFileDialog();
     if (filePaths && filePaths.length >= 1) {
         thumbnail.render(filePaths);
-        electron.updateConfig("picture_paths", filePaths);
+        electron.updateConfig("picture_folders", filePaths);
     }
 }
 
