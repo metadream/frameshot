@@ -54,18 +54,23 @@ export default new class Gallery {
         const fragment = document.createDocumentFragment();
         const images = await electron.readImages(folder);
 
-        images.forEach((url, index) => {
-            const item = $(`<div class="thumb"><img data-original-src="${url}"/></div>`);
+        images.forEach((path, index) => {
+            const item = $(`<div class="thumb" data-original="${path}"><img/></div>`);
+            item.original = path;
             item.index = index++;
 
-            this.thumbItems.push(item);
-            this.#bindEvents(item);
+            item.addEventListener("click", async () => {
+                this.#selectIndex(item.index);
+            });
             fragment.append(item);
+            this.thumbItems.push(item);
         });
 
         gallery.append(fragment);
+        preview.render(".gallery", "div.thumb");
+
         requestAnimationFrame(() => {
-            gallery.querySelectorAll('img[data-original-src]:not([src])').forEach(img => {
+            gallery.querySelectorAll('img:not([src])').forEach(img => {
                 this.observer.observe(img);
             });
         });
@@ -76,32 +81,17 @@ export default new class Gallery {
         if (img.src) return;
 
         // 设置元数据
-        const metadata = await image.createThumbnail(img.dataset.originalSrc);
         const item = img.parentNode;
+        const metadata = await image.createThumbnail(item.original);
         item.width = metadata.width;
         item.height = metadata.height;
         item.size = metadata.size;
-        item.original = metadata.original;
 
         // 加载缩略图
         img.src = metadata.thumbnail;
         img.onload = () => {
             img.classList.add('loaded');
         };
-    }
-
-    /** 绑定缩略图事件 */
-    #bindEvents(item) {
-        // 单击选中
-        item.addEventListener("click", async () => {
-            this.#selectIndex(item.index);
-        });
-
-        // 双击预览
-        const thumbnail = item.querySelector("img");
-        thumbnail.addEventListener("dblclick", () => {
-            preview.render(thumbnail);
-        });
     }
 
     /** 根据索引选中缩略图 */
@@ -111,7 +101,8 @@ export default new class Gallery {
             this.currentIndex = 0;
             return;
         }
-        if (index > this.thumbItems.length - 1) {
+        const total = this.thumbItems.length;
+        if (index > total - 1) {
             this.currentIndex = this.thumbItems.length - 1;
             return;
         }
@@ -125,7 +116,7 @@ export default new class Gallery {
         // 更新标题栏
         const { width, height, size, original } = item;
         const filename = original.split(/[\\/]/).pop();
-        infoBar.innerHTML = `${width}×${height}　|　${formatBytes(size)}　|　${filename}`;
+        infoBar.innerHTML = `${index + 1}/${total}　|　${width}×${height}　|　${formatBytes(size)}　|　${filename}`;
     }
 
     /** 取消选中状态 */
