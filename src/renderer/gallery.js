@@ -11,7 +11,7 @@ const infoBar = $(".info-bar");
 /** 缩略图区域 */
 export default new class Gallery {
 
-    thumbElements = [];
+    thumbnails = [];
     currentIndex = -1;
 
     constructor() {
@@ -52,14 +52,14 @@ export default new class Gallery {
             this.currentIndex = 0;
             return;
         }
-        if (index > this.thumbElements.length - 1) {
-            this.currentIndex = this.thumbElements.length - 1;
+        if (index > this.thumbnails.length - 1) {
+            this.currentIndex = this.thumbnails.length - 1;
             return;
         }
 
         this.#unselect();
         this.currentIndex = index;
-        const item = this.thumbElements[index];
+        const item = this.thumbnails[index];
         item.classList.add("selected");
 
         const filename = item.url.split(/[\\/]/).pop();
@@ -77,7 +77,7 @@ export default new class Gallery {
             const item = $(`<div class="thumb"><img data-original="${url}"/></div>`);
             item.url = url;
             item.index = index++;
-            this.thumbElements.push(item);
+            this.thumbnails.push(item);
             this.#bindEvents(item);
             fragment.append(item);
         });
@@ -121,10 +121,4 @@ export default new class Gallery {
         return filePath;
     }
 
-    destroy() {
-        if (this.observer) {
-            this.observer.disconnect();
-            this.observer = null;
-        }
-    }
 }
