@@ -55,13 +55,12 @@ export default new class Gallery {
         const images = await electron.readImages(folder);
 
         images.forEach((url, index) => {
-            const thumbItem = $(`<div class="thumb"><img data-original-src="${url}"/></div>`);
-            thumbItem.original = url;
-            thumbItem.index = index++;
+            const item = $(`<div class="thumb"><img data-original-src="${url}"/></div>`);
+            item.index = index++;
 
-            this.thumbItems.push(thumbItem);
-            this.#bindEvents(thumbItem);
-            fragment.append(thumbItem);
+            this.thumbItems.push(item);
+            this.#bindEvents(item);
+            fragment.append(item);
         });
 
         container.append(fragment);
@@ -78,11 +77,11 @@ export default new class Gallery {
 
         // 设置元数据
         const metadata = await image.createThumbnail(img.dataset.originalSrc);
-        console.log(metadata)
-        const thumbItem = img.parentNode;
-        thumbItem.width = metadata.width;
-        thumbItem.height = metadata.height;
-        thumbItem.size = metadata.size;
+        const item = img.parentNode;
+        item.width = metadata.width;
+        item.height = metadata.height;
+        item.size = metadata.size;
+        item.original = metadata.original;
 
         // 加载缩略图
         img.src = metadata.thumbnail;
@@ -92,14 +91,14 @@ export default new class Gallery {
     }
 
     /** 绑定缩略图事件 */
-    #bindEvents(thumbItem) {
+    #bindEvents(item) {
         // 单击选中
-        thumbItem.addEventListener("click", async () => {
-            this.#selectIndex(thumbItem.index);
+        item.addEventListener("click", async () => {
+            this.#selectIndex(item.index);
         });
 
         // 双击预览  TODO 动画过渡弹出
-        const thumbnail = thumbItem.querySelector("img");
+        const thumbnail = item.querySelector("img");
         thumbnail.addEventListener("dblclick", () => {
             preview.render(thumbnail);
         });
@@ -120,11 +119,11 @@ export default new class Gallery {
         // 设置选中状态
         this.#unselect();
         this.currentIndex = index;
-        const thumbItem = this.thumbItems[index];
-        thumbItem.classList.add("selected");
+        const item = this.thumbItems[index];
+        item.classList.add("selected");
 
         // 更新标题栏
-        const { width, height, size, original } = thumbItem;
+        const { width, height, size, original } = item;
         const filename = original.split(/[\\/]/).pop();
         infoBar.innerHTML = `${width}×${height}　|　${formatBytes(size)}　|　${filename}`;
     }
