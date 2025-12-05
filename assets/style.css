@@ -109,6 +109,7 @@ aside .dragger {
 
 .gallery {
     display: flex;
+    align-content: flex-start;
     flex-wrap: wrap;
     flex: 1;
     padding: 30px;
