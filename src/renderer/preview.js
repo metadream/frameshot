@@ -1,13 +1,13 @@
 import { $ } from "../main/utils.js";
 
-const container = $(".preview");
+const preview = $(".preview");
 
 /** 预览区域 */
 export default new class Preview {
 
     constructor() {
-        container.addEventListener("click", e => {
-            container.classList.remove("show");
+        preview.addEventListener("click", e => {
+            preview.classList.remove("opened");
         });
 
         // document.addEventListener("keyup", e => {
@@ -24,7 +24,7 @@ export default new class Preview {
     }
 
     render(thumbnail) {
-        container.classList.add("show");
-        container.innerHTML = `<img src="${thumbnail.src}"/>`;
+        preview.classList.add("opened");
+        preview.innerHTML = `<img src="${thumbnail.src}"/>`;
     }
 }

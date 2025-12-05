@@ -1,7 +1,7 @@
 import { $, formatBytes } from "../main/utils.js";
 import preview from "./preview.js";
 
-const container = $(".gallery");
+const gallery = $(".gallery");
 const infoBar = $(".info-bar");
 
 /** 缩略图区域 */
@@ -12,7 +12,7 @@ export default new class Gallery {
 
     constructor() {
         // 点击空白区域取消选择
-        container.addEventListener("click", e => {
+        gallery.addEventListener("click", e => {
             if (e.target === e.currentTarget) {
                 this.#unselect();
                 infoBar.innerHTML = "";
@@ -49,7 +49,7 @@ export default new class Gallery {
     /** 读取目录下的图片并渲染缩略图 */
     async render(folder) {
         this.observer.disconnect();
-        container.innerHTML = "";
+        gallery.innerHTML = "";
 
         const fragment = document.createDocumentFragment();
         const images = await electron.readImages(folder);
@@ -63,9 +63,9 @@ export default new class Gallery {
             fragment.append(item);
         });
 
-        container.append(fragment);
+        gallery.append(fragment);
         requestAnimationFrame(() => {
-            container.querySelectorAll('img[data-original-src]:not([src])').forEach(img => {
+            gallery.querySelectorAll('img[data-original-src]:not([src])').forEach(img => {
                 this.observer.observe(img);
             });
         });
@@ -130,7 +130,7 @@ export default new class Gallery {
 
     /** 取消选中状态 */
     #unselect() {
-        const selected = container.querySelector(".selected");
+        const selected = gallery.querySelector(".selected");
         if (selected) selected.classList.remove("selected");
     }
 
