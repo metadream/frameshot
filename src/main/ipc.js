@@ -5,8 +5,13 @@ import fs from "fs";
 import crypto from "crypto";
 import sharp from "sharp";
 
-const imageTypes = ["avif", "bmp", "gif", "heic", "jpg", "jpeg", "png", "raw", "svg", "tiff", "webp"];
-const imageExpr = new RegExp(`\\.(${imageTypes.join("|")})$`, "i");
+// Sharp 支持的所有图片格式
+const imageFormats = /\.(avif|gif|heic|jpeg|jpg|png|raw|svg|tiff|webp)$/i;
+// 可保持相同格式的位图列表
+const rasterFormats = /\.(avif|heic|jpeg|jpg|png|raw|tiff|webp)$/i;
+// 当无法保持格式时使用的默认输出格式
+const fallbackFormat = ".png";
+// 临时缓存目录路径
 const tempPath = path.join(app.getPath("temp"), app.getName());
 fs.mkdirSync(tempPath, { recursive: true });
 
@@ -47,14 +52,16 @@ ipcMain.handle("read-folders", async (event, folders) => {
 ipcMain.handle("read-images", async (event, folder) => {
     return fs.readdirSync(folder)
              .map(p => path.join(folder, p))
-             .filter(p => fs.existsSync(p) && fs.statSync(p).isFile() && imageExpr.test(p))
+             .filter(p => fs.existsSync(p) && fs.statSync(p).isFile() && imageFormats.test(p))
              .sort((a, b) => a.localeCompare(b));
 });
 
 /** 如果不存在则创建缩略图并缓存到系统临时目录 */
 ipcMain.handle("create-thumbnail", async (event, inputPath) => {
     const fileKey = crypto.createHash('md5').update(inputPath).digest('hex');
-    const outputPath = path.join(tempPath, fileKey + path.extname(inputPath));
+    const ext = path.extname(inputPath).toLowerCase();
+    const outputFormat = rasterFormats.test(ext) ? ext : fallbackFormat;
+    const outputPath = path.join(tempPath, fileKey + outputFormat);
 
     const image = sharp(inputPath);
     const metadata = await image.metadata();
@@ -67,7 +74,6 @@ ipcMain.handle("create-thumbnail", async (event, inputPath) => {
         .resize(256, 256, { fit: "inside", withoutEnlargement: true })
         .toFile(outputPath);
     }
-    console.log(metadata);
     return metadata;
 });
 
