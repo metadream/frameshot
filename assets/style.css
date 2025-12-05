@@ -30,7 +30,7 @@ body {
 }
 
 body.rounded-border {
-    border: red 1px solid;
+    border: #ccc 1px solid;
     border-radius: 10px;
 }
 
