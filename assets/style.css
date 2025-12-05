@@ -14,6 +14,7 @@
 }
 
 html {
+    user-select: none;
     overflow: hidden;
 }
 
@@ -36,7 +37,6 @@ body.rounded-border {
 
 body.dragging {
     cursor: col-resize;
-    user-select: none;
 }
 
 header {
@@ -140,7 +140,6 @@ aside .dragger {
  * ----------------------------------------------------- */
 
 button {
-    user-select: none;
     font: inherit;
     cursor: pointer;
     outline: 0;
@@ -174,12 +173,11 @@ img {
 }
 
 /* --------------------------------------------------------
- * Custom Components
+ * Tree Component
  * ----------------------------------------------------- */
 
 .tree-root {
     list-style: none;
-    user-select: none;
     margin: 0;
     padding: 0;
 }
@@ -232,4 +230,27 @@ img {
     overflow: hidden;
     transition: max-height 0.3s ease;
     padding-left: 24px;
+}
+
+/* --------------------------------------------------------
+ * Preview Component
+ * ----------------------------------------------------- */
+
+.shade-mask {
+    display: none;
+    justify-content: space-between;
+    align-items: center;
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0);
+    color: #fff;
+    transition: background .3s;
+}
+
+.icon-prev, .icon-next {
+    width: 64px;
+    height: 64px;
+    padding: 10px;
+    fill: currentcolor;
+    cursor: pointer;
 }

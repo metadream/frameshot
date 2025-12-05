@@ -62,13 +62,14 @@ export default new class Gallery {
             item.addEventListener("click", async () => {
                 this.#selectIndex(item.index);
             });
+            item.addEventListener("dblclick", e => {
+                preview.open(item);
+            })
             fragment.append(item);
             this.thumbItems.push(item);
         });
 
         gallery.append(fragment);
-        preview.render(".gallery", "div.thumb");
-
         requestAnimationFrame(() => {
             gallery.querySelectorAll('img:not([src])').forEach(img => {
                 this.observer.observe(img);
