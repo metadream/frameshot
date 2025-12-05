@@ -247,10 +247,17 @@ img {
     transition: background .3s;
 }
 
-.icon-prev, .icon-next {
+.shade-mask .icon-prev, .shade-mask .icon-next {
     width: 64px;
     height: 64px;
     padding: 10px;
     fill: currentcolor;
     cursor: pointer;
+}
+
+.shade-mask .preview-zone {
+    position: absolute;
+    cursor: zoom-in;
+    will-change: transform;
+    transition: all .3s;
 }

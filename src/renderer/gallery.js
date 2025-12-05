@@ -55,7 +55,7 @@ export default new class Gallery {
         const images = await electron.readImages(folder);
 
         images.forEach((path, index) => {
-            const item = $(`<div class="thumb" data-original="${path}"><img/></div>`);
+            const item = $(`<div class="thumb"><img/></div>`);
             item.original = path;
             item.index = index++;
 
