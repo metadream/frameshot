@@ -127,6 +127,7 @@ aside .dragger {
     border-radius: 5px;
     border: #e3e3e3 1px solid;
     background: #eee;
+    overflow: hidden;
 }
 
 .gallery .thumb.selected {

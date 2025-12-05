@@ -9,7 +9,6 @@ contextBridge.exposeInMainWorld("electron", {
 
     getAppName: () => ipcRenderer.invoke("get-app-name"),
     getAppPath: () => ipcRenderer.invoke("get-app-path"),
-    getTempPath: () => ipcRenderer.invoke("get-temp-path"),
     getDefaultFolders: () => ipcRenderer.invoke("get-default-folders"),
 
     openFileDialog: () => ipcRenderer.invoke("open-file-dialog"),

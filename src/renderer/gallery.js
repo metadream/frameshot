@@ -1,9 +1,5 @@
-import { $ } from "../main/utils.js";
+import { $, formatBytes } from "../main/utils.js";
 import preview from "./preview.js";
-
-function delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 const container = $(".gallery");
 const infoBar = $(".info-bar");
@@ -11,10 +7,11 @@ const infoBar = $(".info-bar");
 /** 缩略图区域 */
 export default new class Gallery {
 
-    thumbnails = [];
+    thumbItems = [];
     currentIndex = -1;
 
     constructor() {
+        // 点击空白区域取消选择
         container.addEventListener("click", e => {
             if (e.target === e.currentTarget) {
                 this.#unselect();
@@ -22,6 +19,7 @@ export default new class Gallery {
             }
         });
 
+        // 方向键切换
         document.addEventListener("keyup", e => {
             switch (e.code) {
                 case "ArrowLeft":
@@ -33,11 +31,12 @@ export default new class Gallery {
             }
         })
 
+        // 可视区内懒加载缩略图
         this.observer = new IntersectionObserver(entries => {
             entries.forEach(async entry => {
                 if (entry.isIntersecting) {
                     const img = entry.target;
-                    await this.#loadImage(img);
+                    await this.#loadThumbnail(img);
                     this.observer.unobserve(img);
                 }
             });
@@ -47,78 +46,93 @@ export default new class Gallery {
         });
     }
 
-    #selectIndex(index) {
-        if (index < 0) {
-            this.currentIndex = 0;
-            return;
-        }
-        if (index > this.thumbnails.length - 1) {
-            this.currentIndex = this.thumbnails.length - 1;
-            return;
-        }
-
-        this.#unselect();
-        this.currentIndex = index;
-        const item = this.thumbnails[index];
-        item.classList.add("selected");
-
-        const filename = item.url.split(/[\\/]/).pop();
-        infoBar.innerHTML = `2000x3000　|　1.4MB　|　${filename}`;
-    }
-
+    /** 读取目录下的图片并渲染缩略图 */
     async render(folder) {
         this.observer.disconnect();
         container.innerHTML = "";
 
         const fragment = document.createDocumentFragment();
         const images = await electron.readImages(folder);
-        let index = 0;
-        images.forEach(url => {
-            const item = $(`<div class="thumb"><img data-original="${url}"/></div>`);
-            item.url = url;
-            item.index = index++;
-            this.thumbnails.push(item);
-            this.#bindEvents(item);
-            fragment.append(item);
+
+        images.forEach((url, index) => {
+            const thumbItem = $(`<div class="thumb"><img data-original-src="${url}"/></div>`);
+            thumbItem.original = url;
+            thumbItem.index = index++;
+
+            this.thumbItems.push(thumbItem);
+            this.#bindEvents(thumbItem);
+            fragment.append(thumbItem);
         });
 
         container.append(fragment);
         requestAnimationFrame(() => {
-            container.querySelectorAll('img[data-original]:not([src])').forEach(img => {
+            container.querySelectorAll('img[data-original-src]:not([src])').forEach(img => {
                 this.observer.observe(img);
             });
         });
     }
 
-    #bindEvents(item) {
-        item.addEventListener("click", async () => {
-            this.#selectIndex(item.index);
-        });
-
-        const thumbnail = item.querySelector("img");
-        thumbnail.addEventListener("dblclick", () => {
-            preview.render(thumbnail);
-        });
-    }
-
-    #unselect() {
-        const selected = container.querySelector(".selected");
-        if (selected) selected.classList.remove("selected");
-    }
-
-    async #loadImage(img) {
+    /** 加载(或创建)缩略图 */
+    async #loadThumbnail(img) {
         if (img.src) return;
-        img.src = await this.#createThumbnail(img.dataset.original);
+
+        // 设置元数据
+        const metadata = await image.createThumbnail(img.dataset.originalSrc);
+        console.log(metadata)
+        const thumbItem = img.parentNode;
+        thumbItem.width = metadata.width;
+        thumbItem.height = metadata.height;
+        thumbItem.size = metadata.size;
+
+        // 加载缩略图
+        img.src = metadata.thumbnail;
         img.onload = () => {
             img.classList.add('loaded');
         };
     }
 
-    async #createThumbnail(filePath) {
-        // const buffer = await electron.getThumbnail(filePath);
-        const randomInt = Math.floor(Math.random() * 2001) + 1000;
-        await delay(randomInt);
-        return filePath;
+    /** 绑定缩略图事件 */
+    #bindEvents(thumbItem) {
+        // 单击选中
+        thumbItem.addEventListener("click", async () => {
+            this.#selectIndex(thumbItem.index);
+        });
+
+        // 双击预览  TODO 动画过渡弹出
+        const thumbnail = thumbItem.querySelector("img");
+        thumbnail.addEventListener("dblclick", () => {
+            preview.render(thumbnail);
+        });
+    }
+
+    /** 根据索引选中缩略图 */
+    #selectIndex(index) {
+        // 索引边界判断
+        if (index < 0) {
+            this.currentIndex = 0;
+            return;
+        }
+        if (index > this.thumbItems.length - 1) {
+            this.currentIndex = this.thumbItems.length - 1;
+            return;
+        }
+
+        // 设置选中状态
+        this.#unselect();
+        this.currentIndex = index;
+        const thumbItem = this.thumbItems[index];
+        thumbItem.classList.add("selected");
+
+        // 更新标题栏
+        const { width, height, size, original } = thumbItem;
+        const filename = original.split(/[\\/]/).pop();
+        infoBar.innerHTML = `${width}×${height}　|　${formatBytes(size)}　|　${filename}`;
+    }
+
+    /** 取消选中状态 */
+    #unselect() {
+        const selected = container.querySelector(".selected");
+        if (selected) selected.classList.remove("selected");
     }
 
 }

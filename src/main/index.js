@@ -12,6 +12,7 @@ app.whenReady().then(() => {
     const mainWindow = new BrowserWindow({
         icon: appIcon,
         frame: false,
+        show: false,
         width: 900,
         height: 600,
         webPreferences: {
