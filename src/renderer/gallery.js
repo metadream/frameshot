@@ -97,7 +97,7 @@ export default new class Gallery {
             this.#selectIndex(item.index);
         });
 
-        // 双击预览  TODO 动画过渡弹出
+        // 双击预览
         const thumbnail = item.querySelector("img");
         thumbnail.addEventListener("dblclick", () => {
             preview.render(thumbnail);

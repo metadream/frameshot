@@ -2,6 +2,7 @@ import { $ } from "../main/utils.js";
 
 /** 树形组件 */
 export class Tree {
+
     constructor(selector) {
         this.root = $('<ul class="tree-root"></ul>');
         $(selector).append(this.root);
