@@ -107,7 +107,7 @@ aside .dragger {
     align-items: center;
 }
 
-.thumbnails {
+.gallery {
     display: flex;
     flex-wrap: wrap;
     flex: 1;
@@ -118,7 +118,7 @@ aside .dragger {
     overflow: auto;
 }
 
-.thumbnails .thumb {
+.gallery .thumb {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -129,7 +129,7 @@ aside .dragger {
     background: #eee;
 }
 
-.thumbnails .thumb.selected {
+.gallery .thumb.selected {
     border: #3797fc 1px solid;
 }
 
@@ -211,7 +211,7 @@ img {
     transition: all .3s;
 }
 
-.tree-item:hover, .tree-item.actived {
+.tree-item:hover, .tree-item.active {
     color: blue;
 }
 

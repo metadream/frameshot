@@ -1,5 +1,6 @@
 import { $ } from "../main/utils.js";
 
+/** 预览区域 */
 export default new class Preview {
     constructor() {
         this.container = $(".preview");

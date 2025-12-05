@@ -15,36 +15,15 @@ ipcMain.handle("open-external", (event, url) => shell.openExternal(url));
 ipcMain.handle("get-default-folders", () => getConfig("picture_folders") || [app.getPath("pictures")]);
 ipcMain.handle("update-config", (event, key, value) => updateConfig(key, value));
 
-/** 打开原生文件选择对话框 (支持文件和目录多选) */
+/** 打开原生文件选择对话框 (支持目录多选) */
 ipcMain.handle("open-file-dialog", () => {
     return dialog.showOpenDialog({
-        properties: ["openFile", "openDirectory", "multiSelections"],
-        filters: [
-            { name: "Image Files", extensions: imageTypes },
-            { name: "All Files", extensions: ["*"] }
-        ]
+        properties: ["openDirectory", "multiSelections"]
     });
-});
-
-/** 将路径数组解析为文件夹和图片两个数组 */
-ipcMain.handle("read-file-paths", async (event, filePaths) => {
-    const folders = [];
-    const images = [];
-
-    if (filePaths) filePaths
-    .filter(p => fs.existsSync(p))
-    .forEach(p => {
-        if (fs.statSync(p).isDirectory()) {
-            folders.push(p);
-        } else if (imageExpr.test(p)) {
-            images.push(p);
-        }
-    });
-    return { folders, images };
 });
 
 /** 将文件夹数组构建成树形组件所需数据结构 */
-ipcMain.handle("build-tree-data", async (event, folders) => {
+ipcMain.handle("read-folders", async (event, folders) => {
     return folders
     .filter(p => fs.existsSync(p) && fs.statSync(p).isDirectory())
     .map(dir => {
@@ -60,6 +39,14 @@ ipcMain.handle("build-tree-data", async (event, folders) => {
         };
         return build(dir);
     });
+});
+
+/** 读取单个目录下所有图片文件 */
+ipcMain.handle("read-images", async (event, folder) => {
+    return fs.readdirSync(folder)
+             .map(p => path.join(folder, p))
+             .filter(p => fs.existsSync(p) && fs.statSync(p).isFile() && imageExpr.test(p))
+             .sort((a, b) => a.localeCompare(b));
 });
 
 /** 创建缩略图并缓存到系统临时目录 */

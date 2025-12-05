@@ -7,6 +7,7 @@ export class Tree {
         $(selector).append(this.root);
     }
 
+    /** 渲染整棵树 */
     render(data) {
         this.root.innerHTML = "";
         if (!data || !data.length) return;
@@ -16,6 +17,7 @@ export class Tree {
         });
     }
 
+    /** 创建树节点 */
     createNode(item, path = "") {
         const currentPath = path ? `${path}/${item.name}` : item.name;
         const treeNode = $('<li class="tree-node"></li>')
@@ -26,10 +28,10 @@ export class Tree {
         nodeName.addEventListener("click", e => {
             e.stopPropagation();
             const allItems = this.root.querySelectorAll(".tree-item");
-            allItems.forEach(el => el.classList.remove("actived"));
-            treeItem.classList.add("actived");
+            allItems.forEach(el => el.classList.remove("active"));
+            treeItem.classList.add("active");
 
-            console.log(currentPath);
+            this.onNodeClick && this.onNodeClick(item);
         });
 
         const hasChildren = item.children && item.children.length > 0;
@@ -50,6 +52,7 @@ export class Tree {
         return treeNode;
     }
 
+    /** 创建展开/收缩图标 */
     createToggleIcon(treeNode, hasChildren) {
         const toggleIcon = $('<div class="tree-toggle-icon"></div');
         if (hasChildren) {
@@ -82,6 +85,12 @@ export class Tree {
             toggleIcon.classList.add("hidden");
         }
         return toggleIcon;
+    }
+
+    /** 自动点击第一个节点 */
+    autoClick() {
+        const firstNode = this.root.querySelector(".tree-node-name");
+        firstNode && firstNode.click();
     }
 
 }

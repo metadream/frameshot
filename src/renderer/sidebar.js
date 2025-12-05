@@ -1,0 +1,73 @@
+import { $ } from "../main/utils.js";
+import { Tree } from "./tree.js";
+import gallery from "./gallery.js";
+
+const sidebar = $('aside');
+const dragger = $(".dragger");
+const closeBtn = $("#close-btn");
+const minimizeBtn = $("#minimize-btn");
+const maximizeBtn = $("#maximize-btn");
+const openBtn = $('#open-btn');
+const toggleBtn = $('#toggle-btn');
+
+/** 侧边栏区域 */
+export default new class Sidebar {
+
+    constructor() {
+        // 构建目录树
+        this.tree = new Tree('.folders');
+        this.tree.onNodeClick = node => {
+            gallery.render(node.path);
+        }
+
+        // 模拟Mac交通灯按钮
+        closeBtn.onclick = () => electron.closeWindow();
+        minimizeBtn.onclick = () => electron.minimizeWindow();
+        maximizeBtn.onclick = () => electron.toggleWindow();
+
+        // 打开文件夹按钮
+        openBtn.onclick = async () => {
+            const { filePaths } = await electron.openFileDialog();
+            if (filePaths && filePaths.length >= 1) {
+                this.render(filePaths);
+                electron.updateConfig("picture_folders", filePaths);
+            }
+        }
+
+        // 切换侧边栏按钮
+        toggleBtn.onclick = function() {
+            sidebar.style.transition = "all .2s"
+            sidebar.classList.toggle("hidden");
+            sidebar.ontransitionend = function() {
+                sidebar.style.transition = null;
+            }
+        }
+
+        // 拖动侧边栏把手
+        dragger.onmousedown = function(e) {
+            const clientX = e.clientX;
+            const offsetLeft = dragger.offsetLeft;
+            document.body.classList.add("dragging");
+
+            document.onmousemove = function(e) {
+                const distance = offsetLeft + (e.clientX - clientX);
+                sidebar.style.width = distance + "px";
+                return false;
+            };
+
+            document.onmouseup = function() {
+                document.onmousemove = null;
+                document.onmouseup = null;
+                document.body.classList.remove("dragging");
+            };
+            return false;
+        }
+    }
+
+    /** 渲染侧边栏内容 */
+    async render(folders) {
+        const data = await electron.readFolders(folders);
+        this.tree.render(data);
+        this.tree.autoClick();
+    }
+}

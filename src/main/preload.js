@@ -14,8 +14,8 @@ contextBridge.exposeInMainWorld("electron", {
 
     openFileDialog: () => ipcRenderer.invoke("open-file-dialog"),
     openExternal: url => ipcRenderer.invoke("open-external", url),
-    readFilePaths: paths => ipcRenderer.invoke("read-file-paths", paths),
-    buildTreeData: folders => ipcRenderer.invoke("build-tree-data", folders),
+    readFolders: folders => ipcRenderer.invoke("read-folders", folders),
+    readImages: folder => ipcRenderer.invoke("read-images", folder),
     updateConfig: (key, value) => ipcRenderer.invoke("update-config", key, value)
 });
 

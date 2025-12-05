@@ -5,14 +5,17 @@ function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+const container = $(".gallery");
 const infoBar = $(".info-bar");
-const thumbElements = [];
-let currentIndex = -1;
 
-export default new class Thumbnail {
+/** 缩略图区域 */
+export default new class Gallery {
+
+    thumbElements = [];
+    currentIndex = -1;
+
     constructor() {
-        this.container = $(".thumbnails");
-        this.container.addEventListener("click", e => {
+        container.addEventListener("click", e => {
             if (e.target === e.currentTarget) {
                 this.#unselect();
                 infoBar.innerHTML = "";
@@ -22,10 +25,10 @@ export default new class Thumbnail {
         document.addEventListener("keyup", e => {
             switch (e.code) {
                 case "ArrowLeft":
-                    this.#selectIndex(--currentIndex);
+                    this.#selectIndex(--this.currentIndex);
                     break;
                 case "ArrowRight":
-                    this.#selectIndex(++currentIndex);
+                    this.#selectIndex(++this.currentIndex);
                     break;
             }
         })
@@ -46,42 +49,42 @@ export default new class Thumbnail {
 
     #selectIndex(index) {
         if (index < 0) {
-            currentIndex = 0;
+            this.currentIndex = 0;
             return;
         }
-        if (index > thumbElements.length - 1) {
-            currentIndex = thumbElements.length - 1;
+        if (index > this.thumbElements.length - 1) {
+            this.currentIndex = this.thumbElements.length - 1;
             return;
         }
 
         this.#unselect();
-        currentIndex = index;
-        const item = thumbElements[index];
+        this.currentIndex = index;
+        const item = this.thumbElements[index];
         item.classList.add("selected");
 
         const filename = item.url.split(/[\\/]/).pop();
         infoBar.innerHTML = `2000x3000　|　1.4MB　|　${filename}`;
     }
 
-    async render(filePaths) {
+    async render(folder) {
         this.observer.disconnect();
-        this.container.innerHTML = "";
+        container.innerHTML = "";
 
         const fragment = document.createDocumentFragment();
-        const entry = await electron.readFilePaths(filePaths);
+        const images = await electron.readImages(folder);
         let index = 0;
-        entry.images.forEach(url => {
+        images.forEach(url => {
             const item = $(`<div class="thumb"><img data-original="${url}"/></div>`);
             item.url = url;
             item.index = index++;
-            thumbElements.push(item);
+            this.thumbElements.push(item);
             this.#bindEvents(item);
             fragment.append(item);
         });
 
-        this.container.append(fragment);
+        container.append(fragment);
         requestAnimationFrame(() => {
-            this.container.querySelectorAll('img[data-original]:not([src])').forEach(img => {
+            container.querySelectorAll('img[data-original]:not([src])').forEach(img => {
                 this.observer.observe(img);
             });
         });
@@ -99,7 +102,7 @@ export default new class Thumbnail {
     }
 
     #unselect() {
-        const selected = this.container.querySelector(".selected");
+        const selected = container.querySelector(".selected");
         if (selected) selected.classList.remove("selected");
     }
 
