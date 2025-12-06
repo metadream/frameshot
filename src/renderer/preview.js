@@ -1,7 +1,7 @@
 import { $ } from "../main/utils.js";
 
 const container = $("main");
-const Zoom = { MIN_SCALE: 2, MAX_SCALE: 10, STEP: 1.2 };
+const Zoom = { MIN_SCALE: 2, MAX_SCALE: 20, STEP: 1.2 };
 
 /** 预览区域 */
 export default new class Preview {
@@ -16,7 +16,7 @@ export default new class Preview {
         });
 
         window.addEventListener('keyup', e => {
-            if (e.code === "Esc") this.close();
+            if (e.code === "Escape") this.close();
         });
     }
 
@@ -115,20 +115,8 @@ export default new class Preview {
             }
         }
 
-        const { relativeX, relativeY, width, height } = previewZone.position();
-        previewZone.initWidth = width;
-        previewZone.initHeight = height;
-        previewZone.centerX = relativeX + width / 2;
-        previewZone.centerY = relativeY + height / 2;
-        previewZone.aspectRatio = width / height;
-
-        const image = thumb.cloneNode(true);
-        image.src = thumb.metadata.original;
-        previewZone.append(image);
-
         previewZone.addEventListener('pointerdown', function(e) {
             e.preventDefault();
-            // if (this.isTransitioning || !current.contains(e.target)) return;
 
             this.style.transition = "none";
             this.style.cursor = "grab";
@@ -150,7 +138,6 @@ export default new class Preview {
                 this.style.transition = 'all .3s';
                 this.onpointermove = null;
 
-                // Click to zoom in/out
                 if (e.type == 'pointerup' && !this.isDragging) {
                     const { width, height } = self.viewport;
                     this.transX = width - this.centerX - e.clientX;
@@ -164,7 +151,6 @@ export default new class Preview {
 
         previewZone.addEventListener('wheel', function(e) {
             e.preventDefault();
-            // if (this.isTransitioning || !current.contains(e.target)) return;
 
             if (e.wheelDelta > 0) this.scale *= Zoom.STEP;
             else this.scale /= Zoom.STEP;
@@ -175,44 +161,19 @@ export default new class Preview {
             this.checkBoundary();
         });
 
+        const { relativeX, relativeY, width, height } = previewZone.position();
+        previewZone.initWidth = width;
+        previewZone.initHeight = height;
+        previewZone.centerX = relativeX + width / 2;
+        previewZone.centerY = relativeY + height / 2;
+        previewZone.aspectRatio = width / height;
+
+        const image = thumb.cloneNode(true);
+        image.src = thumb.metadata.original;
+        previewZone.append(image);
+
         this.shadeMask.append(previewZone);
         return previewZone;
-    }
-
-    #onPreviewZoneDrag(e, self) {
-        e.preventDefault();
-        // if (this.isTransitioning || !current.contains(e.target)) return;
-
-        this.style.transition = "none";
-        this.style.cursor = "grab";
-        this.startX = e.clientX;
-        this.startY = e.clientY;
-        this.isDragging = false;
-
-        this.onpointermove = function(e) {
-            this.isDragging = true;
-            this.offsetX = e.clientX - this.startX;
-            this.offsetY = e.clientY - this.startY;
-            this.style.cursor = "grabbing";
-            this.transform(this.transX + this.offsetX, this.transY + this.offsetY, null);
-        }
-
-        this.onpointerup = this.onpointerout = function(e) {
-            this.transX += this.offsetX ?? 0;
-            this.transY += this.offsetY ?? 0;
-            this.style.transition = 'all .3s';
-            this.onpointermove = null;
-
-            // Click to zoom in/out
-            if (e.type == 'pointerup' && !this.isDragging) {
-                const { width, height } = self.viewport;
-                this.transX = width - this.centerX - e.clientX;
-                this.transY = height - this.centerY - e.clientY;
-                this.scale = this.scale <= this.initScale ? this.scale *= 2 : this.initScale;
-                this.transform();
-            }
-            this.checkBoundary();
-        }
     }
 
     #resetViewport() {
