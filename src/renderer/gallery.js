@@ -55,16 +55,19 @@ export default new class Gallery {
         const images = await electron.readImages(folder);
 
         images.forEach((path, index) => {
-            const item = $(`<div class="thumb"><img/></div>`);
-            item.original = path;
-            item.index = index++;
+            const thumb = $('<img/>');
+            thumb.metadata = { original: path };
+            thumb.addEventListener("click", () => {
+                preview.open(thumb);
+            })
 
+            const item = $(`<div class="thumb"></div>`);
+            item.index = index++;
             item.addEventListener("click", async () => {
                 this.#selectIndex(item.index);
             });
-            item.addEventListener("dblclick", e => {
-                preview.open(item);
-            })
+
+            item.append(thumb);
             fragment.append(item);
             this.thumbItems.push(item);
         });
@@ -78,20 +81,17 @@ export default new class Gallery {
     }
 
     /** 加载(或创建)缩略图 */
-    async #loadThumbnail(img) {
-        if (img.src) return;
+    async #loadThumbnail(thumb) {
+        if (thumb.src) return;
 
         // 设置元数据
-        const item = img.parentNode;
-        const metadata = await image.createThumbnail(item.original);
-        item.width = metadata.width;
-        item.height = metadata.height;
-        item.size = metadata.size;
+        const { original } = thumb.metadata;
+        Object.assign(thumb.metadata, await image.createThumbnail(original));
 
         // 加载缩略图
-        img.src = metadata.thumbnail;
-        img.onload = () => {
-            img.classList.add('loaded');
+        thumb.src = thumb.metadata.thumbnail;
+        thumb.onload = () => {
+            thumb.classList.add('loaded');
         };
     }
 
@@ -115,7 +115,8 @@ export default new class Gallery {
         item.classList.add("selected");
 
         // 更新标题栏
-        const { width, height, size, original } = item;
+        const { metadata } = item.querySelector("img");
+        const { width, height, size, original } = metadata;
         const filename = original.split(/[\\/]/).pop();
         infoBar.innerHTML = `${index + 1}/${total}　|　${width}×${height}　|　${formatBytes(size)}　|　${filename}`;
     }

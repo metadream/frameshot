@@ -7,13 +7,12 @@ const Zoom = { MIN_SCALE: 2, MAX_SCALE: 10, STEP: 1.2 };
 export default new class Preview {
 
     constructor() {
-        this.#initViewport();
+        this.#resetViewport();
         this.#createShadeMask();
-        this.#createPreviewZone();
 
         window.addEventListener("resize", () => {
-            this.#initViewport();
-            this.#adaptViewport();
+            this.#resetViewport();
+            this.currentZone && this.currentZone.adaptViewport();
         });
 
         window.addEventListener('keyup', e => {
@@ -23,41 +22,69 @@ export default new class Preview {
 
     open(item) {
         this.shadeMask.fadeIn();
-        const thumb = item.querySelector("img");
-        const rect = thumb.getBoundingClientRect();
-        const { left, top, width, height } = rect;
-        const { viewport, previewZone } = this;
-        const relativeX = left - viewport.left;
-        const relativeY = top - viewport.top;
+        this.currentZone = this.#createPreviewZone(item);
+        this.currentZone.adaptViewport();
+    }
 
+    close() {
+        this.shadeMask.fadeOut();
+        this.currentZone.restore();
+    }
+
+    #createPreviewZone(thumb) {
+        const self = this;
+        const previewZone = $(`<div class="preview-zone"></div>`);
+
+        previewZone.position = function() {
+            const rect = thumb.getBoundingClientRect();
+            const relativeX = rect.left - self.viewport.left;
+            const relativeY = rect.top - self.viewport.top;
+            const { width, height } = rect;
+            this.style.left = relativeX + "px";
+            this.style.top = relativeY + "px";
+            this.style.width = width + "px";
+            this.style.height = height + "px";
+            return { relativeX, relativeY, width, height };
+        }
+
+        previewZone.transform = function(x, y, s) {
+            requestAnimationFrame(() => {
+                this.style.transform = `translate(${x}px, ${y}px) scale(${s})`;
+            });
+        }
+
+        previewZone.adaptViewport = function() {
+            const { width, height, ratio } = self.viewport;
+            const { initWidth, initHeight, centerX, centerY, aspectRatio } = this;
+
+            const scale = aspectRatio > ratio ? width / initWidth : height / initHeight;
+            const transX = width / 2 - centerX;
+            const transY = height / 2 - centerY;
+            this.transform(transX, transY, scale);
+        }
+
+        previewZone.restore = function() {
+            this.position();
+            this.transform(0, 0, 1);
+            this.ontransitionend = () => this.remove();
+        }
+
+        const { relativeX, relativeY, width, height } = previewZone.position();
         previewZone.initWidth = width;
         previewZone.initHeight = height;
         previewZone.centerX = relativeX + width / 2;
         previewZone.centerY = relativeY + height / 2;
         previewZone.aspectRatio = width / height;
 
-        previewZone.innerHTML = "";
-        previewZone.ontransitionend = null;
-        previewZone.style.left = relativeX + "px";
-        previewZone.style.top = relativeY + "px";
-        previewZone.style.width = width + "px";
-        previewZone.style.height = height + "px";
-
         const image = thumb.cloneNode(true);
-        image.src = item.original;
+        image.src = thumb.metadata.original;
         previewZone.append(image);
-        this.#adaptViewport();
+
+        this.shadeMask.append(previewZone);
+        return previewZone;
     }
 
-    close() {
-        this.shadeMask.fadeOut();
-        this.previewZone.transform(0, 0, 1);
-        this.previewZone.ontransitionend = function() {
-            this.removeAttribute("style");
-        }
-    }
-
-    #initViewport() {
+    #resetViewport() {
         const rect = container.getBoundingClientRect();
         this.viewport = {
             left: rect.left,
@@ -65,15 +92,6 @@ export default new class Preview {
             width: container.clientWidth,
             height: container.clientHeight,
             ratio: container.clientWidth / container.clientHeight
-        }
-    }
-
-    #createPreviewZone() {
-        this.previewZone = $(`<div class="preview-zone"></div>`);
-        this.shadeMask.append(this.previewZone);
-
-        this.previewZone.transform = function(x, y, s) {
-            this.style.transform = `translate(${x}px, ${y}px) scale(${s})`;
         }
     }
 
@@ -107,24 +125,6 @@ export default new class Preview {
                 this.close();
             }
         });
-    }
-
-    #adaptViewport() {
-        const { viewport, previewZone } = this;
-        const { width, height, ratio } = viewport;
-        const { initWidth, initHeight, centerX, centerY, aspectRatio } = previewZone;
-
-        // previewZone.scale = aspectRatio > ratio ? width / initWidth : height / initHeight;
-        // previewZone.initScale = previewZone.scale;
-        // previewZone.minScale = previewZone.scale / Zoom.MIN_SCALE;
-        // previewZone.maxScale = previewZone.scale * Zoom.MAX_SCALE;
-        // previewZone.initX = previewZone.transX = width / 2 - centerX;
-        // previewZone.initY = previewZone.transY = height / 2 - centerY;
-
-        const scale = aspectRatio > ratio ? width / initWidth : height / initHeight;
-        const transX = width / 2 - centerX;
-        const transY = height / 2 - centerY;
-        previewZone.transform(transX, transY, scale);
     }
 
 }

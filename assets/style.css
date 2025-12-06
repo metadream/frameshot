@@ -135,6 +135,10 @@ aside .dragger {
     border: #3797fc 1px solid;
 }
 
+.gallery img {
+    cursor: pointer;
+}
+
 /* --------------------------------------------------------
  * Native Components
  * ----------------------------------------------------- */

@@ -10,4 +10,10 @@
 - 复制粘贴？
 - 刷新:原本存在后被删除测试、原目录增加图片后测试
 - 大目录树形结构非常卡
-- devtools调整后，preview对不齐
+
+            // previewZone.scale = aspectRatio > ratio ? width / initWidth : height / initHeight;
+            // previewZone.initScale = previewZone.scale;
+            // previewZone.minScale = previewZone.scale / Zoom.MIN_SCALE;
+            // previewZone.maxScale = previewZone.scale * Zoom.MAX_SCALE;
+            // previewZone.initX = previewZone.transX = width / 2 - centerX;
+            // previewZone.initY = previewZone.transY = height / 2 - centerY;
