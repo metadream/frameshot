@@ -67,7 +67,7 @@ export default new class Gallery {
             thumb.metadata = { original: path };
             thumb.addEventListener("click", () => {
                 preview.open(item);
-            })
+            });
 
             item.append(thumb);
             fragment.append(item);
