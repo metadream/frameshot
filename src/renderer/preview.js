@@ -10,31 +10,37 @@ export default new class Preview {
         this.#resetViewport();
         this.#createShadeMask();
 
+        // 监听窗体大小变化
         window.addEventListener("resize", () => {
             this.#resetViewport();
             this.currentZone && this.currentZone.adaptViewport();
         });
 
+        // 监听全局按键
         window.addEventListener('keyup', e => {
             if (e.code === "Escape") this.close();
         });
     }
 
+    /** 打开预览区 */
     open(item) {
         this.shadeMask.fadeIn();
         this.currentZone = this.#createPreviewZone(item);
         this.currentZone.adaptViewport();
     }
 
+    /** 关闭预览区 */
     close() {
         this.shadeMask.fadeOut();
         this.currentZone.restore();
     }
 
+    /** 创建预览区 */
     #createPreviewZone(thumb) {
         const self = this;
         const previewZone = $(`<div class="preview-zone"></div>`);
 
+        // 定义初始位置
         previewZone.position = function() {
             const rect = thumb.getBoundingClientRect();
             const relativeX = rect.left - self.viewport.left;
@@ -47,6 +53,7 @@ export default new class Preview {
             return { relativeX, relativeY, width, height };
         }
 
+        // 缩放动画
         previewZone.transform = function(x, y, s) {
             requestAnimationFrame(() => {
                 this.style.transform = `
@@ -56,6 +63,7 @@ export default new class Preview {
             });
         }
 
+        // 自适应视口大小
         previewZone.adaptViewport = function() {
             const { width, height, ratio } = self.viewport;
             const { initWidth, initHeight, centerX, centerY, aspectRatio } = this;
@@ -69,12 +77,14 @@ export default new class Preview {
             this.transform();
         }
 
+        // 还原到缩略图状态
         previewZone.restore = function() {
             this.position();
             this.transform(0, 0, 1);
             this.ontransitionend = () => this.remove();
         }
 
+        // 判断拖动边界
         previewZone.checkBoundary = function() {
             this.style.cursor = this.scale <= this.initScale ? 'zoom-in' : 'zoom-out';
             const { initWidth, initHeight } = this;
@@ -115,6 +125,7 @@ export default new class Preview {
             }
         }
 
+        // 拖动图片
         previewZone.addEventListener('pointerdown', function(e) {
             e.preventDefault();
 
@@ -138,6 +149,7 @@ export default new class Preview {
                 this.style.transition = 'all .3s';
                 this.onpointermove = null;
 
+                // 点击图片缩放
                 if (e.type == 'pointerup' && !this.isDragging) {
                     const { width, height } = self.viewport;
                     this.transX = width - this.centerX - e.clientX;
@@ -149,6 +161,7 @@ export default new class Preview {
             }
         });
 
+        // 鼠标滚轮缩放
         previewZone.addEventListener('wheel', function(e) {
             e.preventDefault();
 
@@ -161,6 +174,7 @@ export default new class Preview {
             this.checkBoundary();
         });
 
+        // 绑定必要的属性
         const { relativeX, relativeY, width, height } = previewZone.position();
         previewZone.initWidth = width;
         previewZone.initHeight = height;
@@ -168,6 +182,7 @@ export default new class Preview {
         previewZone.centerY = relativeY + height / 2;
         previewZone.aspectRatio = width / height;
 
+        // 克隆缩略图到预览区
         const image = thumb.cloneNode(true);
         image.src = thumb.metadata.original;
         previewZone.append(image);
@@ -176,6 +191,7 @@ export default new class Preview {
         return previewZone;
     }
 
+    /** 重置视口属性 */
     #resetViewport() {
         const rect = container.getBoundingClientRect();
         this.viewport = {
@@ -187,6 +203,7 @@ export default new class Preview {
         }
     }
 
+    /** 创建遮罩层 */
     #createShadeMask() {
         this.shadeMask = $(`<div class="shade-mask">
             <svg class="icon-prev" viewBox="0 0 60 60"><path d="M29 43l-3 3-16-16 16-16 3 3-13 13 13 13z"/></svg>
