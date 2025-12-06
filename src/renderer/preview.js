@@ -24,17 +24,19 @@ export default new class Preview {
 
     /** 打开预览区 */
     async open(thumbItem) {
-        this.shadeMask.fadeIn();
         this.#loadSiblingItems(thumbItem);
         this.currentZone = await this.#createPreviewZone(thumbItem);
         this.currentZone.adaptViewport(true);
+        this.shadeMask.fadeIn();
     }
 
     /** 关闭预览区 */
     close() {
-        this.shadeMask.fadeOut();
-        this.currentZone.restore();
-        this.currentZone = null;
+        if (this.currentZone) {
+            this.currentZone.restore();
+            this.currentZone = null;
+            this.shadeMask.fadeOut();
+        }
     }
 
     /** 滑动到上一张 */

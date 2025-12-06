@@ -22,6 +22,10 @@ export default new class Gallery {
         // 方向键切换
         document.addEventListener("keyup", e => {
             switch (e.code) {
+                case "Enter":
+                    const item = this.thumbItems[this.currentIndex];
+                    preview.open(item);
+                    break;
                 case "ArrowLeft":
                     this.#selectIndex(--this.currentIndex);
                     preview.slidePrevious();
@@ -51,11 +55,12 @@ export default new class Gallery {
     /** 读取目录下的图片并渲染缩略图 */
     async render(folder) {
         this.observer.disconnect();
+        this.thumbItems.length = 0;
+        this.currentIndex = -1;
         gallery.innerHTML = "";
 
         const fragment = document.createDocumentFragment();
         const images = await electron.readImages(folder);
-
         images.forEach((path, index) => {
             const item = $(`<div class="thumb"></div>`);
             item.index = index++;
@@ -116,8 +121,8 @@ export default new class Gallery {
         // 将选中项置于可见区域
         item.scrollIntoView({
             behavior: 'smooth',
-            block: 'center',
-            inline: 'center'
+            block: 'nearest',
+            inline: 'nearest'
         });
 
         // 更新标题栏
