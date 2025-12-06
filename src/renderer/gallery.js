@@ -24,9 +24,11 @@ export default new class Gallery {
             switch (e.code) {
                 case "ArrowLeft":
                     this.#selectIndex(--this.currentIndex);
+                    preview.slidePrevious();
                     break;
                 case "ArrowRight":
                     this.#selectIndex(++this.currentIndex);
+                    preview.slideNext();
                     break;
             }
         })
@@ -55,17 +57,17 @@ export default new class Gallery {
         const images = await electron.readImages(folder);
 
         images.forEach((path, index) => {
-            const thumb = $('<img/>');
-            thumb.metadata = { original: path };
-            thumb.addEventListener("click", () => {
-                preview.open(thumb);
-            })
-
             const item = $(`<div class="thumb"></div>`);
             item.index = index++;
             item.addEventListener("click", async () => {
                 this.#selectIndex(item.index);
             });
+
+            const thumb = $('<img/>');
+            thumb.metadata = { original: path };
+            thumb.addEventListener("click", () => {
+                preview.open(item);
+            })
 
             item.append(thumb);
             fragment.append(item);

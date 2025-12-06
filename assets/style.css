@@ -252,6 +252,7 @@ img {
 }
 
 .shade-mask .icon-prev, .shade-mask .icon-next {
+    z-index: 1;
     width: 64px;
     height: 64px;
     padding: 10px;
