@@ -92,9 +92,6 @@ export default new class Gallery {
 
         // 加载缩略图
         thumb.src = thumb.metadata.thumbnail;
-        thumb.onload = () => {
-            thumb.classList.add('loaded');
-        };
     }
 
     /** 根据索引选中缩略图 */
@@ -115,6 +112,13 @@ export default new class Gallery {
         this.currentIndex = index;
         const item = this.thumbItems[index];
         item.classList.add("selected");
+
+        // 将选中项置于可见区域
+        item.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+            inline: 'center'
+        });
 
         // 更新标题栏
         const { metadata } = item.querySelector("img");

@@ -23,10 +23,10 @@ export default new class Preview {
     }
 
     /** 打开预览区 */
-    open(thumbItem) {
+    async open(thumbItem) {
         this.shadeMask.fadeIn();
         this.#loadSiblingItems(thumbItem);
-        this.currentZone = this.#createPreviewZone(thumbItem);
+        this.currentZone = await this.#createPreviewZone(thumbItem);
         this.currentZone.adaptViewport(true);
     }
 
@@ -48,8 +48,7 @@ export default new class Preview {
     }
 
     /** 左右滑动相邻图片 */
-    #slideSiblingItem(direction) {
-        console.log(this.currentZone)
+    async #slideSiblingItem(direction) {
         if (!this.currentZone) return;
 
         // 判断获取上一张还是下一张
@@ -61,7 +60,7 @@ export default new class Preview {
         this.#slidePreviewZone(direction, true);
 
         // 创建新的预览区并以隐藏方式设置到视口外
-        this.currentZone = this.#createPreviewZone(siblingItem);
+        this.currentZone = await this.#createPreviewZone(siblingItem);
         this.currentZone.style.display = "none";
         this.currentZone.adaptViewport();
         this.#slidePreviewZone(-direction);
@@ -96,9 +95,11 @@ export default new class Preview {
     }
 
     /** 创建预览区 */
-    #createPreviewZone(thumbItem) {
-        const self = this;
+    async #createPreviewZone(thumbItem) {
         const thumb = thumbItem.querySelector("img");
+        await this.#ensureThumbLoaded(thumb);
+
+        const self = this;
         const previewZone = $(`<div class="preview-zone"></div>`);
 
         // 定义初始位置
@@ -247,6 +248,25 @@ export default new class Preview {
 
         this.shadeMask.append(previewZone);
         return previewZone;
+    }
+
+    /** 确保缩略图已加载 */
+    #ensureThumbLoaded(thumb) {
+        return new Promise((resolve, reject) => {
+            if (thumb.width) return resolve();
+            const onLoad = () => {
+                resolve();
+                thumb.removeEventListener('load', onLoad);
+                thumb.removeEventListener('error', onError);
+            };
+            const onError = () => {
+                reject();
+                thumb.removeEventListener('load', onLoad);
+                thumb.removeEventListener('error', onError);
+            };
+            thumb.addEventListener('load', onLoad);
+            thumb.addEventListener('error', onError);
+        });
     }
 
     /** 重置视口属性 */
