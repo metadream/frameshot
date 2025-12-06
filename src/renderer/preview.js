@@ -49,7 +49,10 @@ export default new class Preview {
 
         previewZone.transform = function(x, y, s) {
             requestAnimationFrame(() => {
-                this.style.transform = `translate(${x}px, ${y}px) scale(${s})`;
+                this.style.transform = `
+                    translate(${x ?? this.transX}px, ${y ?? this.transY}px) 
+                    scale(${s ?? this.scale})
+                `;
             });
         }
 
@@ -57,16 +60,59 @@ export default new class Preview {
             const { width, height, ratio } = self.viewport;
             const { initWidth, initHeight, centerX, centerY, aspectRatio } = this;
 
-            const scale = aspectRatio > ratio ? width / initWidth : height / initHeight;
-            const transX = width / 2 - centerX;
-            const transY = height / 2 - centerY;
-            this.transform(transX, transY, scale);
+            this.scale = aspectRatio > ratio ? width / initWidth : height / initHeight;
+            this.initScale = this.scale;
+            this.minScale = this.scale / Zoom.MIN_SCALE;
+            this.maxScale = this.scale * Zoom.MAX_SCALE;
+            this.initX = this.transX = width / 2 - centerX;
+            this.initY = this.transY = height / 2 - centerY;
+            this.transform();
         }
 
         previewZone.restore = function() {
             this.position();
             this.transform(0, 0, 1);
             this.ontransitionend = () => this.remove();
+        }
+
+        previewZone.checkBoundary = function() {
+            this.style.cursor = this.scale <= this.initScale ? 'zoom-in' : 'zoom-out';
+            const { initWidth, initHeight } = this;
+            const width = initWidth * this.scale;
+            const height = initHeight * this.scale;
+            const bound = {
+                x1: this.initX, x2: this.initX,
+                y1: this.initY, y2: this.initY
+            }
+            if (width > self.viewport.width) {
+                bound.x1 = width / 2 - this.centerX;
+                bound.x2 = bound.x1 - (width - self.viewport.width);
+            }
+            if (height > self.viewport.height) {
+                bound.y1 = height / 2 - this.centerY;
+                bound.y2 = bound.y1 - (height - self.viewport.height);
+            }
+
+            let outOfBounds = false;
+            if (this.transX > bound.x1) {
+                this.transX = bound.x1;
+                outOfBounds = true;
+            }
+            if (this.transX < bound.x2) {
+                this.transX = bound.x2;
+                outOfBounds = true;
+            }
+            if (this.transY > bound.y1) {
+                this.transY = bound.y1;
+                outOfBounds = true;
+            }
+            if (this.transY < bound.y2) {
+                this.transY = bound.y2;
+                outOfBounds = true;
+            }
+            if (outOfBounds) {
+                this.transform();
+            }
         }
 
         const { relativeX, relativeY, width, height } = previewZone.position();
@@ -80,8 +126,93 @@ export default new class Preview {
         image.src = thumb.metadata.original;
         previewZone.append(image);
 
+        previewZone.addEventListener('pointerdown', function(e) {
+            e.preventDefault();
+            // if (this.isTransitioning || !current.contains(e.target)) return;
+
+            this.style.transition = "none";
+            this.style.cursor = "grab";
+            this.startX = e.clientX;
+            this.startY = e.clientY;
+            this.isDragging = false;
+
+            this.onpointermove = function(e) {
+                this.isDragging = true;
+                this.offsetX = e.clientX - this.startX;
+                this.offsetY = e.clientY - this.startY;
+                this.style.cursor = "grabbing";
+                this.transform(this.transX + this.offsetX, this.transY + this.offsetY, null);
+            }
+
+            this.onpointerup = this.onpointerout = function(e) {
+                this.transX += this.offsetX ?? 0;
+                this.transY += this.offsetY ?? 0;
+                this.style.transition = 'all .3s';
+                this.onpointermove = null;
+
+                // Click to zoom in/out
+                if (e.type == 'pointerup' && !this.isDragging) {
+                    const { width, height } = self.viewport;
+                    this.transX = width - this.centerX - e.clientX;
+                    this.transY = height - this.centerY - e.clientY;
+                    this.scale = this.scale <= this.initScale ? this.scale *= 2 : this.initScale;
+                    this.transform();
+                }
+                this.checkBoundary();
+            }
+        });
+
+        previewZone.addEventListener('wheel', function(e) {
+            e.preventDefault();
+            // if (this.isTransitioning || !current.contains(e.target)) return;
+
+            if (e.wheelDelta > 0) this.scale *= Zoom.STEP;
+            else this.scale /= Zoom.STEP;
+            if (this.scale > this.maxScale) this.scale = this.maxScale;
+            if (this.scale < this.minScale) this.scale = this.minScale;
+
+            this.transform();
+            this.checkBoundary();
+        });
+
         this.shadeMask.append(previewZone);
         return previewZone;
+    }
+
+    #onPreviewZoneDrag(e, self) {
+        e.preventDefault();
+        // if (this.isTransitioning || !current.contains(e.target)) return;
+
+        this.style.transition = "none";
+        this.style.cursor = "grab";
+        this.startX = e.clientX;
+        this.startY = e.clientY;
+        this.isDragging = false;
+
+        this.onpointermove = function(e) {
+            this.isDragging = true;
+            this.offsetX = e.clientX - this.startX;
+            this.offsetY = e.clientY - this.startY;
+            this.style.cursor = "grabbing";
+            this.transform(this.transX + this.offsetX, this.transY + this.offsetY, null);
+        }
+
+        this.onpointerup = this.onpointerout = function(e) {
+            this.transX += this.offsetX ?? 0;
+            this.transY += this.offsetY ?? 0;
+            this.style.transition = 'all .3s';
+            this.onpointermove = null;
+
+            // Click to zoom in/out
+            if (e.type == 'pointerup' && !this.isDragging) {
+                const { width, height } = self.viewport;
+                this.transX = width - this.centerX - e.clientX;
+                this.transY = height - this.centerY - e.clientY;
+                this.scale = this.scale <= this.initScale ? this.scale *= 2 : this.initScale;
+                this.transform();
+            }
+            this.checkBoundary();
+        }
     }
 
     #resetViewport() {
@@ -115,7 +246,9 @@ export default new class Preview {
 
         this.shadeMask.addEventListener('pointerup', e => {
             const { target } = e;
-            const { shadeMask } = this;
+            const { currentZone, shadeMask } = this;
+            if (currentZone.contains(target)) return;
+
             const prevIcon = shadeMask.querySelector(".icon-prev");
             const nextIcon = shadeMask.querySelector(".icon-next");
 
