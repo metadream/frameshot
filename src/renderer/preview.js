@@ -197,7 +197,6 @@ export default new class Preview {
         // 拖动图片
         previewZone.addEventListener("pointerdown", function(e) {
             e.preventDefault();
-
             this.style.transition = "none";
             this.style.cursor = "grab";
             this.startX = e.clientX;
@@ -322,14 +321,16 @@ export default new class Preview {
         container.append(this.shadeMask);
 
         this.shadeMask.fadeIn = function() {
-            this.ontransitionend = null;
             this.style.display = "flex";
             nextFrame(() => this.style.background = "rgba(0, 0, 0, .8)");
         }
 
         this.shadeMask.fadeOut = function() {
             this.style.background = "rgba(0, 0, 0, 0)";
-            this.ontransitionend = () => this.style.display = "none";
+            this.ontransitionend = () => {
+                this.ontransitionend = null;
+                this.style.display = "none";
+            }
         }
 
         this.shadeMask.addEventListener("pointerup", e => {
