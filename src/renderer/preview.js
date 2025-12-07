@@ -91,9 +91,7 @@ export default new class Preview {
 
         // 滑动结束后移除元素
         if (isRemove) {
-            currentZone.withoutTransform
-                ? currentZone.remove()
-                : currentZone.ontransitionend = () => currentZone.remove();
+            currentZone.ontransitionend = () => currentZone.remove();
         }
     }
 
@@ -281,18 +279,23 @@ export default new class Preview {
 
     /** 复制预览区属性以保持原位置和缩放状态 */
     #copyZoneProperties(source, target) {
-        const { initScale, minScale, maxScale, scale, initX, initY, transX, transY } = source;
         const style = source.getAttribute("style");
+        const {
+            initScale, minScale, maxScale, scale,
+            centerX, centerY, initX, initY, transX, transY
+        } = source;
+
         target.setAttribute("style", style);
         target.initScale = initScale;
         target.minScale = minScale;
         target.maxScale = maxScale;
         target.scale = scale;
+        target.centerX = centerX;
+        target.centerY = centerY;
         target.initX = initX;
         target.initY = initY;
         target.transX = transX;
         target.transY = transY;
-        target.withoutTransform = true;
     }
 
     /** 重置视口属性 */
