@@ -64,6 +64,7 @@ export default new class Gallery {
         this.thumbItems.length = 0;
         this.currentIndex = -1;
         gallery.innerHTML = "";
+        infoBar.innerHTML = "";
 
         const fragment = document.createDocumentFragment();
         const images = await electron.readImages(folder);
