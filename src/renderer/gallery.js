@@ -21,18 +21,26 @@ export default new class Gallery {
 
         // 方向键切换
         document.addEventListener("keyup", e => {
-            switch (e.code) {
+            switch (e.key) {
                 case "Enter":
                     const item = this.thumbItems[this.currentIndex];
                     preview.open(item);
                     break;
                 case "ArrowLeft":
-                    this.#selectIndex(--this.currentIndex);
-                    preview.slidePrevious();
+                    if (e.altKey) {
+                        console.log('Alt + 左箭头 被按下');
+                    } else {
+                        this.#selectIndex(--this.currentIndex);
+                        preview.slidePrevious();
+                    }
                     break;
                 case "ArrowRight":
-                    this.#selectIndex(++this.currentIndex);
-                    preview.slideNext();
+                    if (e.altKey) {
+                        console.log('Alt + 右箭头 被按下');
+                    } else {
+                        this.#selectIndex(++this.currentIndex);
+                        preview.slideNext();
+                    }
                     break;
             }
         })
