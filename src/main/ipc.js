@@ -58,7 +58,7 @@ ipcMain.handle("read-images", async (event, folder) => {
 
 /** 如果不存在则创建缩略图并缓存到系统临时目录 */
 ipcMain.handle("create-thumbnail", async (event, inputPath) => {
-    const fileKey = crypto.createHash('md5').update(inputPath).digest('hex');
+    const fileKey = crypto.createHash("md5").update(inputPath).digest("hex");
     const ext = path.extname(inputPath).toLowerCase();
     const outputFormat = rasterFormats.test(ext) ? ext : fallbackFormat;
     const outputPath = path.join(tempPath, fileKey + outputFormat);

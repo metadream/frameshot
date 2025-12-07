@@ -27,20 +27,12 @@ export default new class Gallery {
                     preview.open(item);
                     break;
                 case "ArrowLeft":
-                    if (e.altKey) {
-                        console.log('Alt + 左箭头 被按下');
-                    } else {
-                        this.#selectIndex(--this.currentIndex);
-                        preview.slide(-1);
-                    }
+                    this.#selectIndex(--this.currentIndex);
+                    e.altKey ? preview.compare(-1) : preview.slide(-1);
                     break;
                 case "ArrowRight":
-                    if (e.altKey) {
-                        console.log('Alt + 右箭头 被按下');
-                    } else {
-                        this.#selectIndex(++this.currentIndex);
-                        preview.slide(1);
-                    }
+                    this.#selectIndex(++this.currentIndex);
+                    e.altKey ? preview.compare(1) : preview.slide(1);
                     break;
             }
         })
@@ -76,7 +68,7 @@ export default new class Gallery {
                 this.#selectIndex(item.index);
             });
 
-            const thumb = $('<img/>');
+            const thumb = $("<img/>");
             thumb.metadata = { original: path };
             thumb.addEventListener("click", () => {
                 preview.open(item);
@@ -89,7 +81,7 @@ export default new class Gallery {
 
         gallery.append(fragment);
         requestAnimationFrame(() => {
-            gallery.querySelectorAll('img:not([src])').forEach(img => {
+            gallery.querySelectorAll("img:not([src])").forEach(img => {
                 this.observer.observe(img);
             });
         });
@@ -128,9 +120,9 @@ export default new class Gallery {
 
         // 将选中项置于可见区域
         item.scrollIntoView({
-            behavior: 'smooth',
-            block: 'nearest',
-            inline: 'nearest'
+            behavior: "smooth",
+            block: "nearest",
+            inline: "nearest"
         });
 
         // 更新标题栏

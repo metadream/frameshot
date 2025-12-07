@@ -17,7 +17,7 @@ export default new class Preview {
         });
 
         // 监听全局按键
-        window.addEventListener('keyup', e => {
+        window.addEventListener("keyup", e => {
             if (e.code === "Escape") this.close();
         });
     }
@@ -65,6 +65,22 @@ export default new class Preview {
         nextFrame(() => this.#slidePreviewZone(direction));
     }
 
+    /** 保持缩放无动画切换相邻图片 */
+    async compare(direction) {
+        if (!this.currentZone) return;
+
+        // 判断获取上一张还是下一张
+        const { prevItem, nextItem } = this;
+        const siblingItem = direction > 0 ? nextItem : prevItem;
+        if (!siblingItem) return;
+
+        const previewZone = await this.#createPreviewZone(siblingItem);
+        this.#loadSiblingItems(siblingItem);
+        this.#copyZoneProperties(this.currentZone, previewZone);
+        this.currentZone.remove();
+        this.currentZone = previewZone;
+    }
+
     /** 动态滑动预览区 */
     #slidePreviewZone(direction, isRemove) {
         const { viewport, currentZone } = this;
@@ -75,7 +91,9 @@ export default new class Preview {
 
         // 滑动结束后移除元素
         if (isRemove) {
-            currentZone.ontransitionend = () => currentZone.remove();
+            currentZone.withoutTransform
+                ? currentZone.remove()
+                : currentZone.ontransitionend = () => currentZone.remove();
         }
     }
 
@@ -84,8 +102,8 @@ export default new class Preview {
         const { prevIcon, nextIcon } = this.shadeMask;
         this.prevItem = currentItem.previousSibling;
         this.nextItem = currentItem.nextSibling;
-        prevIcon.style.visibility = this.prevItem ? 'visible' : 'hidden';
-        nextIcon.style.visibility = this.nextItem ? 'visible' : 'hidden';
+        prevIcon.style.visibility = this.prevItem ? "visible" : "hidden";
+        nextIcon.style.visibility = this.nextItem ? "visible" : "hidden";
     }
 
     /** 创建预览区 */
@@ -127,7 +145,6 @@ export default new class Preview {
             this.maxScale = this.scale * Zoom.MAX_SCALE;
             this.initX = this.transX = width / 2 - centerX;
             this.initY = this.transY = height / 2 - centerY;
-            this.style.transform = "translateZ(0)";
             delay ? nextFrame(() => this.transform()) : this.transform();
         }
 
@@ -140,7 +157,7 @@ export default new class Preview {
 
         // 判断拖动边界
         previewZone.checkBoundary = function() {
-            this.style.cursor = this.scale <= this.initScale ? 'zoom-in' : 'zoom-out';
+            this.style.cursor = this.scale <= this.initScale ? "zoom-in" : "zoom-out";
             const { initWidth, initHeight } = this;
             const width = initWidth * this.scale;
             const height = initHeight * this.scale;
@@ -180,7 +197,7 @@ export default new class Preview {
         }
 
         // 拖动图片
-        previewZone.addEventListener('pointerdown', function(e) {
+        previewZone.addEventListener("pointerdown", function(e) {
             e.preventDefault();
 
             this.style.transition = "none";
@@ -200,11 +217,11 @@ export default new class Preview {
             this.onpointerup = this.onpointerout = function(e) {
                 this.transX += this.offsetX ?? 0;
                 this.transY += this.offsetY ?? 0;
-                this.style.transition = 'all .3s';
+                this.style.transition = "all .3s";
                 this.onpointermove = null;
 
                 // 点击图片缩放
-                if (e.type == 'pointerup' && !this.isDragging) {
+                if (e.type == "pointerup" && !this.isDragging) {
                     const { width, height } = self.viewport;
                     this.transX = width - this.centerX - e.clientX;
                     this.transY = height - this.centerY - e.clientY;
@@ -216,17 +233,15 @@ export default new class Preview {
         });
 
         // 鼠标滚轮缩放
-        previewZone.addEventListener('wheel', function(e) {
-            e.preventDefault();
-
-            if (e.wheelDelta > 0) this.scale *= Zoom.STEP;
-            else this.scale /= Zoom.STEP;
+        previewZone.addEventListener("wheel", function(e) {
+            this.scale = e.wheelDelta > 0
+                ? this.scale *= Zoom.STEP : this.scale /= Zoom.STEP;
             if (this.scale > this.maxScale) this.scale = this.maxScale;
             if (this.scale < this.minScale) this.scale = this.minScale;
 
             this.transform();
             this.checkBoundary();
-        });
+        }, { passive: true });
 
         // 绑定必要的属性
         const { relativeX, relativeY, width, height } = previewZone.position();
@@ -251,17 +266,33 @@ export default new class Preview {
             if (thumb.width) return resolve();
             const onLoad = () => {
                 resolve();
-                thumb.removeEventListener('load', onLoad);
-                thumb.removeEventListener('error', onError);
+                thumb.removeEventListener("load", onLoad);
+                thumb.removeEventListener("error", onError);
             };
             const onError = () => {
                 reject();
-                thumb.removeEventListener('load', onLoad);
-                thumb.removeEventListener('error', onError);
+                thumb.removeEventListener("load", onLoad);
+                thumb.removeEventListener("error", onError);
             };
-            thumb.addEventListener('load', onLoad);
-            thumb.addEventListener('error', onError);
+            thumb.addEventListener("load", onLoad);
+            thumb.addEventListener("error", onError);
         });
+    }
+
+    /** 复制预览区属性以保持原位置和缩放状态 */
+    #copyZoneProperties(source, target) {
+        const { initScale, minScale, maxScale, scale, initX, initY, transX, transY } = source;
+        const style = source.getAttribute("style");
+        target.setAttribute("style", style);
+        target.initScale = initScale;
+        target.minScale = minScale;
+        target.maxScale = maxScale;
+        target.scale = scale;
+        target.initX = initX;
+        target.initY = initY;
+        target.transX = transX;
+        target.transY = transY;
+        target.withoutTransform = true;
     }
 
     /** 重置视口属性 */
@@ -289,16 +320,16 @@ export default new class Preview {
 
         this.shadeMask.fadeIn = function() {
             this.ontransitionend = null;
-            this.style.display = 'flex';
-            nextFrame(() => this.style.background = 'rgba(0, 0, 0, .8)');
+            this.style.display = "flex";
+            nextFrame(() => this.style.background = "rgba(0, 0, 0, .8)");
         }
 
         this.shadeMask.fadeOut = function() {
-            this.style.background = 'rgba(0, 0, 0, 0)';
-            this.ontransitionend = () => this.style.display = 'none';
+            this.style.background = "rgba(0, 0, 0, 0)";
+            this.ontransitionend = () => this.style.display = "none";
         }
 
-        this.shadeMask.addEventListener('pointerup', e => {
+        this.shadeMask.addEventListener("pointerup", e => {
             const { target } = e;
             if (this.currentZone.contains(target)) return;
 

@@ -2,20 +2,20 @@ import { $ } from "../main/utils.js";
 import { Tree } from "./tree.js";
 import gallery from "./gallery.js";
 
-const sidebar = $('aside');
+const sidebar = $("aside");
 const dragger = $(".dragger");
 const closeBtn = $("#close-btn");
 const minimizeBtn = $("#minimize-btn");
 const maximizeBtn = $("#maximize-btn");
-const openBtn = $('#open-btn');
-const toggleBtn = $('#toggle-btn');
+const openBtn = $("#open-btn");
+const toggleBtn = $("#toggle-btn");
 
 /** 侧边栏区域 */
 export default new class Sidebar {
 
     constructor() {
         // 构建目录树
-        this.tree = new Tree('.folders');
+        this.tree = new Tree(".folders");
         this.tree.onNodeClick = node => {
             gallery.render(node.path);
         }
