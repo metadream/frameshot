@@ -4,6 +4,7 @@ import preview from "./preview.js";
 const gallery = $(".gallery");
 const fileInfo = $(".file-info");
 const imageInfo = $(".image-info");
+const scaleInfo = $(".scale-info");
 
 /** 缩略图区域 */
 export default new class Gallery {
@@ -138,6 +139,7 @@ export default new class Gallery {
         const filename = original.split(/[\\/]/).pop();
         fileInfo.innerHTML = `${index + 1}/${total}　|　${filename}`;
         imageInfo.innerHTML = `${width}×${height}　|　${formatBytes(size)}`;
+        scaleInfo.innerHTML = `69%`;
     }
 
     /** 取消选中状态 */
@@ -146,6 +148,7 @@ export default new class Gallery {
         if (selected) selected.classList.remove("selected");
         fileInfo.innerHTML = "";
         imageInfo.innerHTML = "";
+        scaleInfo.innerHTML = "";
     }
 
 }
