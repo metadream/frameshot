@@ -2,7 +2,8 @@ import { $, formatBytes } from "../main/utils.js";
 import preview from "./preview.js";
 
 const gallery = $(".gallery");
-const infoBar = $(".info-bar");
+const fileInfo = $(".file-info");
+const imageInfo = $(".image-info");
 
 /** 缩略图区域 */
 export default new class Gallery {
@@ -15,7 +16,6 @@ export default new class Gallery {
         gallery.addEventListener("click", e => {
             if (e.target === e.currentTarget) {
                 this.#unselect();
-                infoBar.innerHTML = "";
             }
         });
 
@@ -60,11 +60,11 @@ export default new class Gallery {
 
     /** 读取目录下的图片并渲染缩略图 */
     async render(folder) {
+        this.#unselect();
         this.observer.disconnect();
         this.thumbItems.length = 0;
         this.currentIndex = -1;
         gallery.innerHTML = "";
-        infoBar.innerHTML = "";
 
         const fragment = document.createDocumentFragment();
         const images = await electron.readImages(folder);
@@ -136,13 +136,16 @@ export default new class Gallery {
         const { metadata } = item.querySelector("img");
         const { width, height, size, original } = metadata;
         const filename = original.split(/[\\/]/).pop();
-        infoBar.innerHTML = `${index + 1}/${total}　|　${width}×${height}　|　${formatBytes(size)}　|　${filename}`;
+        fileInfo.innerHTML = `${index + 1}/${total}　|　${filename}`;
+        imageInfo.innerHTML = `${width}×${height}　|　${formatBytes(size)}`;
     }
 
     /** 取消选中状态 */
     #unselect() {
         const selected = gallery.querySelector(".selected");
         if (selected) selected.classList.remove("selected");
+        fileInfo.innerHTML = "";
+        imageInfo.innerHTML = "";
     }
 
 }
