@@ -18,7 +18,7 @@ export default new class Preview {
 
         // 监听全局按键
         window.addEventListener("keyup", e => {
-            if (e.code === "Escape") this.close();
+            if (e.key === "Escape") this.close();
         });
     }
 
@@ -221,14 +221,16 @@ export default new class Preview {
                 this.onpointermove = null;
 
                 // 点击图片缩放
-                if (e.type == "pointerup" && !this.isDragging) {
-                    const { width, height } = self.viewport;
-                    this.transX = width - this.centerX - e.clientX;
-                    this.transY = height - this.centerY - e.clientY;
-                    this.scale = this.scale <= this.initScale ? this.scale *= 2 : this.initScale;
-                    this.transform();
+                if (e.type == "pointerup") {
+                    if (!this.isDragging) {
+                        const { width, height } = self.viewport;
+                        this.transX = width - this.centerX - e.clientX;
+                        this.transY = height - this.centerY - e.clientY;
+                        this.scale = this.scale <= this.initScale ? this.scale *= 2 : this.initScale;
+                        this.transform();
+                    }
+                    this.checkBoundary();
                 }
-                this.checkBoundary();
             }
         });
 
