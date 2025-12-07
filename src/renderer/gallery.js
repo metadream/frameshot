@@ -35,7 +35,13 @@ export default new class Gallery {
                     e.altKey ? preview.compare(1) : preview.slide(1);
                     break;
             }
-        })
+        });
+
+        preview.onSlide = (item) => {
+            if (this.currentIndex !== item.index) {
+                this.#selectIndex(item.index);
+            }
+        };
 
         // 可视区内懒加载缩略图
         this.observer = new IntersectionObserver(entries => {

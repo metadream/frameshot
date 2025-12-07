@@ -50,15 +50,16 @@ export default new class Preview {
         const siblingItem = direction > 0 ? nextItem : prevItem;
         if (!siblingItem) return;
 
+        this.onSlide && this.onSlide(siblingItem);
+        this.#loadSiblingItems(siblingItem);
+
         // 将当前预览区滑走并移除
         this.#slidePreviewZone(direction, true);
-
         // 创建新的预览区并以隐藏方式设置到视口外
         this.currentZone = await this.#createPreviewZone(siblingItem);
         this.currentZone.style.display = "none";
         this.currentZone.adaptViewport();
         this.#slidePreviewZone(-direction);
-        this.#loadSiblingItems(siblingItem);
 
         // 将新的预览区滑入视口内
         this.currentZone.style.display = "block";
@@ -74,8 +75,10 @@ export default new class Preview {
         const siblingItem = direction > 0 ? nextItem : prevItem;
         if (!siblingItem) return;
 
-        const previewZone = await this.#createPreviewZone(siblingItem);
+        this.onSlide && this.onSlide(siblingItem);
         this.#loadSiblingItems(siblingItem);
+
+        const previewZone = await this.#createPreviewZone(siblingItem);
         this.#copyZoneProperties(this.currentZone, previewZone);
         this.currentZone.remove();
         this.currentZone = previewZone;
