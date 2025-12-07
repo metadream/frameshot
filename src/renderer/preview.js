@@ -205,9 +205,9 @@ export default new class Preview {
 
             this.onpointermove = function(e) {
                 this.isDragging = true;
+                this.style.cursor = "grabbing";
                 this.offsetX = e.clientX - this.startX;
                 this.offsetY = e.clientY - this.startY;
-                this.style.cursor = "grabbing";
                 this.transform(this.transX + this.offsetX, this.transY + this.offsetY, null);
             }
 
