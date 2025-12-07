@@ -31,7 +31,7 @@ export default new class Gallery {
                         console.log('Alt + 左箭头 被按下');
                     } else {
                         this.#selectIndex(--this.currentIndex);
-                        preview.slidePrevious();
+                        preview.slide(-1);
                     }
                     break;
                 case "ArrowRight":
@@ -39,7 +39,7 @@ export default new class Gallery {
                         console.log('Alt + 右箭头 被按下');
                     } else {
                         this.#selectIndex(++this.currentIndex);
-                        preview.slideNext();
+                        preview.slide(1);
                     }
                     break;
             }

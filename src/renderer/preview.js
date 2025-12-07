@@ -41,18 +41,8 @@ export default new class Preview {
         }
     }
 
-    /** 滑动到上一张 */
-    slidePrevious() {
-        this.#slideSiblingItem(-1);
-    }
-
-    /** 滑动到下一张 */
-    slideNext() {
-        this.#slideSiblingItem(1);
-    }
-
     /** 左右滑动相邻图片 */
-    async #slideSiblingItem(direction) {
+    async slide(direction) {
         if (!this.currentZone) return;
 
         // 判断获取上一张还是下一张
@@ -314,9 +304,9 @@ export default new class Preview {
 
             const { prevIcon, nextIcon } = this.shadeMask;
             if (prevIcon.contains(target)) {
-                this.slidePrevious();
+                this.slide(-1);
             } else if (nextIcon.contains(target)) {
-                this.slideNext();
+                this.slide(1);
             } else {
                 this.close();
             }
