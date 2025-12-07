@@ -6,6 +6,10 @@ export function $(selector) {
     return document.querySelector(selector);
 }
 
+export function nextFrame(callback) {
+    requestAnimationFrame(() => requestAnimationFrame(callback));
+}
+
 export function formatBytes(bytes) {
     if (!bytes || bytes < 1) return "0";
     const unit = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB"];

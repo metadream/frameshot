@@ -1,4 +1,4 @@
-import { $ } from "../main/utils.js";
+import { $, nextFrame } from "../main/utils.js";
 
 const container = $("main");
 const Zoom = { MIN_SCALE: 2, MAX_SCALE: 20, STEP: 1.2 };
@@ -24,10 +24,12 @@ export default new class Preview {
 
     /** 打开预览区 */
     async open(thumbItem) {
-        this.#loadSiblingItems(thumbItem);
-        this.currentZone = await this.#createPreviewZone(thumbItem);
-        this.currentZone.adaptViewport(true);
-        this.shadeMask.fadeIn();
+        if (!this.currentZone) {
+            this.#loadSiblingItems(thumbItem);
+            this.currentZone = await this.#createPreviewZone(thumbItem);
+            this.currentZone.adaptViewport(true);
+            this.shadeMask.fadeIn();
+        }
     }
 
     /** 关闭预览区 */
@@ -70,7 +72,7 @@ export default new class Preview {
 
         // 将新的预览区滑入视口内
         this.currentZone.style.display = "block";
-        requestAnimationFrame(() => this.#slidePreviewZone(direction));
+        nextFrame(() => this.#slidePreviewZone(direction));
     }
 
     /** 动态滑动预览区 */
@@ -135,7 +137,8 @@ export default new class Preview {
             this.maxScale = this.scale * Zoom.MAX_SCALE;
             this.initX = this.transX = width / 2 - centerX;
             this.initY = this.transY = height / 2 - centerY;
-            delay ? requestAnimationFrame(() => this.transform()) : this.transform();
+            this.style.transform = "translateZ(0)";
+            delay ? nextFrame(() => this.transform()) : this.transform();
         }
 
         // 还原到缩略图状态
@@ -297,7 +300,7 @@ export default new class Preview {
         this.shadeMask.fadeIn = function() {
             this.ontransitionend = null;
             this.style.display = 'flex';
-            requestAnimationFrame(() => this.style.background = 'rgba(0, 0, 0, .8)');
+            nextFrame(() => this.style.background = 'rgba(0, 0, 0, .8)');
         }
 
         this.shadeMask.fadeOut = function() {
