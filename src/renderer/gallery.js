@@ -5,6 +5,7 @@ const gallery = $(".gallery");
 const fileInfo = $(".file-info");
 const imageInfo = $(".image-info");
 const scaleInfo = $(".scale-info");
+const sortBtn = $("#sort-btn");
 
 /** 缩略图区域 */
 export default new class Gallery {
@@ -19,6 +20,14 @@ export default new class Gallery {
                 this.#unselect();
             }
         });
+
+        // TODO 按字段排序
+        sortBtn.onclick = () => {
+            this.thumbItems.sort((a, b) => {
+                return a.testSort - b.testSort;
+            });
+            gallery.append(...this.thumbItems);
+        }
 
         // 方向键切换
         document.addEventListener("keyup", e => {
@@ -72,6 +81,7 @@ export default new class Gallery {
         images.forEach((path, index) => {
             const item = $(`<div class="thumb"></div>`);
             item.index = index++;
+            item.testSort = Math.random();
             item.addEventListener("click", async () => {
                 this.#selectIndex(item.index);
             });
@@ -149,6 +159,33 @@ export default new class Gallery {
         fileInfo.innerHTML = "";
         imageInfo.innerHTML = "";
         scaleInfo.innerHTML = "";
+    }
+
+    #sortBy(field = 'name', order = 'ascending') {
+        this.thumbItems.sort((a, b) => {
+            const av = a[field];
+            const bv = b[field];
+            if (!av && !av) return 0;
+            if (!av) return -1;
+            if (!bv) return 1;
+
+            let result;
+            switch (field) {
+                case "time":
+                case "size":
+                case "type":
+                case "resolution":
+                case "name":
+                    result = av.localeCompare(bv);
+                    break;
+            }
+
+            // 比较值
+            if (aValue < bValue) return order === 'ascending' ? -1 : 1;
+            if (aValue > bValue) return order === 'ascending' ? 1 : -1;
+            return 0;
+        });
+        gallery.append(...this.thumbItems);
     }
 
 }
