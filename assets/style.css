@@ -188,6 +188,67 @@ img {
 }
 
 /* --------------------------------------------------------
+ * Sort Menu Component
+ * ----------------------------------------------------- */
+
+.sort-controls {
+    position: relative;
+    display: flex;
+}
+
+.sort-controls:hover .sort-menu {
+    opacity: 1;
+    visibility: visible;
+}
+
+.sort-menu {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    right: -35%;
+    top: 42px;
+    z-index: 9;
+    padding: 8px 0;
+    background: var(--header-color);
+    border: var(--border-color) 1px solid;
+    border-radius: 5px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, .3);
+
+    opacity: 0;
+    visibility: hidden;
+    transition: all .3s;
+}
+
+.sort-menu::before, .sort-menu::after {
+    content: "";
+    position: absolute;
+    left: 75%;
+    border-width: 7px;
+    border-style: solid;
+    transform: translateX(-50%);
+}
+
+.sort-menu::before {
+    top: -15px;
+    border-color: transparent transparent var(--border-color) transparent;
+}
+
+.sort-menu::after {
+    top: -14px;
+    border-color: transparent transparent var(--header-color) transparent;
+}
+
+.sort-menu > span {
+    padding: 6px 15px;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.sort-menu > span:hover {
+    background: var(--block-color);
+}
+
+/* --------------------------------------------------------
  * Tree Component
  * ----------------------------------------------------- */
 
