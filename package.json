@@ -17,13 +17,22 @@
     },
     "build": {
         "appId": "image-scope",
+        "fileAssociations": [
+            {
+                "ext": [ "avif", "gif", "heic", "jpeg", "jpg", "png", "raw", "svg", "tiff", "webp" ],
+                "name": "Image Document",
+                "description": "Image files",
+                "role": "Viewer"
+            }
+        ],
         "win": {
             "target": [ "nsis" ],
             "icon": "assets/build/icon.ico"
         },
         "linux": {
             "target": [ "deb" ],
-            "icon": "assets/build/icon.png"
+            "icon": "assets/build/icon.png",
+            "mimeTypes": [ "image/*" ]
         },
         "mac": {
             "target": [ "dmg" ],

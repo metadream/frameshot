@@ -9,3 +9,15 @@
 - 大目录树形结构非常卡，改为只加载一级目录？
 - 标题栏显示缩放百分比
 - 速度很快地切换途中按esc，preview-zone未被移除
+
+            "extendInfo": {
+                "CFBundleDocumentTypes": [
+                    {
+                         "CFBundleTypeExtensions": [], 
+                         "LSItemContentTypes": ["public.image"],
+                        "CFBundleTypeName": "Image Document",
+                        "CFBundleTypeRole": "Viewer",
+                        "LSHandlerRank": "Owner"
+                    }
+                ]
+            }

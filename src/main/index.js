@@ -1,15 +1,20 @@
 import { app, BrowserWindow, Menu } from "electron";
 import path from "path";
+import fs from "fs";
 import "./ipc.js";
 
 const appPath = app.getAppPath();
 const appIcon = path.join(appPath, `assets/build/icon.${process.platform === "win32" ? "ico" : "png"}`);
 const preload = path.join(appPath, "src/main/preload.js");
 
+let mainWindow = null;
+let fileToOpen = null;
+
+// 创建主窗体
 app.whenReady().then(() => {
     Menu.setApplicationMenu(null);
 
-    const mainWindow = new BrowserWindow({
+    mainWindow = new BrowserWindow({
         icon: appIcon,
         frame: false,
         show: false,
@@ -22,10 +27,61 @@ app.whenReady().then(() => {
         }
     });
 
+    // 加载主页面
     mainWindow.loadFile("index.html");
     if (!app.isPackaged) {
         mainWindow.webContents.openDevTools();
     }
 
+    // 如果存在启动时要打开的文件
+    mainWindow.webContents.once("dom-ready", () => {
+        if (fileToOpen) {
+            mainWindow.webContents.send("file-opened", fileToOpen);
+            fileToOpen = null;
+        }
+    });
+
+    // 默认最大化窗口
     mainWindow.maximize();
+
+    // Windows/Linux 双击打开文件通过命令行参数传递
+    const files = getFilesFromArgs(process.argv);
+    if (files.length > 0) {
+        fileToOpen = files[0];
+    }
 });
+
+// MacOS 处理双击打开文件的情况
+app.on("open-file", (event, filePath) => {
+    event.preventDefault();
+
+    // 如果应用已启动直接发送，否则保存路径稍后处理
+    if (mainWindow) {
+        mainWindow.webContents.send("file-opened", filePath);
+    } else {
+        fileToOpen = filePath;
+    }
+});
+
+/** 从启动参数中提取文件路径 */
+function getFilesFromArgs(argv) {
+    const files = [];
+    const args = argv.slice(1); // 去掉第一个参数（通常是应用路径）
+
+    args.forEach(arg => {
+        if (arg !== "." && !arg.startsWith("-") &&
+            !arg.includes("electron") &&
+            !arg.includes(app.getAppPath())) {
+
+            try {
+                const fullPath = path.resolve(arg);
+                if (fs.statSync(fullPath).isFile()) {
+                    files.push(fullPath);
+                }
+            } catch (error) {
+                // 忽略无效路径
+            }
+        }
+    });
+    return files;
+}

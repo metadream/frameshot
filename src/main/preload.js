@@ -1,4 +1,4 @@
-const { contextBridge, ipcRenderer, webUtils } = require("electron");
+const { contextBridge, ipcRenderer } = require("electron");
 
 contextBridge.exposeInMainWorld("electron", {
     platform: process.platform,
@@ -15,7 +15,9 @@ contextBridge.exposeInMainWorld("electron", {
     openExternal: url => ipcRenderer.invoke("open-external", url),
     readFolders: folders => ipcRenderer.invoke("read-folders", folders),
     readImages: folder => ipcRenderer.invoke("read-images", folder),
-    updateConfig: (key, value) => ipcRenderer.invoke("update-config", key, value)
+    updateConfig: (key, value) => ipcRenderer.invoke("update-config", key, value),
+
+    onFileOpened: callback => ipcRenderer.on("file-opened", callback)
 });
 
 contextBridge.exposeInMainWorld("image", {
