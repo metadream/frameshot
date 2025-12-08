@@ -255,7 +255,7 @@ export default new class Preview {
 
         // 克隆缩略图到预览区
         const image = thumb.cloneNode(true);
-        image.src = thumb.metadata.original;
+        image.src = thumbItem.original;
         previewZone.append(image);
 
         this.shadeMask.append(previewZone);

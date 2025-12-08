@@ -21,5 +21,6 @@ contextBridge.exposeInMainWorld("electron", {
 });
 
 contextBridge.exposeInMainWorld("image", {
+    getMetadata: path => ipcRenderer.invoke("get-metadata", path),
     createThumbnail: path => ipcRenderer.invoke("create-thumbnail", path)
 });

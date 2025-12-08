@@ -56,6 +56,18 @@ ipcMain.handle("read-images", async (event, folder) => {
              .sort((a, b) => a.localeCompare(b));
 });
 
+/** 获取图片元数据 */
+ipcMain.handle("get-metadata", async (event, inputPath) => {
+    const image = sharp(inputPath);
+    const metadata = await image.metadata();
+    const stat = fs.statSync(inputPath);
+    metadata.size = stat.size;
+    metadata.mtime = stat.mtimeMs / 1000;
+    metadata.resolution = metadata.width * metadata.height;
+    metadata.original = inputPath;
+    return metadata;
+});
+
 /** 如果不存在则创建缩略图并缓存到系统临时目录 */
 ipcMain.handle("create-thumbnail", async (event, inputPath) => {
     const fileKey = crypto.createHash("md5").update(inputPath).digest("hex");
@@ -63,18 +75,12 @@ ipcMain.handle("create-thumbnail", async (event, inputPath) => {
     const outputFormat = rasterFormats.test(ext) ? ext : fallbackFormat;
     const outputPath = path.join(tempPath, fileKey + outputFormat);
 
-    const image = sharp(inputPath);
-    const metadata = await image.metadata();
-    metadata.size = fs.statSync(inputPath).size;
-    metadata.original = inputPath;
-    metadata.thumbnail = outputPath;
-
     if (!fs.existsSync(outputPath)) {
         await image
         .resize(256, 256, { fit: "inside", withoutEnlargement: true })
         .toFile(outputPath);
     }
-    return metadata;
+    return outputPath;
 });
 
 /** 窗口控制 */

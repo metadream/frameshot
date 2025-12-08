@@ -1,4 +1,4 @@
-import { $, formatBytes } from "../main/utils.js";
+import { $, formatBytes, nextFrame } from "../main/utils.js";
 import preview from "./preview.js";
 
 const gallery = $(".gallery");
@@ -23,10 +23,7 @@ export default new class Gallery {
 
         // TODO 按字段排序
         sortBtn.onclick = () => {
-            this.thumbItems.sort((a, b) => {
-                return a.testSort - b.testSort;
-            });
-            gallery.append(...this.thumbItems);
+            this.#sortBy("size");
         }
 
         // 方向键切换
@@ -78,16 +75,18 @@ export default new class Gallery {
 
         const fragment = document.createDocumentFragment();
         const images = await electron.readImages(folder);
-        images.forEach((path, index) => {
+        let index = 0;
+
+        for (const path of images) {
             const item = $(`<div class="thumb"></div>`);
             item.index = index++;
-            item.testSort = Math.random();
+            Object.assign(item, await image.getMetadata(path));
+
             item.addEventListener("click", async () => {
                 this.#selectIndex(item.index);
             });
 
             const thumb = $("<img/>");
-            thumb.metadata = { original: path };
             thumb.addEventListener("click", () => {
                 preview.open(item);
             });
@@ -95,10 +94,10 @@ export default new class Gallery {
             item.append(thumb);
             fragment.append(item);
             this.thumbItems.push(item);
-        });
+        }
 
         gallery.append(fragment);
-        requestAnimationFrame(() => {
+        nextFrame(() => {
             gallery.querySelectorAll("img:not([src])").forEach(img => {
                 this.observer.observe(img);
             });
@@ -108,13 +107,8 @@ export default new class Gallery {
     /** 加载(或创建)缩略图 */
     async #loadThumbnail(thumb) {
         if (thumb.src) return;
-
-        // 设置元数据
-        const { original } = thumb.metadata;
-        Object.assign(thumb.metadata, await image.createThumbnail(original));
-
-        // 加载缩略图
-        thumb.src = thumb.metadata.thumbnail;
+        const item = thumb.parentNode;
+        thumb.src = await image.createThumbnail(item.original);
     }
 
     /** 根据索引选中缩略图 */
@@ -144,8 +138,7 @@ export default new class Gallery {
         });
 
         // 更新标题栏
-        const { metadata } = item.querySelector("img");
-        const { width, height, size, original } = metadata;
+        const { width, height, size, original } = item;
         const filename = original.split(/[\\/]/).pop();
         fileInfo.innerHTML = `${index + 1}/${total}　|　${filename}`;
         imageInfo.innerHTML = `${width}×${height}　|　${formatBytes(size)}`;
@@ -161,31 +154,38 @@ export default new class Gallery {
         scaleInfo.innerHTML = "";
     }
 
-    #sortBy(field = 'name', order = 'ascending') {
+    #sortBy(field = "name", order = "asc") {
         this.thumbItems.sort((a, b) => {
-            const av = a[field];
-            const bv = b[field];
-            if (!av && !av) return 0;
-            if (!av) return -1;
-            if (!bv) return 1;
+            let av = a[field];
+            let bv = b[field];
+            let result = 0;
+            if (!av && !av) return result;
 
-            let result;
-            switch (field) {
-                case "time":
-                case "size":
-                case "type":
-                case "resolution":
-                case "name":
-                    result = av.localeCompare(bv);
-                    break;
+            if (!av) result = 1;
+            else if (!bv) result = -1;
+            else {
+                switch (field) {
+                    case "mtime":
+                    case "size":
+                    case "resolution":
+                        result = av - bv;
+                        break;
+                    case "format":
+                    case "name":
+                        av = av.toLowerCase();
+                        bv = bv.toLowerCase();
+                        result = av.localeCompare(bv);
+                        break;
+                }
             }
-
-            // 比较值
-            if (aValue < bValue) return order === 'ascending' ? -1 : 1;
-            if (aValue > bValue) return order === 'ascending' ? 1 : -1;
-            return 0;
+            return order === "asc" ? result : -result;
         });
-        gallery.append(...this.thumbItems);
+
+        // 直接移动DOM元素进行排序
+        this.thumbItems.forEach((item, index) => {
+            item.index = index;
+            gallery.append(item);
+        });
     }
 
 }
