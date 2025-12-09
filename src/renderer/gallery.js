@@ -61,11 +61,18 @@ export default new class Gallery {
                     break;
                 case "Delete":
                     const itemToDel = this.thumbItems[this.currentIndex];
-                    console.log(itemToDel.original, itemToDel.thumbnail); // TODO fs.unlink
-
+                    // electron.deleteFile(itemToDel.original);
+                    // electron.deleteFile(itemToDel.thumbnail);
                     itemToDel.remove();
+
                     this.thumbItems.splice(this.currentIndex, 1);
                     this.#selectIndex(this.currentIndex);
+
+                    // TODO 删除最后一张时预览图无法滑动到上一张
+                    console.log(this.currentIndex, this.thumbItems.length - 1)
+                    this.currentIndex == this.thumbItems.length
+                        ? preview.slide(-1) : preview.slide(1);
+
                     break;
             }
         });

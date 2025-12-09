@@ -15,6 +15,7 @@ contextBridge.exposeInMainWorld("electron", {
     openExternal: url => ipcRenderer.invoke("open-external", url),
     readFolders: folders => ipcRenderer.invoke("read-folders", folders),
     readImages: folder => ipcRenderer.invoke("read-images", folder),
+    deleteFile: path => ipcRenderer.invoke("delete-file", path),
     updateConfig: (key, value) => ipcRenderer.invoke("update-config", key, value),
 
     onFileOpened: callback => ipcRenderer.on("file-opened", callback)

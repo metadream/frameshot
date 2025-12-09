@@ -84,6 +84,13 @@ ipcMain.handle("create-thumbnail", async (event, inputPath) => {
     return outputPath;
 });
 
+/** 如果不存在则创建缩略图并缓存到系统临时目录 */
+ipcMain.handle("delete-file", async (event, filePath) => {
+    if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+    }
+});
+
 /** 窗口控制 */
 ipcMain.on("window-control", (event, action) => {
     const win = BrowserWindow.fromWebContents(event.sender);
