@@ -6,6 +6,7 @@ const fileInfo = $(".file-info");
 const imageInfo = $(".image-info");
 const scaleInfo = $(".scale-info");
 const sortBtn = $("#sort-btn");
+const sortMenu = $(".sort-menu");
 
 /** 缩略图区域 */
 export default new class Gallery {
@@ -21,10 +22,27 @@ export default new class Gallery {
             }
         });
 
-        // TODO 按字段排序
-        sortBtn.onclick = () => {
-            this.#sortBy("size");
+        sortBtn.onpointerenter = sortMenu.onpointerenter = () => {
+            clearTimeout(sortBtn.hideTimer);
+            sortMenu.classList.add("show");
         }
+        sortBtn.onpointerleave = sortMenu.onpointerleave = () => {
+            sortBtn.hideTimer = setTimeout(() => sortMenu.classList.remove("show"), 200)
+        }
+
+        const sortItems = sortMenu.querySelectorAll("span");
+        sortItems.forEach(item => {
+            item.onclick = () => {
+                const field = item.dataset.field;
+                const icon = item.querySelector("i");
+                const sort = !icon.className || icon.className === "desc"
+                    ? "asc" : "desc";
+
+                this.#sortBy(field, sort);
+                sortItems.forEach(v => v.querySelector("i").removeAttribute("class"));
+                icon.className = sort;
+            }
+        });
 
         // 方向键切换
         document.addEventListener("keyup", e => {

@@ -196,13 +196,8 @@ img {
     display: flex;
 }
 
-.sort-controls:hover .sort-menu {
-    opacity: 1;
-    visibility: visible;
-}
-
 .sort-menu {
-    display: flex;
+    display: none;
     flex-direction: column;
     position: absolute;
     right: -35%;
@@ -213,10 +208,10 @@ img {
     border: var(--border-color) 1px solid;
     border-radius: 5px;
     box-shadow: 0 10px 20px rgba(0, 0, 0, .3);
+}
 
-    opacity: 0;
-    visibility: hidden;
-    transition: all .3s;
+.sort-menu.show {
+    display: flex;
 }
 
 .sort-menu::before, .sort-menu::after {
@@ -239,9 +234,27 @@ img {
 }
 
 .sort-menu > span {
+    display: flex;
+    align-items: center;
+    gap: 3px;
     padding: 6px 15px;
     white-space: nowrap;
     cursor: pointer;
+}
+
+.sort-menu > span > i {
+    width: 16px;
+    height: 16px;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.sort-menu > span > i.asc {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E %3Cpath d='M8 4a.5.5 0 0 1 .5.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L7.5 10.293V4.5A.5.5 0 0 1 8 4z'/%3E %3C/svg%3E");
+}
+
+.sort-menu > span > i.desc {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E %3Cpath d='M8 12a.5.5 0 0 0 .5-.5V5.707l2.146 2.147a.5.5 0 0 0 .708-.708l-3-3a.5.5 0 0 0-.708 0l-3 3a.5.5 0 1 0 .708.708L7.5 5.707V11.5a.5.5 0 0 0 .5.5z'/%3E %3C/svg%3E");
 }
 
 .sort-menu > span:hover {
