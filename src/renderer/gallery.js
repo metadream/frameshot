@@ -69,10 +69,8 @@ export default new class Gallery {
                     this.#selectIndex(this.currentIndex);
 
                     // TODO 删除最后一张时预览图无法滑动到上一张
-                    console.log(this.currentIndex, this.thumbItems.length - 1)
                     this.currentIndex == this.thumbItems.length
                         ? preview.slide(-1) : preview.slide(1);
-
                     break;
             }
         });
