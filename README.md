@@ -8,7 +8,7 @@
 - 刷新:原本存在后被删除测试、原目录增加图片后测试
 - 大目录树形结构非常卡，增加loading？
 - sidebar状态、布局方式、排序方式写入配置文件
-- 速度很快地切换途中按esc，preview-zone未被移除
+- 速度很快地切换途中按esc，或打开预览中途按esc，preview-zone未被移除，本质是动画未结束所以未执行remove
 
 "extendInfo": {
 "CFBundleDocumentTypes": [
