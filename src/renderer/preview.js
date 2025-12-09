@@ -130,9 +130,17 @@ export default new class Preview {
 
         // 缩放动画
         previewZone.transform = function(x, y, s) {
+            this.calcScaleRatio();
             this.style.transform = `
                 translate(${x ?? this.transX}px, ${y ?? this.transY}px) 
                 scale(${s ?? this.scale})`;
+        }
+
+        previewZone.calcScaleRatio = function() {
+            if (this.naturalWidth) {
+                const rate = this.scale * this.initWidth / this.naturalWidth;
+                self.onScale && self.onScale(rate.toFixed(2));
+            }
         }
 
         // 自适应视口大小
@@ -154,6 +162,7 @@ export default new class Preview {
             this.position();
             this.transform(0, 0, 1);
             this.ontransitionend = () => this.remove();
+            self.onScale && self.onScale(0);
         }
 
         // 判断拖动边界
@@ -256,6 +265,12 @@ export default new class Preview {
         // 克隆缩略图到预览区
         const image = thumb.cloneNode(true);
         image.src = thumbItem.original;
+        image.onload = () => {
+            if (!previewZone.naturalWidth) {
+                previewZone.naturalWidth = image.naturalWidth;
+                previewZone.calcScaleRatio();
+            }
+        }
         previewZone.append(image);
 
         this.shadeMask.append(previewZone);

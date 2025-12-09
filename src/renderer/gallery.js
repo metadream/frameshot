@@ -68,6 +68,10 @@ export default new class Gallery {
             }
         };
 
+        preview.onScale = ratio => {
+            scaleInfo.innerHTML = ratio > 0 ? `${(ratio * 100).toFixed(0)}%` : "";
+        }
+
         // 可视区内懒加载缩略图
         this.observer = new IntersectionObserver(entries => {
             entries.forEach(async entry => {
@@ -160,7 +164,6 @@ export default new class Gallery {
         const filename = original.split(/[\\/]/).pop();
         fileInfo.innerHTML = `${index + 1}/${total}　|　${filename}`;
         imageInfo.innerHTML = `${width}×${height}　|　${formatBytes(size)}`;
-        scaleInfo.innerHTML = `69%`;
     }
 
     /** 取消选中状态 */

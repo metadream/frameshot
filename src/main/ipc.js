@@ -65,7 +65,7 @@ ipcMain.handle("get-metadata", async (event, inputPath) => {
         name: path.basename(inputPath),
         mtime: mtimeMs / 1000,
         resolution: width * height,
-        size, format
+        size, format, width, height
     };
 });
 
