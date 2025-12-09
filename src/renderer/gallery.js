@@ -46,7 +46,6 @@ export default new class Gallery {
 
         // 方向键切换
         document.addEventListener("keyup", e => {
-            console.log(e.key)
             switch (e.key) {
                 case "Enter":
                     let item = this.thumbItems[this.currentIndex];
