@@ -46,9 +46,10 @@ export default new class Gallery {
 
         // 方向键切换
         document.addEventListener("keyup", e => {
+            console.log(e.key)
             switch (e.key) {
                 case "Enter":
-                    const item = this.thumbItems[this.currentIndex];
+                    let item = this.thumbItems[this.currentIndex];
                     preview.open(item);
                     break;
                 case "ArrowLeft":
@@ -59,12 +60,21 @@ export default new class Gallery {
                     this.#selectIndex(++this.currentIndex);
                     e.altKey ? preview.compare(1) : preview.slide(1);
                     break;
+                case "Delete":
+                    const itemToDel = this.thumbItems[this.currentIndex];
+                    console.log(itemToDel.original, itemToDel.thumbnail); // TODO fs.unlink
+
+                    itemToDel.remove();
+                    this.thumbItems.splice(this.currentIndex, 1);
+                    this.#selectIndex(this.currentIndex);
+                    break;
             }
         });
 
         preview.onSlide = (item) => {
-            if (this.currentIndex !== item.index) {
-                this.#selectIndex(item.index);
+            const index = item.index();
+            if (this.currentIndex !== index) {
+                this.#selectIndex(index);
             }
         };
 
@@ -97,15 +107,22 @@ export default new class Gallery {
 
         const fragment = document.createDocumentFragment();
         const images = await electron.readImages(folder);
-        let index = 0;
 
         for (const path of images) {
             const item = $(`<div class="thumb"></div>`);
-            item.index = index++;
             Object.assign(item, await image.getMetadata(path));
+            item.index = function() {
+                let index = 0;
+                let node = this.previousElementSibling;
+                while (node) {
+                    index++;
+                    node = node.previousElementSibling;
+                }
+                return index;
+            };
 
             item.addEventListener("click", async () => {
-                this.#selectIndex(item.index);
+                this.#selectIndex(item.index());
             });
 
             const thumb = $("<img/>");
@@ -130,25 +147,20 @@ export default new class Gallery {
     async #loadThumbnail(thumb) {
         if (thumb.src) return;
         const item = thumb.parentNode;
-        thumb.src = await image.createThumbnail(item.original);
+        item.thumbnail = await image.createThumbnail(item.original);
+        thumb.src = item.thumbnail;
     }
 
     /** 根据索引选中缩略图 */
     #selectIndex(index) {
         // 索引边界判断
-        if (index < 0) {
-            this.currentIndex = 0;
-            return;
-        }
         const total = this.thumbItems.length;
-        if (index > total - 1) {
-            this.currentIndex = this.thumbItems.length - 1;
-            return;
-        }
+        if (index < 0) index = 0;
+        if (index > total - 1) index = total - 1;
+        this.currentIndex = index;
 
         // 设置选中状态
         this.#unselect();
-        this.currentIndex = index;
         const item = this.thumbItems[index];
         item.classList.add("selected");
 
@@ -204,7 +216,6 @@ export default new class Gallery {
 
         // 直接移动DOM元素进行排序
         this.thumbItems.forEach((item, index) => {
-            item.index = index;
             gallery.append(item);
         });
     }
