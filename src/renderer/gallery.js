@@ -68,18 +68,19 @@ export default new class Gallery {
 
         // 方向键切换
         document.addEventListener("keydown", e => {
-            e.preventDefault();
             switch (e.key) {
                 case "Enter":
                     preview.open(this.galleryItems[this.currentIndex]);
                     break;
                 case "ArrowUp":
                 case "ArrowLeft":
+                    e.preventDefault();
                     this.#selectIndex(--this.currentIndex);
                     e.altKey ? preview.compare(-1) : preview.slide(-1);
                     break;
                 case "ArrowDown":
                 case "ArrowRight":
+                    e.preventDefault();
                     this.#selectIndex(++this.currentIndex);
                     e.altKey ? preview.compare(1) : preview.slide(1);
                     break;
