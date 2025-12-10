@@ -95,6 +95,7 @@ export default new class Preview {
         // 滑动结束后移除元素
         if (isRemove) {
             currentZone.ontransitionend = () => currentZone.remove();
+            currentZone.ontransitioncancel = () => currentZone.remove();
         }
     }
 
@@ -162,6 +163,7 @@ export default new class Preview {
             this.position();
             this.transform(0, 0, 1);
             this.ontransitionend = () => this.remove();
+            this.ontransitioncancel = () => this.remove();
             self.onScale && self.onScale(0);
         }
 
