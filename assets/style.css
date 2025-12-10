@@ -121,63 +121,69 @@ aside .dragger {
 .gallery {
     display: flex;
     align-content: flex-start;
-    flex-wrap: wrap;
     flex: 1;
     padding: 30px;
-    gap: 20px;
     scrollbar-color: var(--scrollbar-color) var(--header-color);
     scrollbar-width: thin;
     overflow: auto;
 }
 
-.gallery.grid .list-info {
-    display: none;
+.gallery.grid {
+    flex-wrap: wrap;
+    gap: 20px;
 }
 
-.gallery.grid .thumb {
+.gallery.list {
+    flex-direction: column;
+    gap: 10px;
+}
+
+.gallery-item {
     display: flex;
-}
-
-.gallery.list .list-info {
-    display: flex;
-}
-
-.gallery.list .thumb {
-    display: none;
-}
-
-.gallery .thumb {
-    display: flex;
-    justify-content: center;
     align-items: center;
-    width: 108px;
-    height: 108px;
     border-radius: 5px;
     border: var(--border-color) 1px solid;
     background: var(--block-color);
     overflow: hidden;
 }
 
-.gallery .thumb.selected {
+.gallery-item.selected {
     border: var(--selected-color) 1px solid;
 }
 
-.gallery.list {
-    flex-direction: column;
+.gallery.grid > .gallery-item {
+    justify-content: center;
+    width: 108px;
+    height: 108px;
 }
 
-.gallery .list-info {
-    display: flex;
-    width: 100%;
-    gap: 30px;
+.gallery.grid > .gallery-item > div {
+    display: none;
 }
 
-.list-info .filename {
+.gallery.list > .gallery-item {
+    padding: 8px 16px;
+    gap: 20px;
+    overflow: initial;
+}
+
+.gallery.list > .gallery-item > img {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+}
+
+.gallery.list > .gallery-item > div {
+    width: 90px;
+    text-align: right;
+}
+
+.gallery.list > .gallery-item > .filename {
     flex: 1;
-}
-
-.gallery img {
-    cursor: pointer;
+    text-align: left;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 
 /* --------------------------------------------------------

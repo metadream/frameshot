@@ -17,3 +17,7 @@ export function formatBytes(bytes) {
     const scale = Math.max(0, base);
     return parseFloat((bytes / Math.pow(1024, base)).toFixed(scale)) + " " + unit[base];
 }
+
+export function formatDate(timestamp) {
+    return new Date(timestamp).toISOString().slice(0, 10);
+}
