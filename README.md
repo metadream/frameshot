@@ -7,7 +7,6 @@
 - 右键打开文件选择当前app
 - 大目录树形结构非常卡，增加loading？
 - 删除前确认，删除最后一张时预览图无法滑动到上一张
-- sidebar状态、布局方式、排序方式写入配置文件
 
 "extendInfo": {
 "CFBundleDocumentTypes": [

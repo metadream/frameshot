@@ -8,9 +8,9 @@ const configFile = path.join(configPath, "config.json");
 
 // 默认配置项
 const config = {
-    picture_folders: [app.getPath("pictures")],
     show_sidebar: true,
     layout_mode: "grid",
+    picture_folders: [app.getPath("pictures")],
     sort_mode: ["name", "asc"]
 }
 // 自动加载配置

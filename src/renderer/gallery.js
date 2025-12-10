@@ -7,6 +7,7 @@ const imageInfo = $(".image-info");
 const scaleInfo = $(".scale-info");
 const sortBtn = $("#sort-btn");
 const sortMenu = $(".sort-menu");
+const sortMode = await electron.getConfig("sort_mode");
 
 /** 缩略图区域 */
 export default new class Gallery {
@@ -32,15 +33,21 @@ export default new class Gallery {
 
         const sortItems = sortMenu.querySelectorAll("span");
         sortItems.forEach(item => {
+            const field = item.dataset.field;
+            const icon = item.querySelector("i");
+
+            if (field === sortMode[0]) {
+                icon.className = sortMode[1];
+            }
+
             item.onclick = () => {
-                const field = item.dataset.field;
-                const icon = item.querySelector("i");
                 const sort = !icon.className || icon.className === "desc"
                     ? "asc" : "desc";
 
                 this.#sortBy(field, sort);
                 sortItems.forEach(v => v.querySelector("i").removeAttribute("class"));
                 icon.className = sort;
+                electron.updateConfig("sort_mode", [field, sort]);
             }
         });
 
@@ -140,6 +147,8 @@ export default new class Gallery {
         }
 
         gallery.append(fragment);
+        this.#sortBy(sortMode[0], sortMode[1]);
+
         nextFrame(() => {
             gallery.querySelectorAll("img:not([src])").forEach(img => {
                 this.observer.observe(img);
@@ -219,9 +228,7 @@ export default new class Gallery {
         });
 
         // 直接移动DOM元素进行排序
-        this.thumbItems.forEach((item, index) => {
-            gallery.append(item);
-        });
+        gallery.append(...this.thumbItems);
     }
 
 }

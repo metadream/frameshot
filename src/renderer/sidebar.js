@@ -9,6 +9,7 @@ const minimizeBtn = $("#minimize-btn");
 const maximizeBtn = $("#maximize-btn");
 const openBtn = $("#open-btn");
 const toggleBtn = $("#toggle-btn");
+const showSidebar = await electron.getConfig("show_sidebar");
 
 /** 侧边栏区域 */
 export default new class Sidebar {
@@ -41,7 +42,10 @@ export default new class Sidebar {
             sidebar.ontransitionend = function() {
                 sidebar.style.transition = null;
             }
+            electron.updateConfig("show_sidebar", !sidebar.classList.contains("hidden"));
         }
+
+        showSidebar ? sidebar.classList.remove("hidden") : sidebar.classList.add("hidden");
 
         // 拖动侧边栏把手
         dragger.onmousedown = function(e) {
