@@ -130,6 +130,22 @@ aside .dragger {
     overflow: auto;
 }
 
+.gallery.grid .list-info {
+    display: none;
+}
+
+.gallery.grid .thumb {
+    display: flex;
+}
+
+.gallery.list .list-info {
+    display: flex;
+}
+
+.gallery.list .thumb {
+    display: none;
+}
+
 .gallery .thumb {
     display: flex;
     justify-content: center;
@@ -144,6 +160,20 @@ aside .dragger {
 
 .gallery .thumb.selected {
     border: var(--selected-color) 1px solid;
+}
+
+.gallery.list {
+    flex-direction: column;
+}
+
+.gallery .list-info {
+    display: flex;
+    width: 100%;
+    gap: 30px;
+}
+
+.list-info .filename {
+    flex: 1;
 }
 
 .gallery img {

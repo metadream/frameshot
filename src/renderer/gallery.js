@@ -5,9 +5,13 @@ const gallery = $(".gallery");
 const fileInfo = $(".file-info");
 const imageInfo = $(".image-info");
 const scaleInfo = $(".scale-info");
+const gridBtn = $("#grid-btn");
+const listBtn = $("#list-btn");
 const sortBtn = $("#sort-btn");
 const sortMenu = $(".sort-menu");
 const sortMode = await electron.getConfig("sort_mode");
+
+gallery.classList.add("grid");
 
 /** 缩略图区域 */
 export default new class Gallery {
@@ -22,6 +26,10 @@ export default new class Gallery {
                 this.#unselect();
             }
         });
+
+        gridBtn.onclick = listBtn.onclick = function() {
+            gallery.className = "gallery " + this.dataset.key;
+        }
 
         sortBtn.onpointerenter = sortMenu.onpointerenter = () => {
             clearTimeout(sortBtn.hideTimer);
@@ -140,8 +148,18 @@ export default new class Gallery {
             thumb.addEventListener("click", () => {
                 preview.open(item);
             });
-
             item.append(thumb);
+
+            const cols = $(`<div class="list-info">
+                <div class="filename">${item.name}</div>
+                <div>${item.format}</div>
+                <div>${item.width}x${item.height}</div>
+                <div>${item.size}</div>
+                <div>${item.mtime}</div>
+            </div>`);
+
+            fragment.append(cols);
+
             fragment.append(item);
             this.thumbItems.push(item);
         }
