@@ -1,10 +1,10 @@
 {
-    "name": "image-scope",
-    "productName": "ImageScope",
+    "name": "frame-shot",
+    "productName": "FrameShot",
     "version": "1.2.0",
     "description": "Image Viewer and Duplicate Finder",
     "author": "Marco Chan",
-    "repository": "github:metadream/image-scope",
+    "repository": "github:metadream/frame-shot",
     "copyright": "Copyright (c) 2025",
     "license": "MIT",
     "type": "module",
@@ -16,7 +16,7 @@
         "build:mac": "electron-builder -m"
     },
     "build": {
-        "appId": "image-scope",
+        "appId": "frame-shot",
         "fileAssociations": [
             {
                 "ext": [ "avif", "gif", "heic", "jpeg", "jpg", "png", "raw", "svg", "tiff", "webp" ],
