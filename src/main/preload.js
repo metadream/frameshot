@@ -9,14 +9,14 @@ contextBridge.exposeInMainWorld("electron", {
 
     getAppName: () => ipcRenderer.invoke("get-app-name"),
     getAppPath: () => ipcRenderer.invoke("get-app-path"),
-    getDefaultFolders: () => ipcRenderer.invoke("get-default-folders"),
 
     openFileDialog: () => ipcRenderer.invoke("open-file-dialog"),
     openExternal: url => ipcRenderer.invoke("open-external", url),
     readFolders: folders => ipcRenderer.invoke("read-folders", folders),
     readImages: folder => ipcRenderer.invoke("read-images", folder),
-    deleteFile: path => ipcRenderer.invoke("delete-file", path),
+    getConfig: key => ipcRenderer.invoke("get-config", key),
     updateConfig: (key, value) => ipcRenderer.invoke("update-config", key, value),
+    deleteFile: path => ipcRenderer.invoke("delete-file", path),
 
     onFileOpened: callback => ipcRenderer.on("file-opened", callback)
 });

@@ -11,5 +11,5 @@ electron.onFileOpened((event, filePath) => {
 });
 
 // 打开默认文件夹
-const defaultFolders = await electron.getDefaultFolders();
-sidebar.render(defaultFolders);
+const pictureFolders = await electron.getConfig("picture_folders");
+sidebar.render(pictureFolders);
