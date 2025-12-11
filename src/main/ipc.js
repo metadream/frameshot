@@ -18,7 +18,7 @@ fs.mkdirSync(tempPath, { recursive: true });
 ipcMain.handle("get-app-name", () => app.getName());
 ipcMain.handle("get-app-path", () => app.getAppPath());
 ipcMain.handle("open-external", (event, url) => shell.openExternal(url));
-
+ipcMain.handle("get-folder", (event, file) => path.dirname(file));
 ipcMain.handle("get-config", (event, key) => getConfig(key));
 ipcMain.handle("update-config", (event, key, value) => updateConfig(key, value));
 
