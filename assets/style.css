@@ -9,6 +9,7 @@
 
 :root {
     --font-color: #333;
+    --minor-color: #999;
     --scrollbar-color: #bbb;
     --border-color: #ddd;
     --block-color: #eee;
@@ -62,6 +63,7 @@ header .info-bar {
     flex: 1;
     display: flex;
     gap: 20px;
+    color: var(--minor-color);
 }
 
 header .info-bar .file-info {
