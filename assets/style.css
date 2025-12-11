@@ -162,14 +162,15 @@ aside .dragger {
 }
 
 .gallery.list > .gallery-item {
+    height: 42px;
     padding: 8px 16px;
     gap: 20px;
     overflow: initial;
 }
 
 .gallery.list > .gallery-item > img {
-    max-width: 32px;
-    max-height: 32px;
+    max-width: 28px;
+    max-height: 28px;
     object-fit: contain;
 }
 

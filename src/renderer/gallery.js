@@ -10,8 +10,8 @@ const listBtn = $("#list-btn");
 const sortBtn = $("#sort-btn");
 const sortMenu = $(".sort-menu");
 
-const layoutMode = await electron.getConfig("layout_mode");
-const sortMode = await electron.getConfig("sort_mode");
+let layoutMode = await electron.getConfig("layout_mode");
+let sortMode = await electron.getConfig("sort_mode");
 
 /** 缩略图区域 */
 export default new class Gallery {
@@ -29,9 +29,9 @@ export default new class Gallery {
 
         // 布局切换按钮
         gridBtn.onclick = listBtn.onclick = e => {
-            const { mode } = e.currentTarget.dataset;
-            this.#setLayoutMode(mode);
-            electron.updateConfig("layout_mode", mode);
+            layoutMode = e.currentTarget.dataset.mode;
+            this.#setLayoutMode(layoutMode);
+            electron.updateConfig("layout_mode", layoutMode);
         }
 
         // 排序菜单按钮
@@ -58,11 +58,12 @@ export default new class Gallery {
             item.onclick = () => {
                 const sort = !icon.className || icon.className === "desc"
                     ? "asc" : "desc";
+                sortMode = [field, sort];
 
-                this.#sortBy(field, sort);
+                this.#setSortMode(sortMode);
                 sortItems.forEach(v => v.querySelector("i").removeAttribute("class"));
                 icon.className = sort;
-                electron.updateConfig("sort_mode", [field, sort]);
+                electron.updateConfig("sort_mode", sortMode);
             }
         });
 
@@ -186,7 +187,7 @@ export default new class Gallery {
 
         // 设置启动后的排序结果
         this.#setLayoutMode(layoutMode);
-        this.#sortBy(sortMode[0], sortMode[1]);
+        this.#setSortMode(sortMode);
     }
 
     /** 加载(或创建)缩略图 */
@@ -238,7 +239,10 @@ export default new class Gallery {
     }
 
     /** 对展示区进行排序 */
-    #sortBy(field = "name", order = "asc") {
+    #setSortMode(sortMode = ["name", "asc"]) {
+        const field = sortMode[0];
+        const order = sortMode[1];
+
         this.galleryItems.sort((a, b) => {
             let av = a[field];
             let bv = b[field];
