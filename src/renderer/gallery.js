@@ -73,32 +73,38 @@ export default new class Gallery {
                 case "Enter":
                     preview.open(this.galleryItems[this.currentIndex]);
                     break;
+
                 case "ArrowUp":
                 case "ArrowLeft":
                     e.preventDefault();
                     this.#selectIndex(--this.currentIndex);
                     e.altKey ? preview.compare(-1) : preview.slide(-1);
                     break;
+
                 case "ArrowDown":
                 case "ArrowRight":
                     e.preventDefault();
                     this.#selectIndex(++this.currentIndex);
                     e.altKey ? preview.compare(1) : preview.slide(1);
                     break;
+
                 case "Delete":
                     const choice = await electron.openConfirmDialog();
                     if (choice) {
                         const selectedItem = this.galleryItems[this.currentIndex];
-                        // electron.deleteFile(selectedItem.original);
-                        // electron.deleteFile(selectedItem.thumbnail);
-                        selectedItem.remove();
+                        const success = await electron.trashFile(selectedItem.original);
 
-                        this.galleryItems.splice(this.currentIndex, 1);
-                        this.#selectIndex(this.currentIndex);
+                        if (success) {
+                            electron.deleteFile(selectedItem.thumbnail);
+                            selectedItem.remove();
 
-                        // TODO 删除最后一张时预览图无法滑动到上一张
-                        this.currentIndex == this.galleryItems.length
-                            ? preview.slide(-1) : preview.slide(1);
+                            this.galleryItems.splice(this.currentIndex, 1);
+                            this.#selectIndex(this.currentIndex);
+
+                            // TODO 删除最后一张时预览图无法滑动到上一张
+                            this.currentIndex == this.galleryItems.length
+                                ? preview.slide(-1) : preview.slide(1);
+                        }
                     }
             }
         });

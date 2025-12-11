@@ -5,7 +5,6 @@
 - 右键打开文件选择当前app
 - 主图标
 - 删除最后一张时预览图无法滑动到上一张
-- unlink回收站
 
 "extendInfo": {
 "CFBundleDocumentTypes": [

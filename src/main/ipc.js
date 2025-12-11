@@ -70,6 +70,23 @@ ipcMain.handle("read-images", async (event, folder) => {
              .sort((a, b) => a.localeCompare(b));
 });
 
+/** 将文件移除到回收站 */
+ipcMain.handle("trash-file", async (event, filePath) => {
+    try {
+        await shell.trashItem(filePath);
+        return true;
+    } catch (e) {
+        return false;
+    }
+});
+
+/** 彻底删除文件 */
+ipcMain.handle("delete-file", async (event, filePath) => {
+    if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+    }
+});
+
 /** 获取图片元数据 */
 ipcMain.handle("get-metadata", async (event, inputPath) => {
     const { format, width, height } = await sharp(inputPath).metadata();
@@ -96,13 +113,6 @@ ipcMain.handle("create-thumbnail", async (event, inputPath) => {
         .toFile(outputPath);
     }
     return outputPath;
-});
-
-/** 如果不存在则创建缩略图并缓存到系统临时目录 */
-ipcMain.handle("delete-file", async (event, filePath) => {
-    if (fs.existsSync(filePath)) {
-        fs.unlinkSync(filePath);
-    }
 });
 
 /** 窗口控制 */
