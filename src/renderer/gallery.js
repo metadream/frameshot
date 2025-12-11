@@ -67,13 +67,15 @@ export default new class Gallery {
             }
         });
 
-        // 方向键切换
+        // 按键绑定
         document.addEventListener("keydown", async e => {
             switch (e.key) {
+                // 回车键打开预览
                 case "Enter":
                     preview.open(this.galleryItems[this.currentIndex]);
                     break;
 
+                // 左上方向键切换上一张
                 case "ArrowUp":
                 case "ArrowLeft":
                     e.preventDefault();
@@ -81,6 +83,7 @@ export default new class Gallery {
                     e.altKey ? preview.compare(-1) : preview.slide(-1);
                     break;
 
+                // 右下方向键切换下一张
                 case "ArrowDown":
                 case "ArrowRight":
                     e.preventDefault();
@@ -88,6 +91,8 @@ export default new class Gallery {
                     e.altKey ? preview.compare(1) : preview.slide(1);
                     break;
 
+                // 删除键删除图片
+                // Windows/Linux: Delete; MacOS: Fn+Backspace
                 case "Delete":
                     const choice = await electron.openConfirmDialog();
                     if (choice) {
@@ -98,6 +103,7 @@ export default new class Gallery {
                             electron.deleteFile(selectedItem.thumbnail);
                             selectedItem.remove();
 
+                            // 移除缓存并选中下一张（由于当前图片被删除，保持当前索引就是下一张）
                             this.galleryItems.splice(this.currentIndex, 1);
                             this.#selectIndex(this.currentIndex);
 
