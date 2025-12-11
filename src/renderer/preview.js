@@ -24,7 +24,7 @@ export default new class Preview {
 
     /** 打开预览区 */
     async open(thumbItem) {
-        if (!this.currentZone) {
+        if (!this.currentZone && thumbItem) {
             this.#loadSiblingItems(thumbItem);
             this.currentZone = await this.#createPreviewZone(thumbItem);
             this.currentZone.adaptViewport(true);
@@ -268,7 +268,7 @@ export default new class Preview {
         const image = thumb.cloneNode(true);
         previewZone.append(image);
 
-        // 加载原图 (如果图片较大，此处容易卡顿；如果在动画结束后再加载又有其他问题，比如compare情况下无法加载原图)
+        // 加载原图
         image.src = thumbItem.original;
         image.onerror = () => image.style.display = "none"
         image.onload = () => {

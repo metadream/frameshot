@@ -4,7 +4,7 @@
 - 相似度？
 - 右键打开文件选择当前app
 - 主图标
-- 删除最后一张时预览图无法滑动到上一张
+- 大图片预览卡顿 如果使用ontransitionend，compare情况下无法加载原图
 
 "extendInfo": {
 "CFBundleDocumentTypes": [
