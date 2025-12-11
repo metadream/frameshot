@@ -266,16 +266,17 @@ export default new class Preview {
 
         // 克隆缩略图到预览区
         const image = thumb.cloneNode(true);
+        previewZone.append(image);
+
+        // 加载原图 (如果图片较大，此处容易卡顿；如果在动画结束后再加载又有其他问题，比如compare情况下无法加载原图)
         image.src = thumbItem.original;
+        image.onerror = () => image.style.display = "none"
         image.onload = () => {
             if (!previewZone.naturalWidth) {
                 previewZone.naturalWidth = image.naturalWidth;
                 previewZone.calcScaleRatio();
             }
         }
-        // 加载失败后隐藏默认的错误图标
-        image.onerror = () => image.style.display = "none"
-        previewZone.append(image);
 
         this.shadeMask.append(previewZone);
         return previewZone;
