@@ -273,6 +273,8 @@ export default new class Preview {
                 previewZone.calcScaleRatio();
             }
         }
+        // 加载失败后隐藏默认的错误图标
+        image.onerror = () => image.style.display = "none"
         previewZone.append(image);
 
         this.shadeMask.append(previewZone);

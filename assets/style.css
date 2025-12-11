@@ -168,13 +168,12 @@ aside .dragger {
 }
 
 .gallery.list > .gallery-item > img {
-    width: 32px;
-    height: 32px;
+    max-width: 32px;
+    max-height: 32px;
     object-fit: contain;
 }
 
 .gallery.list > .gallery-item > div {
-    width: 90px;
     text-align: right;
 }
 
