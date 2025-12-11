@@ -130,3 +130,11 @@ ipcMain.on("window-control", (event, action) => {
             break;
     }
 });
+
+/** 如果存在启动时要打开的文件则通知渲染进程 */
+ipcMain.once("render-ready", (event) => {
+    if (global.fileToOpen) {
+        event.sender.send("file-opened", global.fileToOpen);
+        global.fileToOpen = null;
+    }
+});

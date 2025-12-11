@@ -6,6 +6,7 @@ if (electron.platform !== "darwin") {
 }
 
 // 监听直接打开文件的情况
+electron.renderReady();
 electron.onFileOpened((event, filePath) => {
     console.log("filePath=============", filePath);
 });

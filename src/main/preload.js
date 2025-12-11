@@ -20,7 +20,8 @@ contextBridge.exposeInMainWorld("electron", {
     trashFile: path => ipcRenderer.invoke("trash-file", path),
     deleteFile: path => ipcRenderer.invoke("delete-file", path),
 
-    onFileOpened: callback => ipcRenderer.on("file-opened", callback)
+    onFileOpened: callback => ipcRenderer.on("file-opened", callback),
+    renderReady: () => ipcRenderer.send("render-ready")
 });
 
 contextBridge.exposeInMainWorld("image", {

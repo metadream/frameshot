@@ -8,7 +8,6 @@ const appIcon = path.join(appPath, `assets/build/icon.${process.platform === "wi
 const preload = path.join(appPath, "src/main/preload.js");
 
 let mainWindow = null;
-let fileToOpen = null;
 
 // 创建主窗体
 app.whenReady().then(() => {
@@ -33,21 +32,13 @@ app.whenReady().then(() => {
         mainWindow.webContents.openDevTools();
     }
 
-    // 如果存在启动时要打开的文件
-    mainWindow.webContents.once("dom-ready", () => {
-        if (fileToOpen) {
-            mainWindow.webContents.send("file-opened", fileToOpen);
-            fileToOpen = null;
-        }
-    });
-
     // 默认最大化窗口
     mainWindow.maximize();
 
     // Windows/Linux 双击打开文件通过命令行参数传递
     const files = getFilesFromArgs(process.argv);
     if (files.length > 0) {
-        fileToOpen = files[0];
+        global.fileToOpen = files[0];
     }
 });
 
@@ -59,7 +50,7 @@ app.on("open-file", (event, filePath) => {
     if (mainWindow) {
         mainWindow.webContents.send("file-opened", filePath);
     } else {
-        fileToOpen = filePath;
+        global.fileToOpen = filePath;
     }
 });
 
