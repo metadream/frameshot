@@ -29,6 +29,17 @@ ipcMain.handle("open-file-dialog", () => {
     });
 });
 
+/** 打开原生确认对话框 */
+ipcMain.handle("open-confirm-dialog", () => {
+    return dialog.showMessageBoxSync({
+        type: "question",
+        title: "Confirm Message",
+        message: "Are you sure to delete this image?",
+        buttons: ["Cancel", "Confirm"],
+        defaultId: 1
+    });
+});
+
 /** 将文件夹数组构建成树形组件所需数据结构 (限制读取深度) */
 ipcMain.handle("read-folders", async (event, folders, maxDepth = 0) => {
     return folders

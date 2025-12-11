@@ -68,7 +68,7 @@ export default new class Gallery {
         });
 
         // 方向键切换
-        document.addEventListener("keydown", e => {
+        document.addEventListener("keydown", async e => {
             switch (e.key) {
                 case "Enter":
                     preview.open(this.galleryItems[this.currentIndex]);
@@ -86,18 +86,20 @@ export default new class Gallery {
                     e.altKey ? preview.compare(1) : preview.slide(1);
                     break;
                 case "Delete":
-                    const selectedItem = this.galleryItems[this.currentIndex];
-                    // electron.deleteFile(selectedItem.original);
-                    // electron.deleteFile(selectedItem.thumbnail);
-                    selectedItem.remove();
+                    const choice = await electron.openConfirmDialog();
+                    if (choice) {
+                        const selectedItem = this.galleryItems[this.currentIndex];
+                        // electron.deleteFile(selectedItem.original);
+                        // electron.deleteFile(selectedItem.thumbnail);
+                        selectedItem.remove();
 
-                    this.galleryItems.splice(this.currentIndex, 1);
-                    this.#selectIndex(this.currentIndex);
+                        this.galleryItems.splice(this.currentIndex, 1);
+                        this.#selectIndex(this.currentIndex);
 
-                    // TODO 删除最后一张时预览图无法滑动到上一张
-                    this.currentIndex == this.galleryItems.length
-                        ? preview.slide(-1) : preview.slide(1);
-                    break;
+                        // TODO 删除最后一张时预览图无法滑动到上一张
+                        this.currentIndex == this.galleryItems.length
+                            ? preview.slide(-1) : preview.slide(1);
+                    }
             }
         });
 

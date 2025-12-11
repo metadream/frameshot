@@ -11,6 +11,7 @@ contextBridge.exposeInMainWorld("electron", {
     getAppPath: () => ipcRenderer.invoke("get-app-path"),
 
     openFileDialog: () => ipcRenderer.invoke("open-file-dialog"),
+    openConfirmDialog: () => ipcRenderer.invoke("open-confirm-dialog"),
     openExternal: url => ipcRenderer.invoke("open-external", url),
     readFolders: (folders, maxDepth) => ipcRenderer.invoke("read-folders", folders, maxDepth),
     readImages: folder => ipcRenderer.invoke("read-images", folder),
