@@ -161,11 +161,11 @@ export default new class Gallery {
             const item = $(`<div class="gallery-item"></div>`);
             Object.assign(item, await image.getMetadata(path));
 
-            item.innerHTML = `<img/>
+            item.innerHTML = `<div class="thumb"><img/></div>
                 <div class="filename">${item.name}</div>
                 <div style="width:50px">${item.format}</div>
-                <div style="width:100px">${item.width} × ${item.height}</div>
-                <div style="width:90px">${formatBytes(item.size)}</div>
+                <div style="width:90px">${item.width} × ${item.height}</div>
+                <div style="width:80px">${formatBytes(item.size)}</div>
                 <div style="width:90px">${formatDate(item.mtime)}</div>`;
 
             // 获取在兄弟节点中的索引
@@ -210,7 +210,7 @@ export default new class Gallery {
     /** 加载(或创建)缩略图 */
     async #loadThumbnail(thumb) {
         if (thumb.src) return;
-        const item = thumb.parentNode;
+        const item = thumb.closest(".gallery-item");
         item.thumbnail = await image.createThumbnail(item.original);
         thumb.src = item.thumbnail;
     }

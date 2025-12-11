@@ -144,20 +144,24 @@ aside .dragger {
     border-radius: 5px;
     border: var(--border-color) 1px solid;
     background: var(--block-color);
-    overflow: hidden;
 }
 
 .gallery-item.selected {
     border: var(--selected-color) 1px solid;
 }
 
-.gallery.grid > .gallery-item {
+.gallery-item > .thumb {
+    display: flex;
     justify-content: center;
+    align-items: center;
+}
+
+.gallery.grid > .gallery-item > .thumb {
     width: 108px;
     height: 108px;
 }
 
-.gallery.grid > .gallery-item > div {
+.gallery.grid > .gallery-item > div:not(.thumb) {
     display: none;
 }
 
@@ -168,14 +172,13 @@ aside .dragger {
     overflow: initial;
 }
 
-.gallery.list > .gallery-item > img {
-    max-width: 28px;
-    max-height: 28px;
-    object-fit: contain;
-}
-
 .gallery.list > .gallery-item > div {
     text-align: right;
+}
+
+.gallery.list > .gallery-item > .thumb {
+    width: 28px;
+    height: 28px;
 }
 
 .gallery.list > .gallery-item > .filename {
