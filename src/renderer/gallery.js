@@ -103,7 +103,7 @@ export default new class Gallery {
                             electron.deleteFile(selectedItem.thumbnail);
                             selectedItem.remove();
 
-                            // 移除缓存并选中下一张（由于当前图片被删除，保持当前索引就是下一张）
+                            // 移除缓存并选中下一张（由于当前图片被移除，保持当前索引就是下一张）
                             this.galleryItems.splice(this.currentIndex, 1);
                             this.#selectIndex(this.currentIndex);
 
