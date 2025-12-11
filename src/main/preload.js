@@ -12,7 +12,7 @@ contextBridge.exposeInMainWorld("electron", {
 
     openFileDialog: () => ipcRenderer.invoke("open-file-dialog"),
     openExternal: url => ipcRenderer.invoke("open-external", url),
-    readFolders: folders => ipcRenderer.invoke("read-folders", folders),
+    readFolders: (folders, maxDepth) => ipcRenderer.invoke("read-folders", folders, maxDepth),
     readImages: folder => ipcRenderer.invoke("read-images", folder),
     getConfig: key => ipcRenderer.invoke("get-config", key),
     updateConfig: (key, value) => ipcRenderer.invoke("update-config", key, value),

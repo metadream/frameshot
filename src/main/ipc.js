@@ -29,22 +29,25 @@ ipcMain.handle("open-file-dialog", () => {
     });
 });
 
-/** 将文件夹数组构建成树形组件所需数据结构 */
-ipcMain.handle("read-folders", async (event, folders) => {
+/** 将文件夹数组构建成树形组件所需数据结构 (限制读取深度) */
+ipcMain.handle("read-folders", async (event, folders, maxDepth = 0) => {
     return folders
     .filter(p => fs.existsSync(p) && fs.statSync(p).isDirectory())
     .map(dir => {
-        const build = p => {
+        const build = (p, depth) => {
             const node = { name: path.basename(p), path: p };
-            const children = fs.readdirSync(p)
-                               .map(item => path.join(p, item))
-                               .filter(fullPath => fs.statSync(fullPath).isDirectory())
-                               .map(child => build(child))
-                               .sort((a, b) => a.name.localeCompare(b.name));
-            if (children.length > 0) node.children = children;
+
+            if (maxDepth === 0 || depth < maxDepth) {
+                const children = fs.readdirSync(p)
+                                   .map(item => path.join(p, item))
+                                   .filter(fullPath => fs.statSync(fullPath).isDirectory())
+                                   .map(child => build(child, depth + 1))
+                                   .sort((a, b) => a.name.localeCompare(b.name));
+                if (children.length > 0) node.children = children;
+            }
             return node;
         };
-        return build(dir);
+        return build(dir, 0);
     });
 });
 

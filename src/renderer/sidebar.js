@@ -68,10 +68,12 @@ export default new class Sidebar {
         }
     }
 
-    /** 渲染侧边栏内容 */
-    async render(folders) {
-        const data = await electron.readFolders(folders);
-        this.tree.render(data);
-        this.tree.autoClick();
+    /** 渲染侧边栏内容 (考虑性能问题，最多读取三级子目录) */
+    render(folders) {
+        this.tree.loading();
+        electron.readFolders(folders, 3).then(data => {
+            this.tree.render(data);
+            this.tree.autoClick();
+        });
     }
 }

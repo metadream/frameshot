@@ -8,6 +8,11 @@ export class Tree {
         $(selector).append(this.root);
     }
 
+    /** 显示加载动画 */
+    loading() {
+        this.root.innerHTML = `<div class="loading"><div></div><div>Loading ...</div></div>`;
+    }
+
     /** 渲染整棵树 */
     render(data) {
         this.root.innerHTML = "";
@@ -37,10 +42,10 @@ export class Tree {
 
         const hasChildren = item.children && item.children.length > 0;
         const toggleIcon = this.createToggleIcon(treeNode, hasChildren);
-        treeItem.appendChild(toggleIcon);
-        treeItem.appendChild(nodeIcon);
-        treeItem.appendChild(nodeName);
-        treeNode.appendChild(treeItem);
+        treeItem.append(toggleIcon);
+        treeItem.append(nodeIcon);
+        treeItem.append(nodeName);
+        treeNode.append(treeItem);
 
         if (item.children && item.children.length > 0) {
             const ul = $(`<ul class="tree-children" style="max-height:0"></ul>`)
