@@ -122,7 +122,7 @@ export default new class Gallery {
         // 监听预览区滑动事件：切换选中状态
         preview.onSlide = item => {
             if (item !== this.selectedItem) {
-                this.#selectItem(item);
+                this.selectItem(item);
             }
         };
 
@@ -181,7 +181,7 @@ export default new class Gallery {
 
             // 点击设置选中状态
             item.addEventListener("click", async () => {
-                this.#selectItem(item);
+                this.selectItem(item);
             });
 
             // 双击打开预览
@@ -204,7 +204,7 @@ export default new class Gallery {
         // 初始化设置
         this.#setLayoutMode(layoutMode);
         this.#setSortMode(sortMode);
-        this.#selectItem(this.galleryItems[0]);
+        this.selectItem(this.galleryItems[0]);
     }
 
     /** 加载(或创建)缩略图 */
@@ -221,11 +221,11 @@ export default new class Gallery {
         const { previousSibling, nextSibling } = this.selectedItem;
         const siblingItem = direction > 0 ? nextSibling : previousSibling;
         if (!siblingItem) return;
-        this.#selectItem(siblingItem);
+        this.selectItem(siblingItem);
     }
 
     /** 选中缩略图 */
-    #selectItem(item) {
+    selectItem(item) {
         if (!item) return;
         this.#unselect();
         this.selectedItem = item;
