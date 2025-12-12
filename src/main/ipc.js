@@ -5,20 +5,20 @@ import fs from "fs";
 import crypto from "crypto";
 import sharp from "sharp";
 
-// Sharp 支持的所有图片格式
+// Sharp支持的所有图片格式
 const imageFormats = /\.(avif|gif|heic|jpeg|jpg|png|raw|svg|tiff|webp)$/i;
-// 可保持相同格式的位图列表
+// 可保持相同格式输出的位图格式
 const rasterFormats = /\.(avif|heic|jpeg|jpg|png|raw|tiff|webp)$/i;
-// 当无法保持格式时使用的默认输出格式
+// 无法保持格式输出时使用的默认格式
 const fallbackFormat = ".png";
-// 临时缓存目录路径
+// 缩略图临时缓存目录路径
 const tempPath = path.join(app.getPath("temp"), app.getName());
 fs.mkdirSync(tempPath, { recursive: true });
 
 ipcMain.handle("get-app-name", () => app.getName());
 ipcMain.handle("get-app-path", () => app.getAppPath());
 ipcMain.handle("open-external", (event, url) => shell.openExternal(url));
-ipcMain.handle("get-folder", (event, file) => path.dirname(file));
+ipcMain.handle("get-directory", (event, file) => path.dirname(file));
 ipcMain.handle("get-config", (event, key) => getConfig(key));
 ipcMain.handle("update-config", (event, key, value) => updateConfig(key, value));
 
@@ -40,33 +40,44 @@ ipcMain.handle("open-confirm-dialog", () => {
     });
 });
 
-/** 将文件夹数组构建成树形组件所需数据结构 (限制读取深度) */
-ipcMain.handle("read-folders", async (event, folders, maxDepth = 0) => {
-    return folders
-    .filter(p => fs.existsSync(p) && fs.statSync(p).isDirectory())
-    .map(dir => {
-        const build = (p, depth) => {
-            const node = { name: path.basename(p), path: p };
-
-            if (maxDepth === 0 || depth < maxDepth) {
-                const children = fs.readdirSync(p)
-                                   .map(item => path.join(p, item))
-                                   .filter(fullPath => fs.statSync(fullPath).isDirectory())
-                                   .map(child => build(child, depth + 1))
-                                   .sort((a, b) => a.name.localeCompare(b.name));
-                if (children.length > 0) node.children = children;
-            }
-            return node;
-        };
-        return build(dir, 0);
+/**
+ * 读取多文件夹是否含子目录
+ * 返回结构：[{ name, path, hasChildren }]
+ */
+ipcMain.handle("read-folders", async (event, folders) => {
+    return folders.map(folder => {
+        const node = { name: path.basename(folder), path: folder };
+        const entries = fs.readdirSync(folder, { withFileTypes: true })
+                          .filter(entry => entry.isDirectory());
+        node.hasChildren = entries.length > 0;
+        return node;
     });
 });
 
-/** 读取单个目录下所有图片文件 */
+/**
+ * 读取文件夹的子目录及子目录是否还包含孙目录
+ * 返回结构：[{ name, path, hasChildren }]
+ */
+ipcMain.handle("read-folder", async (event, folder) => {
+    return fs.readdirSync(folder, { withFileTypes: true })
+             .filter(entry => entry.isDirectory())
+             .map(entry => {
+                 const fullPath = path.join(entry.parentPath, entry.name);
+                 const hasChildren = fs.readdirSync(fullPath, { withFileTypes: true })
+                                       .some(child => child.isDirectory());
+                 return {
+                     name: entry.name,
+                     path: fullPath,
+                     hasChildren
+                 };
+             });
+});
+
+/** 读取单个文件夹下所有图片文件 */
 ipcMain.handle("read-images", async (event, folder) => {
-    return fs.readdirSync(folder)
-             .map(p => path.join(folder, p))
-             .filter(p => fs.existsSync(p) && fs.statSync(p).isFile() && imageFormats.test(p))
+    return fs.readdirSync(folder, { withFileTypes: true })
+             .filter(entry => entry.isFile() && imageFormats.test(entry.name))
+             .map(entry => path.join(entry.parentPath, entry.name))
              .sort((a, b) => a.localeCompare(b));
 });
 
