@@ -6,9 +6,9 @@
 - 大图片预览卡顿 如果使用ontransitionend，compare情况下无法加载原图
 - 访问smb目录卡顿
 
+- 双击打开文件windows会启动多个实例，mac不会？
 - 右键打开文件后会和上次文件夹的图片混在一起
 - 右键打开文件后自动弹出预览
-- sidebar和gallery分开渲染？
 
 "extendInfo": {
 "CFBundleDocumentTypes": [
