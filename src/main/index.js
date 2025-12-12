@@ -9,8 +9,25 @@ const preload = path.join(appPath, "src/main/preload.js");
 
 let mainWindow = null;
 
-// 创建主窗体
-app.whenReady().then(() => {
+/** 确保应用始终运行一个实例 */
+const gotTheLock = app.requestSingleInstanceLock();
+if (!gotTheLock) { app.quit() } else {
+    // 如果尝试启动第二个实例，则显示第一个
+    app.on("second-instance", (_event, _commandLine, _workingDirectory) => {
+        if (mainWindow) {
+            if (mainWindow.isMinimized()) mainWindow.restore();
+            mainWindow.focus();
+        }
+    });
+
+    // Electron初始化完成时创建主窗口
+    app.whenReady().then(() => {
+        createWindow();
+    });
+}
+
+/** 创建应用程序主窗口 */
+function createWindow() {
     Menu.setApplicationMenu(null);
 
     mainWindow = new BrowserWindow({
@@ -40,7 +57,7 @@ app.whenReady().then(() => {
     if (files.length > 0) {
         global.fileToOpen = files[0];
     }
-});
+}
 
 // MacOS 处理双击打开文件的情况
 app.on("open-file", (event, filePath) => {
