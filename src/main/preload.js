@@ -19,7 +19,7 @@ contextBridge.exposeInMainWorld("electron", {
     readFolders: folders => ipcRenderer.invoke("read-folders", folders),
     readFolder: folder => ipcRenderer.invoke("read-folder", folder),
     readImages: folder => ipcRenderer.invoke("read-images", folder),
-    getDirectory: file => ipcRenderer.invoke("get-directory", file),
+    getParentFolder: file => ipcRenderer.invoke("get-parent-folder", file),
     getConfig: key => ipcRenderer.invoke("get-config", key),
     updateConfig: (key, value) => ipcRenderer.invoke("update-config", key, value),
     trashFile: path => ipcRenderer.invoke("trash-file", path),
