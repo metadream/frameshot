@@ -45,13 +45,17 @@ ipcMain.handle("open-confirm-dialog", () => {
  * 返回结构：[{ name, path, hasChildren }]
  */
 ipcMain.handle("read-folders", async (event, folders) => {
-    return folders.map(folder => {
-        const node = { name: path.basename(folder), path: folder };
-        const entries = fs.readdirSync(folder, { withFileTypes: true })
-                          .filter(entry => entry.isDirectory());
-        node.hasChildren = entries.length > 0;
-        return node;
-    });
+    const nodes = [];
+    for (const folder of folders) {
+        if (fs.existsSync(folder)) {
+            const node = { name: path.basename(folder), path: folder };
+            const entries = fs.readdirSync(folder, { withFileTypes: true })
+                              .filter(entry => entry.isDirectory());
+            node.hasChildren = entries.length > 0;
+            nodes.push(node);
+        }
+    }
+    return nodes;
 });
 
 /**
@@ -59,6 +63,7 @@ ipcMain.handle("read-folders", async (event, folders) => {
  * 返回结构：[{ name, path, hasChildren }]
  */
 ipcMain.handle("read-folder", async (event, folder) => {
+    if (!fs.existsSync(folder)) return [];
     return fs.readdirSync(folder, { withFileTypes: true })
              .filter(entry => entry.isDirectory())
              .map(entry => {
@@ -75,6 +80,7 @@ ipcMain.handle("read-folder", async (event, folder) => {
 
 /** 读取单个文件夹下所有图片文件 */
 ipcMain.handle("read-images", async (event, folder) => {
+    if (!fs.existsSync(folder)) return [];
     return fs.readdirSync(folder, { withFileTypes: true })
              .filter(entry => entry.isFile() && imageFormats.test(entry.name))
              .map(entry => path.join(entry.parentPath, entry.name))
