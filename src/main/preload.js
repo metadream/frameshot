@@ -2,8 +2,6 @@ const { contextBridge, ipcRenderer } = require("electron");
 
 contextBridge.exposeInMainWorld("electron", {
     platform: process.platform,
-    onFileOpened: callback => ipcRenderer.on("file-opened", callback),
-    renderReady: () => ipcRenderer.send("render-ready"),
 
     // 窗口控制
     closeWindow: () => ipcRenderer.send("window-control", "close"),
@@ -25,7 +23,11 @@ contextBridge.exposeInMainWorld("electron", {
     getConfig: key => ipcRenderer.invoke("get-config", key),
     updateConfig: (key, value) => ipcRenderer.invoke("update-config", key, value),
     trashFile: path => ipcRenderer.invoke("trash-file", path),
-    deleteFile: path => ipcRenderer.invoke("delete-file", path)
+    deleteFile: path => ipcRenderer.invoke("delete-file", path),
+
+    // 双击文件启动应用
+    getFileToOpen: () => ipcRenderer.invoke("get-file-to-open"),
+    onFileOpened: callback => ipcRenderer.on("file-opened", callback)
 });
 
 contextBridge.exposeInMainWorld("image", {

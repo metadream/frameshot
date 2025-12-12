@@ -15,6 +15,7 @@ const fallbackFormat = ".png";
 const tempPath = path.join(app.getPath("temp"), app.getName());
 fs.mkdirSync(tempPath, { recursive: true });
 
+ipcMain.handle("get-file-to-open", () => global.fileToOpen);
 ipcMain.handle("get-app-name", () => app.getName());
 ipcMain.handle("get-app-path", () => app.getAppPath());
 ipcMain.handle("open-external", (event, url) => shell.openExternal(url));
@@ -145,13 +146,5 @@ ipcMain.on("window-control", (event, action) => {
         case "toggle":
             win.isMaximized() ? win.unmaximize() : win.maximize();
             break;
-    }
-});
-
-/** 如果存在启动时要打开的文件则通知渲染进程 */
-ipcMain.once("render-ready", (event) => {
-    if (global.fileToOpen) {
-        event.sender.send("file-opened", global.fileToOpen);
-        global.fileToOpen = null;
     }
 });
