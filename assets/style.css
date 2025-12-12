@@ -169,6 +169,7 @@ aside .dragger {
 }
 
 .gallery.list > .gallery-item {
+    height: 42px;
     padding: 20px;
     gap: 20px;
 }
