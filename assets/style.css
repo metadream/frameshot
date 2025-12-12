@@ -146,6 +146,7 @@ aside .dragger {
     border-radius: 5px;
     border: var(--border-color) 1px solid;
     background: var(--block-color);
+    overflow: hidden;
 }
 
 .gallery-item.selected {
@@ -171,11 +172,11 @@ aside .dragger {
     height: 42px;
     padding: 8px 16px;
     gap: 20px;
-    overflow: initial;
 }
 
 .gallery.list > .gallery-item > div {
     text-align: right;
+    white-space: nowrap;
 }
 
 .gallery.list > .gallery-item > .thumb {
@@ -186,7 +187,6 @@ aside .dragger {
 .gallery.list > .gallery-item > .filename {
     flex: 1;
     text-align: left;
-    white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
 }
