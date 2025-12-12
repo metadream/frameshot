@@ -80,7 +80,6 @@ export class Tree {
                     // 对于有子节点但未加载数据的情况
                     if (treeChildren.children.length === 0 && this.onLoadNodes) {
                         const childData = await this.onLoadNodes(nodeData);
-                        console.log(childData)
                         if (childData && childData.length > 0) {
                             childData.forEach(nd => treeChildren.append(this.createNode(nd)));
                         }
