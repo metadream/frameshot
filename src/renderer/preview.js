@@ -23,12 +23,21 @@ export default new class Preview {
     }
 
     /** 打开预览区 */
-    async open(thumbItem) {
+    async open(thumbItem, animate = true) {
         if (!this.currentZone && thumbItem) {
             this.#loadSiblingItems(thumbItem);
             this.currentZone = await this.#createPreviewZone(thumbItem);
-            this.currentZone.adaptViewport(true);
-            this.shadeMask.fadeIn();
+            this.currentZone.adaptViewport(animate);
+            this.shadeMask.fadeIn(animate);
+        }
+    }
+
+    async change(thumbItem) {
+        if (this.currentZone && thumbItem) {
+            this.#loadSiblingItems(thumbItem);
+            this.currentZone.remove();
+            this.currentZone = await this.#createPreviewZone(thumbItem);
+            this.currentZone.adaptViewport();
         }
     }
 
@@ -145,7 +154,7 @@ export default new class Preview {
         }
 
         // 自适应视口大小
-        previewZone.adaptViewport = function(delay) {
+        previewZone.adaptViewport = function(animate) {
             const { width, height, ratio } = self.viewport;
             const { initWidth, initHeight, centerX, centerY, aspectRatio } = this;
 
@@ -155,7 +164,7 @@ export default new class Preview {
             this.maxScale = this.scale * Zoom.MAX_SCALE;
             this.initX = this.transX = width / 2 - centerX;
             this.initY = this.transY = height / 2 - centerY;
-            delay ? nextFrame(() => this.transform()) : this.transform();
+            animate ? nextFrame(() => this.transform()) : this.transform();
         }
 
         // 还原到缩略图状态
@@ -345,9 +354,10 @@ export default new class Preview {
         this.shadeMask.nextIcon = this.shadeMask.querySelector(".icon-next");
         container.append(this.shadeMask);
 
-        this.shadeMask.fadeIn = function() {
+        this.shadeMask.fadeIn = function(animate = true) {
             this.style.display = "flex";
-            nextFrame(() => this.style.background = "rgba(0, 0, 0, .8)");
+            animate ? nextFrame(() => this.style.background = "rgba(0, 0, 0, .8)")
+                : this.style.background = "rgba(0, 0, 0, .8)";
         }
 
         this.shadeMask.fadeOut = function() {

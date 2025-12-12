@@ -7,10 +7,16 @@ if (electron.platform !== "darwin") {
     document.body.classList.add("rounded-border");
 }
 
-// 监听直接打开文件事件
+// 监听应用启动后再从文件打开事件
 electron.onFileOpened(async (event, fileToOpen) => {
     const folder = await electron.getDirectory(fileToOpen);
-    sidebar.render([folder]);
+    await sidebar.render([folder]);
+
+    gallery.render(folder).then(() => {
+        const item = gallery.galleryItems.find(v => v.original === fileToOpen);
+        gallery.selectItem(item);
+        preview.change(item);
+    });
 });
 
 // 启动后打开文件夹
@@ -20,13 +26,15 @@ if (fileToOpen) {
     const folder = await electron.getDirectory(fileToOpen);
     await sidebar.render([folder]);
 
-    setTimeout(() => {
+    gallery.render(folder).then(() => {
         const item = gallery.galleryItems.find(v => v.original === fileToOpen);
         gallery.selectItem(item);
-        preview.open(item);
-    }, 1000);
+        preview.open(item, false);
+    })
 } else {
     // 否则打开应用配置中的默认文件夹
     const folders = await electron.getConfig("picture_folders");
     sidebar.render(folders);
+    console.log(folders[0])
+    gallery.render(folders[0]);
 }

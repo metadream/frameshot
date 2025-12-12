@@ -34,6 +34,7 @@ export default new class Sidebar {
             const { filePaths } = await electron.openFileDialog();
             if (filePaths && filePaths.length >= 1) {
                 this.render(filePaths);
+                gallery.render(filePaths[0])
                 electron.updateConfig("picture_folders", filePaths);
             }
         }
@@ -75,6 +76,5 @@ export default new class Sidebar {
     async render(folders) {
         const roots = await electron.readFolders(folders);
         this.tree.render(roots);
-        this.tree.autoClick();
     }
 }

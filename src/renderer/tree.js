@@ -105,10 +105,4 @@ export class Tree {
         return toggleIcon;
     }
 
-    /** 自动点击第一个节点 */
-    autoClick() {
-        const firstNode = this.root.querySelector(".tree-node-name");
-        firstNode && firstNode.click();
-    }
-
 }
