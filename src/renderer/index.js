@@ -10,7 +10,7 @@ if (electron.platform !== "darwin") {
 
 // 监听直接打开文件的情况
 electron.onFileOpened(async (event, filePath) => {
-    const folder = await electron.getFolder(filePath);
+    const folder = await electron.getDirectory(filePath);
     sidebar.render([folder]);
 });
 

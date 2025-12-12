@@ -17,8 +17,11 @@ export default new class Sidebar {
     constructor() {
         // 构建目录树
         this.tree = new Tree(".folders");
-        this.tree.onNodeClick = node => {
-            gallery.render(node.path);
+        this.tree.onClickNode = nodeData => {
+            gallery.render(nodeData.path);
+        }
+        this.tree.onLoadNodes = async (nodeData) => {
+            return await electron.readFolder(nodeData.path);
         }
 
         // 模拟Mac交通灯按钮
@@ -70,8 +73,7 @@ export default new class Sidebar {
 
     /** 渲染侧边栏内容 (考虑性能问题，最多读取三级子目录) */
     render(folders) {
-        this.tree.loading();
-        electron.readFolders(folders, 3).then(data => {
+        electron.readFolders(folders).then(data => {
             this.tree.render(data);
             this.tree.autoClick();
         });
