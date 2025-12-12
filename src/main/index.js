@@ -13,10 +13,22 @@ let mainWindow = null;
 const gotTheLock = app.requestSingleInstanceLock();
 if (!gotTheLock) { app.quit() } else {
     // 如果尝试启动第二个实例，则显示第一个
-    app.on("second-instance", (_event, _commandLine, _workingDirectory) => {
+    app.on("second-instance", () => {
         if (mainWindow) {
             if (mainWindow.isMinimized()) mainWindow.restore();
             mainWindow.focus();
+        }
+    });
+
+    // MacOS 处理双击打开文件的情况
+    app.on("open-file", (event, filePath) => {
+        event.preventDefault();
+
+        // 如果应用已启动直接发送给渲染进程
+        if (mainWindow) {
+            mainWindow.webContents.send("file-opened", filePath);
+        } else {
+            global.fileToOpen = filePath;
         }
     });
 
@@ -58,18 +70,6 @@ function createWindow() {
         global.fileToOpen = files[0];
     }
 }
-
-// MacOS 处理双击打开文件的情况
-app.on("open-file", (event, filePath) => {
-    event.preventDefault();
-
-    // 如果应用已启动直接发送，否则保存路径稍后处理
-    if (mainWindow) {
-        mainWindow.webContents.send("file-opened", filePath);
-    } else {
-        global.fileToOpen = filePath;
-    }
-});
 
 /** 从启动参数中提取文件路径 */
 function getFilesFromArgs(argv) {

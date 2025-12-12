@@ -6,7 +6,6 @@
 - 大图片预览卡顿 如果使用ontransitionend，compare情况下无法加载原图
 - 访问smb目录卡顿: tree loading
 
-- 双击打开文件windows会启动多个实例，mac不会？
 - 右键打开文件后自动弹出预览
 
 ```
