@@ -2,27 +2,30 @@ const { contextBridge, ipcRenderer } = require("electron");
 
 contextBridge.exposeInMainWorld("electron", {
     platform: process.platform,
+    onFileOpened: callback => ipcRenderer.on("file-opened", callback),
+    renderReady: () => ipcRenderer.send("render-ready"),
 
+    // 窗口控制
     closeWindow: () => ipcRenderer.send("window-control", "close"),
     minimizeWindow: () => ipcRenderer.send("window-control", "minimize"),
     toggleWindow: () => ipcRenderer.send("window-control", "toggle"),
 
+    // 原生方法
     getAppName: () => ipcRenderer.invoke("get-app-name"),
     getAppPath: () => ipcRenderer.invoke("get-app-path"),
-    getFolder: file => ipcRenderer.invoke("get-folder", file),
-
     openFileDialog: () => ipcRenderer.invoke("open-file-dialog"),
     openConfirmDialog: () => ipcRenderer.invoke("open-confirm-dialog"),
     openExternal: url => ipcRenderer.invoke("open-external", url),
-    readFolders: (folders, maxDepth) => ipcRenderer.invoke("read-folders", folders, maxDepth),
+
+    // 文件读写
+    readFolders: folders => ipcRenderer.invoke("read-folders", folders),
+    readFolder: folder => ipcRenderer.invoke("read-folder", folder),
     readImages: folder => ipcRenderer.invoke("read-images", folder),
+    getDirectory: file => ipcRenderer.invoke("get-directory", file),
     getConfig: key => ipcRenderer.invoke("get-config", key),
     updateConfig: (key, value) => ipcRenderer.invoke("update-config", key, value),
     trashFile: path => ipcRenderer.invoke("trash-file", path),
-    deleteFile: path => ipcRenderer.invoke("delete-file", path),
-
-    onFileOpened: callback => ipcRenderer.on("file-opened", callback),
-    renderReady: () => ipcRenderer.send("render-ready")
+    deleteFile: path => ipcRenderer.invoke("delete-file", path)
 });
 
 contextBridge.exposeInMainWorld("image", {
