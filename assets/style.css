@@ -312,7 +312,7 @@ img {
     padding: 0;
 }
 
-.tree-item {
+.tree-node {
     display: flex;
     align-items: center;
     gap: 5px;
@@ -321,7 +321,7 @@ img {
     transition: all .3s;
 }
 
-.tree-item.active {
+.tree-node.active {
     background: var(--border-color);
     border-radius: 5px;
 }

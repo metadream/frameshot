@@ -76,5 +76,6 @@ export default new class Sidebar {
     async render(folders) {
         const roots = await electron.readFolders(folders);
         this.tree.render(roots);
+        this.tree.selectFirstNode();
     }
 }

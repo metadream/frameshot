@@ -21,41 +21,39 @@ export class Tree {
 
     /** 创建树节点 { name, path, children, hasChildren }*/
     createNode(nodeData) {
-        const treeNode = $(`<li class="tree-node"></li>`)
-        const treeItem = $(`<div class="tree-item"></div>`)
+        const nodeGroup = $(`<li class="tree-node-group"></li>`)
+        const treeNode = $(`<div class="tree-node"></div>`)
         const nodeIcon = $(`<svg class="tree-node-icon" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>`);
         const nodeName = $(`<span class="tree-node-name">${nodeData.name}</span>`);
 
         // 点击节点名称切换样式、触发事件
         nodeName.addEventListener("click", e => {
             e.stopPropagation();
-            const allItems = this.root.querySelectorAll(".tree-item");
-            allItems.forEach(el => el.classList.remove("active"));
-            treeItem.classList.add("active");
+            this.selectNode(treeNode);
             this.onClickNode && this.onClickNode(nodeData);
         });
 
         // 创建小图标
-        const toggleIcon = this.createToggleIcon(treeNode, nodeData);
-        treeItem.append(toggleIcon);
-        treeItem.append(nodeIcon);
-        treeItem.append(nodeName);
-        treeNode.append(treeItem);
+        const toggleIcon = this.createToggleIcon(nodeGroup, nodeData);
+        treeNode.append(toggleIcon);
+        treeNode.append(nodeIcon);
+        treeNode.append(nodeName);
+        nodeGroup.append(treeNode);
 
         // 创建子节点
         if (nodeData.children && nodeData.children.length > 0) {
             const ul = $(`<ul class="tree-children" style="max-height:0"></ul>`)
-            treeNode.append(ul);
+            nodeGroup.append(ul);
 
             nodeData.children.forEach(child => {
                 ul.append(this.createNode(child));
             });
         }
-        return treeNode;
+        return nodeGroup;
     }
 
     /** 创建展开/收缩图标 */
-    createToggleIcon(treeNode, nodeData) {
+    createToggleIcon(nodeGroup, nodeData) {
         const toggleIcon = $(`<div class="tree-toggle-icon"></div`);
 
         // hasChildren: 节点数据中有子节点但未获取具体值
@@ -67,10 +65,10 @@ export class Tree {
             toggleIcon.addEventListener("click", async e => {
                 e.stopPropagation();
 
-                let treeChildren = treeNode.querySelector(".tree-children");
+                let treeChildren = nodeGroup.querySelector(".tree-children");
                 if (!treeChildren) {
                     treeChildren = $(`<ul class="tree-children" style="max-height:0"></ul>`);
-                    treeNode.append(treeChildren);
+                    nodeGroup.append(treeChildren);
                 }
 
                 if (toggleIcon.classList.contains("collapsed")) {
@@ -103,6 +101,17 @@ export class Tree {
             toggleIcon.classList.add("hidden");
         }
         return toggleIcon;
+    }
+
+    selectFirstNode() {
+        const firstItem = this.root.querySelector(".tree-node");
+        this.selectNode(firstItem);
+    }
+
+    selectNode(treeNode) {
+        const allItems = this.root.querySelectorAll(".tree-node");
+        allItems.forEach(el => el.classList.remove("active"));
+        treeNode.classList.add("active");
     }
 
 }
