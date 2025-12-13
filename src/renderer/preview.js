@@ -122,10 +122,23 @@ export default new class Preview {
         const thumb = thumbItem.querySelector("img");
         await this.#ensureThumbLoaded(thumb);
 
-        const self = this;
+        // 克隆缩略图到预览区
         const previewZone = $(`<div class="preview-zone"></div>`);
+        const image = thumb.cloneNode(true);
+        previewZone.append(image);
+
+        // 加载原图
+        image.src = thumbItem.original;
+        image.onerror = () => image.style.display = "none"
+        image.onload = () => {
+            if (!previewZone.naturalWidth) {
+                previewZone.naturalWidth = image.naturalWidth;
+                previewZone.calcScaleRatio();
+            }
+        }
 
         // 定义初始位置
+        const self = this;
         previewZone.position = function() {
             const rect = thumb.getBoundingClientRect();
             const relativeX = rect.left - self.viewport.left;
@@ -265,27 +278,13 @@ export default new class Preview {
             this.checkBoundary();
         }, { passive: true });
 
-        // 绑定必要的属性
+        // 绑定初始属性
         const { relativeX, relativeY, width, height } = previewZone.position();
         previewZone.initWidth = width;
         previewZone.initHeight = height;
         previewZone.centerX = relativeX + width / 2;
         previewZone.centerY = relativeY + height / 2;
         previewZone.aspectRatio = width / height;
-
-        // 克隆缩略图到预览区
-        const image = thumb.cloneNode(true);
-        previewZone.append(image);
-
-        // 加载原图
-        image.src = thumbItem.original;
-        image.onerror = () => image.style.display = "none"
-        image.onload = () => {
-            if (!previewZone.naturalWidth) {
-                previewZone.naturalWidth = image.naturalWidth;
-                previewZone.calcScaleRatio();
-            }
-        }
 
         this.shadeMask.append(previewZone);
         return previewZone;
