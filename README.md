@@ -8,7 +8,6 @@
 
 双击打开图片太慢（需先加载缩略图、再滚动到指定item才能打开）
 如果第一个应用没有打开预览，第二次无法预览
-默认选中侧边栏第一个目录
 
 ```
 ipcMain.handle("read-folders", async (event, folders, maxDepth = 0) => {
