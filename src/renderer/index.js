@@ -27,9 +27,7 @@ if (fileToOpen) {
     sidebar.render([folder]);
 
     gallery.render(folder).then(() => {
-        const item = gallery.galleryItems.find(v => v.original === fileToOpen);
-        gallery.selectItem(item);
-        preview.open(item, false);
+        gallery.open(fileToOpen);
     })
 } else {
     // 否则打开应用配置中的默认文件夹
