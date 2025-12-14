@@ -224,16 +224,27 @@ export default new class Gallery {
         this.selectItem(siblingItem);
     }
 
+    open(filePath) {
+        const item = this.galleryItems.find(v => v.original === filePath);
+        if (item) {
+            setTimeout(() => {
+                this.selectItem(item, false);
+                preview.open(item, false);
+            }, 100);
+        }
+    }
+
     /** 选中缩略图 */
-    selectItem(item) {
+    selectItem(item, animate = true) {
         if (!item) return;
         this.#unselect();
         this.selectedItem = item;
 
         // 将选中项置于可见区域
+        item.style.transition = "none";
         item.classList.add("selected");
         item.scrollIntoView({
-            behavior: "smooth",
+            behavior: animate ? "smooth" : "instant",
             block: "nearest",
             inline: "nearest"
         });
