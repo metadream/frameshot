@@ -329,7 +329,7 @@ img {
 .tree-toggle-icon {
     width: 18px;
     height: 18px;
-    transition: transform 0.3s ease;
+    transition: transform .3s ease;
 }
 
 .tree-toggle-icon.collapsed {
@@ -359,7 +359,7 @@ img {
 .tree-children {
     list-style: none;
     overflow: hidden;
-    transition: max-height 0.3s ease;
+    transition: max-height .3s ease;
     padding-left: 24px;
 }
 
