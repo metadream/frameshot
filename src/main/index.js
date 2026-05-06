@@ -1,6 +1,6 @@
 import { app, BrowserWindow, Menu } from "electron";
-import path from "path";
 import fs from "fs";
+import path from "path";
 import "./ipc.js";
 
 const appPath = app.getAppPath();
@@ -11,7 +11,9 @@ let mainWindow = null;
 
 /** 确保应用始终运行一个实例 */
 const gotTheLock = app.requestSingleInstanceLock();
-if (!gotTheLock) { app.quit() } else {
+if (!gotTheLock) {
+    app.quit();
+} else {
     // 如果尝试启动第二个实例，则显示第一个
     app.on("second-instance", () => {
         if (mainWindow) {
@@ -51,8 +53,8 @@ function createWindow() {
         webPreferences: {
             nodeIntegration: false,
             contextIsolation: true,
-            preload
-        }
+            preload,
+        },
     });
 
     // 加载主页面
@@ -76,11 +78,8 @@ function getFilesFromArgs(argv) {
     const files = [];
     const args = argv.slice(1); // 去掉第一个参数（通常是应用路径）
 
-    args.forEach(arg => {
-        if (arg !== "." && !arg.startsWith("-") &&
-            !arg.includes("electron") &&
-            !arg.includes(app.getAppPath())) {
-
+    args.forEach((arg) => {
+        if (arg !== "." && !arg.startsWith("-") && !arg.includes("electron") && !arg.includes(app.getAppPath())) {
             try {
                 const fullPath = path.resolve(arg);
                 if (fs.statSync(fullPath).isFile()) {
