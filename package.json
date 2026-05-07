@@ -1,7 +1,7 @@
 {
     "name": "frame-shot",
     "productName": "FrameShot",
-    "version": "1.2.0",
+    "version": "2.0.0",
     "description": "Image Viewer and Duplicate Finder",
     "author": "Marco Chan",
     "repository": "github:metadream/frame-shot",
