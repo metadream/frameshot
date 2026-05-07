@@ -14,15 +14,16 @@ export class ImageViewer {
             user-select: none;`;
 
         this.image = this.container.querySelector("img");
-        this.image.style.cssText = `
-            max-width: 100%;
-            max-height: 100%;
-            -webkit-user-drag: none;`;
+        this.image.style.cssText = `max-width: 100%; max-height: 100%;  -webkit-user-drag: none;`;
+        this.image.onwheel = (e) => this.scaleImage(e);
+        this.image.onpointerdown = (e) => this.dragImages(e);
+        this.image.onload = (e) => {
+            // 原图可放大倍数
+            this.origScale = this.image.naturalWidth / this.image.clientWidth;
+            this.checkBoundary();
+        };
 
-        this.container.onwheel = (e) => this.scaleImage(e);
-        this.container.onpointerdown = (e) => this.dragImages(e);
         this.resetViewport();
-
         window.addEventListener("resize", () => {
             this.resetImage();
         });
@@ -31,7 +32,7 @@ export class ImageViewer {
     /** 拖动图像 */
     dragImages(e) {
         if (e.button !== 0) return;
-        this.container.style.cursor = "grab";
+        this.image.style.cursor = "grab";
         this.isDragging = false;
 
         let startX = e.clientX;
@@ -40,9 +41,8 @@ export class ImageViewer {
         let offsetY = 0;
 
         document.onpointermove = (e) => {
-            this.container.style.cursor = "grabbing";
+            this.image.style.cursor = "grabbing";
             this.isDragging = true;
-
             offsetX = e.clientX - startX;
             offsetY = e.clientY - startY;
             this.transformImage(this.transX + offsetX, this.transY + offsetY, null);
@@ -51,16 +51,16 @@ export class ImageViewer {
         document.onpointerup = () => {
             document.onpointermove = null;
             document.onpointerup = null;
-            this.container.style.cursor = "default";
+            this.image.style.cursor = "default";
             this.transX += offsetX;
             this.transY += offsetY;
 
-            // 点击图片缩放
+            // 点击切换原图
             if (!this.isDragging) {
                 const { width, height } = this.viewport;
                 this.transX = width - this.centerX - e.clientX;
                 this.transY = height - this.centerY - e.clientY;
-                this.scale = this.scale > 1 ? 1 : (this.scale *= 2);
+                this.scale = this.scale > 1 ? 1 : this.origScale;
                 this.transformImage();
             }
             this.checkBoundary();
@@ -82,25 +82,9 @@ export class ImageViewer {
         this.checkBoundary();
     }
 
-    /** 重置容器和图像中心点 */
-    resetViewport() {
-        this.viewport = this.container.getBoundingClientRect();
-        const imgRect = this.image.getBoundingClientRect();
-        this.centerX = imgRect.x - this.viewport.x + imgRect.width / 2;
-        this.centerY = imgRect.y - this.viewport.y + imgRect.height / 2;
-    }
-
-    /** 重置图像 */
-    resetImage() {
-        this.transX = 0;
-        this.transY = 0;
-        this.scale = 1;
-        this.transformImage();
-        this.resetViewport();
-    }
-
     /** 检查位移边界 */
     checkBoundary() {
+        this.resetCursor();
         const { width, height } = this.image.getBoundingClientRect();
         const bound = { x1: 0, x2: 0, y1: 0, y2: 0 };
 
@@ -132,6 +116,34 @@ export class ImageViewer {
         }
         if (outOfBounds) {
             this.transformImage();
+        }
+    }
+
+    /** 重置容器和图像中心点 */
+    resetViewport() {
+        this.viewport = this.container.getBoundingClientRect();
+        const imgRect = this.image.getBoundingClientRect();
+        this.centerX = imgRect.x - this.viewport.x + imgRect.width / 2;
+        this.centerY = imgRect.y - this.viewport.y + imgRect.height / 2;
+    }
+
+    /** 重置图像 */
+    resetImage() {
+        this.transX = 0;
+        this.transY = 0;
+        this.scale = 1;
+        this.transformImage();
+        this.resetViewport();
+    }
+
+    /** 重置光标样式 */
+    resetCursor() {
+        if (this.scale > 1) {
+            this.image.style.cursor = "zoom-out";
+        } else if (this.origScale > 1) {
+            this.image.style.cursor = "zoom-in";
+        } else {
+            this.image.style.cursor = "default";
         }
     }
 
