@@ -79,19 +79,18 @@ export class ImageCropper {
         };
     }
     initCropBox() {
-        const imgRect = this.image.getBoundingClientRect();
-        const containerRect = this.container.getBoundingClientRect();
-
-        const imgLeft = imgRect.left - containerRect.left;
-        const imgTop = imgRect.top - containerRect.top;
-        const imgWidth = imgRect.width;
-        const imgHeight = imgRect.height;
+        const imgLeft = this.image.offsetLeft;
+        const imgTop = this.image.offsetTop;
+        const imgWidth = this.image.offsetWidth;
+        const imgHeight = this.image.offsetHeight;
+        const containerWidth = this.container.clientWidth;
+        const containerHeight = this.container.clientHeight;
 
         // 计算图片在可视区内的可见区域
         const visibleLeft = Math.max(0, imgLeft);
         const visibleTop = Math.max(0, imgTop);
-        const visibleRight = Math.min(containerRect.width, imgLeft + imgWidth);
-        const visibleBottom = Math.min(containerRect.height, imgTop + imgHeight);
+        const visibleRight = Math.min(containerWidth, imgLeft + imgWidth);
+        const visibleBottom = Math.min(containerHeight, imgTop + imgHeight);
 
         const visibleWidth = visibleRight - visibleLeft;
         const visibleHeight = visibleBottom - visibleTop;
@@ -159,12 +158,10 @@ export class ImageCropper {
         let top = this.startRect.top + dy;
 
         // 限制边界
-        const imgRect = this.image.getBoundingClientRect();
-        const containerRect = this.container.getBoundingClientRect();
-        const imgLeft = imgRect.left - containerRect.left;
-        const imgTop = imgRect.top - containerRect.top;
-        const imgWidth = imgRect.width;
-        const imgHeight = imgRect.height;
+        const imgLeft = this.image.offsetLeft;
+        const imgTop = this.image.offsetTop;
+        const imgWidth = this.image.offsetWidth;
+        const imgHeight = this.image.offsetHeight;
         const cropWidth = parseFloat(this.cropBox.style.width);
         const cropHeight = parseFloat(this.cropBox.style.height);
 
@@ -206,12 +203,10 @@ export class ImageCropper {
         let newHeight = newWidth / ratio;
 
         // 限制边界：计算最大允许尺寸
-        const imgRect = this.image.getBoundingClientRect();
-        const containerRect = this.container.getBoundingClientRect();
-        const imgLeft = imgRect.left - containerRect.left;
-        const imgTop = imgRect.top - containerRect.top;
-        const imgWidth = imgRect.width;
-        const imgHeight = imgRect.height;
+        const imgLeft = this.image.offsetLeft;
+        const imgTop = this.image.offsetTop;
+        const imgWidth = this.image.offsetWidth;
+        const imgHeight = this.image.offsetHeight;
 
         let maxWidth, maxHeight;
         switch (this.resizeDir) {
@@ -322,13 +317,10 @@ export class ImageCropper {
 
     /** 获取原图裁剪区域 */
     getCropRect() {
-        const imgRect = this.image.getBoundingClientRect();
-        const containerRect = this.container.getBoundingClientRect();
-
-        const imgLeft = imgRect.left - containerRect.left;
-        const imgTop = imgRect.top - containerRect.top;
-        const imgDisplayWidth = imgRect.width;
-        const imgDisplayHeight = imgRect.height;
+        const imgLeft = this.image.offsetLeft;
+        const imgTop = this.image.offsetTop;
+        const imgDisplayWidth = this.image.offsetWidth;
+        const imgDisplayHeight = this.image.offsetHeight;
 
         const cropLeft = parseFloat(this.cropBox.style.left);
         const cropTop = parseFloat(this.cropBox.style.top);
