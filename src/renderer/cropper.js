@@ -21,7 +21,7 @@ export class ImageCropper {
         this.layer = document.createElement("div");
         this.layer.style.cssText = `
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 999;
+            z-index: 998;
         `;
 
         // 创建裁剪框
@@ -315,7 +315,7 @@ export class ImageCropper {
         const rect = this.getCropRect();
         return {
             src: this.image.src,
-            ...rect
+            ...rect,
         };
     }
 
@@ -343,12 +343,14 @@ export class ImageCropper {
             // 在保持精确比例的前提下，找到最接近原始值的整数宽高
             // 高度必须是 ratioHeight 的整数倍，以确保 width = height * ratioWidth / ratioHeight 为整数
             const baseH = Math.round(rawHeight / this.ratioHeight);
-            let bestW = 0, bestH = 0, bestErr = Infinity;
+            let bestW = 0,
+                bestH = 0,
+                bestErr = Infinity;
 
             for (let d = -1; d <= 1; d++) {
                 const h = (baseH + d) * this.ratioHeight;
                 if (h <= 0) continue;
-                const w = h / this.ratioHeight * this.ratioWidth;
+                const w = (h / this.ratioHeight) * this.ratioWidth;
                 const err = Math.abs(w - rawWidth) + Math.abs(h - rawHeight);
                 if (err < bestErr) {
                     bestErr = err;
@@ -362,7 +364,7 @@ export class ImageCropper {
             for (let d = -1; d <= 1; d++) {
                 const w = (baseW + d) * this.ratioWidth;
                 if (w <= 0) continue;
-                const h = w / this.ratioWidth * this.ratioHeight;
+                const h = (w / this.ratioWidth) * this.ratioHeight;
                 const err = Math.abs(w - rawWidth) + Math.abs(h - rawHeight);
                 if (err < bestErr) {
                     bestErr = err;

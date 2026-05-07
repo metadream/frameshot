@@ -152,7 +152,7 @@ menu {
     position: absolute;
     right: -45%;
     top: 36px;
-    z-index: 9;
+    z-index: 999;
     padding: 8px 0;
     background: var(--header-color);
     border: var(--border-color) 1px solid;
@@ -218,6 +218,7 @@ menu {
 
 .toast {
     position: absolute;
+    z-index: 999;
     left: 50%;
     color: #fff;
     padding: 6px 15px;
