@@ -21,24 +21,24 @@
   </div>
 
   <div>
-    <div class="sort-controls">
-      <button id="sort-btn"><img src="assets/icons/sort.svg"/></button>
-      <div class="sort-menu">
-        <span data-field="name"><i></i>Name</span>
-        <span data-field="format"><i></i>Format</span>
-        <span data-field="mtime"><i></i>Time</span>
-        <span data-field="size"><i></i>Size</span>
-        <span data-field="resolution"><i></i>Resolution</span>
+    <menu>
+      <button id="sort-btn" disabled><img src="assets/icons/sort.svg"/></button>
+      <div class="menu-items" id="sort-items">
+        <span data-field="name"><i></i>按名称</span>
+        <span data-field="format"><i></i>按格式</span>
+        <span data-field="mtime"><i></i>按时间</span>
+        <span data-field="size"><i></i>按大小</span>
+        <span data-field="resolution"><i></i>按尺寸</span>
       </div>
-    </div>
+    </menu>
 
-    <div class="sort-controls">
+    <menu>
       <button id="convert-btn" disabled><img src="assets/icons/image.svg"/></button>
-      <div class="sort-menu">
-        <span data-field="name">jpg</span>
-        <span data-field="format">png</span>
+      <div class="menu-items" id="convert-items">
+        <span data-format="jpg">转换为 JPG</span>
+        <span data-format="png">转换为 PNG</span>
       </div>
-    </div>
+    </menu>
 
     <button id="open-btn"><img src="assets/icons/folder.svg"/></button>
   </div>

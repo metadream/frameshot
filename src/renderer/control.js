@@ -2,9 +2,6 @@ import { ImageViewer } from "./viewer.js";
 
 // 界面元素
 const imageElement = document.querySelector("main>img");
-const convertBtn = document.querySelector("#convert-btn");
-const sortBtn = document.querySelector("#sort-btn");
-const sortMenu = document.querySelector(".sort-menu");
 const fileInfo = document.querySelector(".file-info");
 const imageInfo = document.querySelector(".image-info");
 
@@ -17,8 +14,14 @@ let sortMode = ["name", "asc"];
 // 图片预览组件
 const imageViewer = new ImageViewer("main");
 imageViewer.onImageLoaded = () => {
-    convertBtn.disabled = false;
+    document.querySelector("#sort-btn").disabled = false;
+    document.querySelector("#convert-btn").disabled = false;
 };
+
+// 菜单初始化
+initMenus();
+bindSortEvents();
+bindConvertEvents();
 
 // 按钮事件：模拟Mac交通灯
 document.querySelector("#close-btn").onclick = () => electron.closeWindow();
@@ -32,22 +35,6 @@ document.querySelector("#open-btn").onclick = async () => {
         openImage(filePaths[0]);
     }
 };
-
-/** 按钮事件：转换图片格式 */
-convertBtn.onclick = async (e) => {
-    const outputFile = await electron.convertImage(imageMeta.path, "jpg");
-    toast(`保存成功: ${outputFile}`);
-};
-
-// 鼠标事件：显示和隐藏排序菜单
-sortBtn.onpointerenter = sortMenu.onpointerenter = () => {
-    clearTimeout(sortBtn.hideTimer);
-    sortMenu.classList.add("show");
-};
-sortBtn.onpointerleave = sortMenu.onpointerleave = () => {
-    sortBtn.hideTimer = setTimeout(() => sortMenu.classList.remove("show"), 200);
-};
-bindSortEvents();
 
 // 全局按键绑定
 document.addEventListener("keydown", async (e) => {
@@ -183,10 +170,28 @@ function sortImageItems() {
     });
 }
 
+/** 显示和隐藏菜单 */
+function initMenus() {
+    const menus = document.querySelectorAll("menu");
+    for (const menu of menus) {
+        const btn = menu.querySelector("button");
+        const items = menu.querySelector(".menu-items");
+        btn.onpointerenter = items.onpointerenter = () => {
+            if (!btn.disabled) {
+                clearTimeout(btn.hideTimer);
+                items.classList.add("show");
+            }
+        };
+        btn.onpointerleave = items.onpointerleave = () => {
+            btn.hideTimer = setTimeout(() => items.classList.remove("show"), 200);
+        };
+    }
+}
+
 /** 绑定排序菜单事件 */
 function bindSortEvents() {
-    const sortItems = sortMenu.querySelectorAll("span");
-    sortItems.forEach((item) => {
+    const menuItems = document.querySelectorAll("#sort-items>span");
+    menuItems.forEach((item) => {
         const field = item.dataset.field;
         const icon = item.querySelector("i");
 
@@ -199,9 +204,21 @@ function bindSortEvents() {
             const sort = !icon.className || icon.className === "desc" ? "asc" : "desc";
             sortMode = [field, sort];
 
-            sortItems.forEach((v) => v.querySelector("i").removeAttribute("class"));
+            menuItems.forEach((v) => v.querySelector("i").removeAttribute("class"));
             icon.className = sort;
             sortImageItems();
+        };
+    });
+}
+
+/** 绑定格式转换菜单事件 */
+function bindConvertEvents() {
+    const menuItems = document.querySelectorAll("#convert-items>span");
+    menuItems.forEach((item) => {
+        item.onclick = async () => {
+            const format = item.dataset.format;
+            const outputFile = await electron.convertImage(imageMeta.path, format);
+            toast(`保存成功: ${outputFile}`);
         };
     });
 }
