@@ -2,6 +2,7 @@ import { ImageViewer } from "./viewer.js";
 import { ImageCropper } from "./cropper.js";
 
 // 界面元素
+const welcome = document.querySelector("#welcome");
 const imageElement = document.querySelector("main>img");
 const fileInfo = document.querySelector(".file-info");
 const imageInfo = document.querySelector(".image-info");
@@ -15,6 +16,8 @@ let sortMode = ["name", "asc"];
 // 图片预览组件
 const imageViewer = new ImageViewer("main");
 imageViewer.onImageLoaded = () => {
+    console.log(welcome);
+    welcome.remove();
     document.querySelector("#refresh-btn").disabled = false;
     document.querySelector("#sort-btn").disabled = false;
     document.querySelector("#convert-btn").disabled = false;
@@ -31,14 +34,8 @@ bindCropEvents();
 document.querySelector("#close-btn").onclick = () => electron.closeWindow();
 document.querySelector("#minimize-btn").onclick = () => electron.minimizeWindow();
 document.querySelector("#maximize-btn").onclick = () => electron.toggleWindow();
-
-// 按钮事件：打开本地图片
-document.querySelector("#open-btn").onclick = async () => {
-    const { filePaths } = await electron.openFileDialog();
-    if (filePaths && filePaths.length >= 1) {
-        openImage(filePaths[0]);
-    }
-};
+document.querySelector("#open-btn").onclick = openFile;
+document.querySelector("#welcome-open-btn").onclick = openFile;
 
 // 按钮事件：刷新图片列表
 document.querySelector("#refresh-btn").onclick = async () => {
@@ -88,6 +85,14 @@ document.addEventListener("keydown", async (e) => {
 export function openImage(imagePath) {
     imageElement.src = imagePath;
     loadImageItems(imagePath);
+}
+
+/** 打开本地图片 */
+async function openFile() {
+    const { filePaths } = await electron.openFileDialog();
+    if (filePaths && filePaths.length >= 1) {
+        openImage(filePaths[0]);
+    }
 }
 
 /** 加载同级图片 */
