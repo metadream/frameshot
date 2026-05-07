@@ -28,4 +28,5 @@ contextBridge.exposeInMainWorld("electron", {
 
     // 图片处理
     convertImage: (input, format) => ipcRenderer.invoke("convert-image", input, format),
+    cropImage: (input, cropRect) => ipcRenderer.invoke("crop-image", input, cropRect),
 });
