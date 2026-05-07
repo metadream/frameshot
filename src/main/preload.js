@@ -25,4 +25,7 @@ contextBridge.exposeInMainWorld("electron", {
     // 双击文件启动应用
     getFileToOpen: () => ipcRenderer.invoke("get-file-to-open"),
     onFileOpened: (callback) => ipcRenderer.on("file-opened", callback),
+
+    // 图片处理
+    convertImage: (input, format) => ipcRenderer.invoke("convert-image", input, format),
 });

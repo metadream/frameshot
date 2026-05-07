@@ -67,6 +67,22 @@ ipcMain.handle("get-sibling-images", async (event, file) => {
     );
 });
 
+/** 转换图片格式 */
+ipcMain.handle("convert-image", async (event, inputFile, outFormat) => {
+    const timestamp = Date.now();
+    const parsedPath = path.parse(inputFile);
+    const outputFile = path.join(parsedPath.dir, `${parsedPath.name}_${timestamp}.${outFormat}`);
+
+    if (outFormat === "png") {
+        await sharp(inputFile).png().toFile(outputFile);
+    } else if (outFormat === "jpg" || outFormat === "jpeg") {
+        await sharp(inputFile).jpeg({ quality: 96 }).toFile(outputFile);
+    } else {
+        throw new Error("Format not supported.");
+    }
+    return outputFile;
+});
+
 /** 将文件移除到回收站 */
 ipcMain.handle("trash-file", async (event, file) => {
     try {

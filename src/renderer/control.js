@@ -34,8 +34,9 @@ document.querySelector("#open-btn").onclick = async () => {
 };
 
 /** 按钮事件：转换图片格式 */
-convertBtn.onclick = (e) => {
-    console.log("=-----");
+convertBtn.onclick = async (e) => {
+    const outputFile = await electron.convertImage(imageMeta.path, "jpg");
+    toast(`图片已保存: ${outputFile}`);
 };
 
 // 鼠标事件：显示和隐藏排序菜单
@@ -225,5 +226,5 @@ function toast(message) {
     setTimeout(() => {
         $toast.classList.add("bounce-out");
         $toast.onanimationend = () => $toast.remove();
-    }, 1000);
+    }, 3000);
 }
