@@ -59,7 +59,21 @@ header {
 header > div {
     display: flex;
     align-items: center;
-    gap: 3px;
+    gap: 8px;
+}
+
+header .window-controls {
+    gap: 2px;
+}
+
+header .window-controls button {
+    cursor: default;
+    width: 24px;
+    height: 24px;
+}
+
+header .window-controls button:hover {
+    background: none;
 }
 
 header .info-bar {
@@ -104,13 +118,7 @@ button {
     transition: all 0.3s;
 }
 
-button.window-control {
-    cursor: default;
-    width: 24px;
-    height: 24px;
-}
-
-button:not(.window-control):hover {
+button:hover {
     background: rgba(0, 0, 0, 0.1);
 }
 
