@@ -52,13 +52,14 @@ ipcMain.handle("get-sibling-images", async (event, file) => {
     return await Promise.all(
         files.map(async (entry) => {
             const imagePath = path.join(entry.parentPath, entry.name);
-            const { width, height } = await sharp(imagePath).metadata();
+            const { format, width, height } = await sharp(imagePath).metadata();
             const { size, mtimeMs } = fs.statSync(imagePath);
             return {
                 name: entry.name,
                 path: imagePath,
                 mtime: mtimeMs,
                 resolution: width * height,
+                format,
                 width,
                 height,
                 size,
