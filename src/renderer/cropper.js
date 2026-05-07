@@ -21,15 +21,13 @@ export class ImageCropper {
         this.layer = document.createElement("div");
         this.layer.style.cssText = `
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 998;
-        `;
+            z-index: 998;`;
 
         // 创建裁剪框
         this.cropBox = document.createElement("div");
         this.cropBox.style.cssText = `
             position: absolute; border: 2px solid #fff; box-sizing: border-box;
-            box-shadow: 0 0 0 9999px rgba(0,0,0,0.5);
-        `;
+            box-shadow: 0 0 0 9999px rgba(0,0,0,0.5);`;
 
         // 添加四个角的手柄
         ["nw", "ne", "sw", "se"].forEach((dir) => {
@@ -38,8 +36,7 @@ export class ImageCropper {
             handle.style.cssText = `
                 position: absolute; width: 12px; height: 12px; background: #fff;
                 border-radius: 50%; border: 2px solid #333;
-                cursor: ${dir}-resize;
-            `;
+                cursor: ${dir}-resize;`;
             // 定位手柄
             if (dir.includes("n")) handle.style.top = "-6px";
             if (dir.includes("s")) handle.style.bottom = "-6px";
