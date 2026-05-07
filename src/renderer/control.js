@@ -14,6 +14,7 @@ let sortMode = ["name", "asc"];
 // 图片预览组件
 const imageViewer = new ImageViewer("main");
 imageViewer.onImageLoaded = () => {
+    document.querySelector("#refresh-btn").disabled = false;
     document.querySelector("#sort-btn").disabled = false;
     document.querySelector("#convert-btn").disabled = false;
 };
@@ -34,6 +35,12 @@ document.querySelector("#open-btn").onclick = async () => {
     if (filePaths && filePaths.length >= 1) {
         openImage(filePaths[0]);
     }
+};
+
+// 按钮事件：刷新图片列表
+document.querySelector("#refresh-btn").onclick = async () => {
+    await loadImageItems(imageMeta.path);
+    toast("刷新成功");
 };
 
 // 全局按键绑定
