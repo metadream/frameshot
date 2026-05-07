@@ -15,12 +15,12 @@ ipcMain.handle("open-external", (event, url) => shell.openExternal(url));
 
 /** 原生提示信息弹窗 */
 ipcMain.handle("show-message-box", (event, message) => {
-    dialog.showMessageBox({ title: "Information", message });
+    dialog.showMessageBox({ title: "提示信息", message });
 });
 
 /** 原生错误信息弹窗 */
 ipcMain.handle("show-error-box", (event, message) => {
-    dialog.showErrorBox("Error Message", message);
+    dialog.showErrorBox("错误信息", message);
 });
 
 /** 原生文件选择对话框 (图片文件单选) */
@@ -35,9 +35,9 @@ ipcMain.handle("open-file-dialog", () => {
 ipcMain.handle("open-confirm-dialog", () => {
     return dialog.showMessageBoxSync({
         type: "question",
-        title: "Confirm Message",
-        message: "Are you sure to delete this image?",
-        buttons: ["Cancel", "Confirm"],
+        title: "确认信息",
+        message: "确定删除这张图片吗?",
+        buttons: ["取消", "确定"],
         defaultId: 1,
     });
 });
@@ -78,7 +78,7 @@ ipcMain.handle("convert-image", async (event, inputFile, outFormat) => {
     } else if (outFormat === "jpg" || outFormat === "jpeg") {
         await sharp(inputFile).jpeg({ quality: 96 }).toFile(outputFile);
     } else {
-        throw new Error("Format not supported.");
+        throw new Error("不支持的输出格式");
     }
     return outputFile;
 });

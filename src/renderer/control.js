@@ -36,7 +36,7 @@ document.querySelector("#open-btn").onclick = async () => {
 /** 按钮事件：转换图片格式 */
 convertBtn.onclick = async (e) => {
     const outputFile = await electron.convertImage(imageMeta.path, "jpg");
-    toast(`图片已保存: ${outputFile}`);
+    toast(`保存成功: ${outputFile}`);
 };
 
 // 鼠标事件：显示和隐藏排序菜单
@@ -89,7 +89,7 @@ document.addEventListener("keydown", async (e) => {
                     imageItems.splice(imageIndex, 1);
                     slideImage(0);
                 } else {
-                    electron.showErrorBox("Delete image failed: " + imageMeta.path);
+                    electron.showErrorBox("删除失败: " + imageMeta.path);
                 }
             }
     }
@@ -124,9 +124,9 @@ function slideImage(direction) {
     updateTitleBar();
 
     if (direction > 0 && imageIndex === imageItems.length - 1) {
-        toast("Last Image");
+        toast("最后一张图片");
     } else if (direction < 0 && imageIndex === 0) {
-        toast("First Image");
+        toast("第一张图片");
     }
 }
 
