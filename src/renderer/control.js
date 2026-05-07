@@ -55,11 +55,6 @@ document.addEventListener("keydown", async (e) => {
             imageViewer.toggleImage();
             break;
 
-        // 取消键关闭窗口
-        case "Escape":
-            electron.closeWindow();
-            break;
-
         // 左、上方向键切换到上一张
         case "ArrowUp":
         case "ArrowLeft":

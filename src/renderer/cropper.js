@@ -78,7 +78,6 @@ export class ImageCropper {
             }
         };
     }
-
     initCropBox() {
         const imgRect = this.image.getBoundingClientRect();
         const containerRect = this.container.getBoundingClientRect();
@@ -88,17 +87,31 @@ export class ImageCropper {
         const imgWidth = imgRect.width;
         const imgHeight = imgRect.height;
 
-        // 初始大小：图片的80%，保持比例
-        let width = imgWidth * 0.8;
+        // 计算图片在可视区内的可见区域
+        const visibleLeft = Math.max(0, imgLeft);
+        const visibleTop = Math.max(0, imgTop);
+        const visibleRight = Math.min(containerRect.width, imgLeft + imgWidth);
+        const visibleBottom = Math.min(containerRect.height, imgTop + imgHeight);
+
+        const visibleWidth = visibleRight - visibleLeft;
+        const visibleHeight = visibleBottom - visibleTop;
+
+        // 如果图片完全不可见，使用可视区大小
+        if (visibleWidth <= 0 || visibleHeight <= 0) {
+            return;
+        }
+
+        // 初始大小：可见区域的80%，保持比例
+        let width = visibleWidth * 0.8;
         let height = width / this.ratio;
-        if (height > imgHeight) {
-            height = imgHeight * 0.8;
+        if (height > visibleHeight * 0.8) {
+            height = visibleHeight * 0.8;
             width = height * this.ratio;
         }
 
-        // 居中
-        const left = imgLeft + (imgWidth - width) / 2;
-        const top = imgTop + (imgHeight - height) / 2;
+        // 居中于可见区域
+        const left = visibleLeft + (visibleWidth - width) / 2;
+        const top = visibleTop + (visibleHeight - height) / 2;
 
         Object.assign(this.cropBox.style, {
             left: `${left}px`,
