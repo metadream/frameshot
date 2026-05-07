@@ -1,8 +1,10 @@
 export class ImageCropper {
-    constructor({ image, container, ratio = 1 }) {
+    constructor({ image, container, ratio = 1, ratioWidth, ratioHeight }) {
         this.image = image;
         this.container = container;
         this.ratio = ratio;
+        this.ratioWidth = ratioWidth;
+        this.ratioHeight = ratioHeight;
         this.cropBox = null;
         this.layer = null;
         this.isDragging = false;
@@ -317,7 +319,7 @@ export class ImageCropper {
         };
     }
 
-    /** 获取原图裁剪区域 */
+    /** 获取原图裁剪区域（精确保持比例，无±1px误差） */
     getCropRect() {
         const imgLeft = this.image.offsetLeft;
         const imgTop = this.image.offsetTop;
@@ -329,15 +331,58 @@ export class ImageCropper {
         const cropWidth = parseFloat(this.cropBox.style.width);
         const cropHeight = parseFloat(this.cropBox.style.height);
 
-        // 转换为原图坐标
         const scaleX = this.image.naturalWidth / imgDisplayWidth;
         const scaleY = this.image.naturalHeight / imgDisplayHeight;
+
+        const rawWidth = cropWidth * scaleX;
+        const rawHeight = cropHeight * scaleY;
+
+        let finalWidth, finalHeight;
+
+        if (this.ratioWidth && this.ratioHeight) {
+            // 在保持精确比例的前提下，找到最接近原始值的整数宽高
+            // 高度必须是 ratioHeight 的整数倍，以确保 width = height * ratioWidth / ratioHeight 为整数
+            const baseH = Math.round(rawHeight / this.ratioHeight);
+            let bestW = 0, bestH = 0, bestErr = Infinity;
+
+            for (let d = -1; d <= 1; d++) {
+                const h = (baseH + d) * this.ratioHeight;
+                if (h <= 0) continue;
+                const w = h / this.ratioHeight * this.ratioWidth;
+                const err = Math.abs(w - rawWidth) + Math.abs(h - rawHeight);
+                if (err < bestErr) {
+                    bestErr = err;
+                    bestW = w;
+                    bestH = h;
+                }
+            }
+
+            // 也尝试以宽度为基准
+            const baseW = Math.round(rawWidth / this.ratioWidth);
+            for (let d = -1; d <= 1; d++) {
+                const w = (baseW + d) * this.ratioWidth;
+                if (w <= 0) continue;
+                const h = w / this.ratioWidth * this.ratioHeight;
+                const err = Math.abs(w - rawWidth) + Math.abs(h - rawHeight);
+                if (err < bestErr) {
+                    bestErr = err;
+                    bestW = w;
+                    bestH = h;
+                }
+            }
+
+            finalWidth = bestW;
+            finalHeight = bestH;
+        } else {
+            finalWidth = Math.round(rawWidth);
+            finalHeight = Math.round(rawHeight);
+        }
 
         return {
             x: Math.round((cropLeft - imgLeft) * scaleX),
             y: Math.round((cropTop - imgTop) * scaleY),
-            width: Math.round(cropWidth * scaleX),
-            height: Math.round(cropHeight * scaleY),
+            width: finalWidth,
+            height: finalHeight,
         };
     }
 

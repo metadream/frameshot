@@ -248,6 +248,8 @@ function bindCropEvents() {
                 image: imageElement,
                 container,
                 ratio: w / h,
+                ratioWidth: w,
+                ratioHeight: h,
             });
 
             // 绑定快捷键：Enter保存，Esc取消
