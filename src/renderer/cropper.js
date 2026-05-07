@@ -100,11 +100,12 @@ export class ImageCropper {
             return;
         }
 
-        // 初始大小：可见区域的80%，保持比例
-        let width = visibleWidth * 0.8;
+        // 自适应充满：保持比例，在可见区域内最大化裁剪框
+        // 横向图片以宽度为基准（宽度填满），纵向图片以高度为基准（高度填满）
+        let width = visibleWidth;
         let height = width / this.ratio;
-        if (height > visibleHeight * 0.8) {
-            height = visibleHeight * 0.8;
+        if (height > visibleHeight) {
+            height = visibleHeight;
             width = height * this.ratio;
         }
 
@@ -277,19 +278,20 @@ export class ImageCropper {
         }
 
         // 再次检查边界（因为最小尺寸限制后可能超出边界）
-        if (newLeft < imgLeft) {
-            newLeft = imgLeft;
-        }
-        if (newTop < imgTop) {
-            newTop = imgTop;
-        }
-        if (newLeft + finalWidth > imgLeft + imgWidth) {
-            finalWidth = imgLeft + imgWidth - newLeft;
-            finalHeight = finalWidth / ratio;
-        }
-        if (newTop + finalHeight > imgTop + imgHeight) {
-            finalHeight = imgTop + imgHeight - newTop;
-            finalWidth = finalHeight * ratio;
+        if (newLeft < imgLeft) newLeft = imgLeft;
+        if (newTop < imgTop) newTop = imgTop;
+
+        // 统一约束：确保宽和高同时满足边界，避免顺序约束导致的累积误差
+        const maxW = imgLeft + imgWidth - newLeft;
+        const maxH = imgTop + imgHeight - newTop;
+        if (finalWidth > maxW || finalHeight > maxH) {
+            if (maxW / ratio <= maxH) {
+                finalWidth = maxW;
+                finalHeight = finalWidth / ratio;
+            } else {
+                finalHeight = maxH;
+                finalWidth = finalHeight * ratio;
+            }
         }
 
         Object.assign(this.cropBox.style, {

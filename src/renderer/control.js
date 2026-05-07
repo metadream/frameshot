@@ -50,19 +50,16 @@ document.querySelector("#refresh-btn").onclick = async () => {
 document.addEventListener("keydown", async (e) => {
     e.preventDefault();
     switch (e.key) {
-        // 回车键切换原图
-        case "Enter":
+        // 上下方向键切换原图
+        case "ArrowUp":
+        case "ArrowDown":
             imageViewer.toggleImage();
             break;
 
-        // 左、上方向键切换到上一张
-        case "ArrowUp":
+        // 左右方向键切换到上一张/下一张
         case "ArrowLeft":
             slideImage(-1);
             break;
-
-        // 右、下方向键切换到下一张
-        case "ArrowDown":
         case "ArrowRight":
             slideImage(+1);
             break;
