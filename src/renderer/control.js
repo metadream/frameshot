@@ -17,12 +17,14 @@ imageViewer.onImageLoaded = () => {
     document.querySelector("#refresh-btn").disabled = false;
     document.querySelector("#sort-btn").disabled = false;
     document.querySelector("#convert-btn").disabled = false;
+    document.querySelector("#crop-btn").disabled = false;
 };
 
 // 菜单初始化
 initMenus();
 bindSortEvents();
 bindConvertEvents();
+bindCropEvents();
 
 // 按钮事件：模拟Mac交通灯
 document.querySelector("#close-btn").onclick = () => electron.closeWindow();
@@ -226,6 +228,17 @@ function bindConvertEvents() {
             const format = item.dataset.format;
             const outputFile = await electron.convertImage(imageMeta.path, format);
             toast(`保存成功: ${outputFile}`);
+        };
+    });
+}
+
+/** 绑定裁剪菜单事件 */
+function bindCropEvents() {
+    const menuItems = document.querySelectorAll("#crop-items>span");
+    menuItems.forEach((item) => {
+        item.onclick = () => {
+            const ratio = item.dataset.ratio;
+            const [width, height] = ratio.split(":").map(Number);
         };
     });
 }
