@@ -2,17 +2,23 @@ import { ImageViewer } from "./viewer.js";
 
 // 界面元素
 const imageElement = document.querySelector("main>img");
+const convertBtn = document.querySelector("#convert-btn");
 const sortBtn = document.querySelector("#sort-btn");
 const sortMenu = document.querySelector(".sort-menu");
 const fileInfo = document.querySelector(".file-info");
 const imageInfo = document.querySelector(".image-info");
 
 // 全局变量
-const imageViewer = new ImageViewer("main");
 let imageIndex = 0;
 let imageItems = null;
 let imageMeta = null;
 let sortMode = ["name", "asc"];
+
+// 图片预览组件
+const imageViewer = new ImageViewer("main");
+imageViewer.onImageLoaded = () => {
+    convertBtn.disabled = false;
+};
 
 // 按钮事件：模拟Mac交通灯
 document.querySelector("#close-btn").onclick = () => electron.closeWindow();
@@ -25,6 +31,11 @@ document.querySelector("#open-btn").onclick = async () => {
     if (filePaths && filePaths.length >= 1) {
         openImage(filePaths[0]);
     }
+};
+
+/** 按钮事件：转换图片格式 */
+convertBtn.onclick = (e) => {
+    console.log("=-----");
 };
 
 // 鼠标事件：显示和隐藏排序菜单

@@ -18,7 +18,7 @@ export class ImageViewer {
         this.image.onwheel = (e) => this.scaleImage(e);
         this.image.onpointerdown = (e) => this.dragImages(e);
         this.image.onload = (e) => {
-            // 原图可放大倍数
+            this.onImageLoaded && this.onImageLoaded();
             this.origScale = this.image.naturalWidth / this.image.clientWidth;
             this.checkBoundary();
         };
