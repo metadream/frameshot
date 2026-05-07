@@ -9,3 +9,9 @@ if (electron.platform !== "darwin") {
 electron.onFileOpened(async (event, fileToOpen) => {
     openImage(fileToOpen);
 });
+
+// 检查启动时是否有通过"打开方式"传入的文件
+const fileToOpen = await electron.getFileToOpen();
+if (fileToOpen) {
+    openImage(fileToOpen);
+}
