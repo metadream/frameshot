@@ -311,6 +311,15 @@ export class ImageCropper {
         this.resizeDir = null;
     }
 
+    /** 获取裁剪数据（包含原图路径和裁剪区域） */
+    getCropData() {
+        const rect = this.getCropRect();
+        return {
+            src: this.image.src,
+            ...rect
+        };
+    }
+
     /** 获取原图裁剪区域 */
     getCropRect() {
         const imgRect = this.image.getBoundingClientRect();
@@ -336,22 +345,6 @@ export class ImageCropper {
             width: Math.round(cropWidth * scaleX),
             height: Math.round(cropHeight * scaleY),
         };
-    }
-
-    /** 保存裁剪图片 */
-    async save() {
-        const rect = this.getCropRect();
-        const canvas = document.createElement("canvas");
-        canvas.width = rect.width;
-        canvas.height = rect.height;
-        const ctx = canvas.getContext("2d");
-
-        const img = new Image();
-        img.src = this.image.src;
-        await new Promise((resolve) => (img.onload = resolve));
-
-        ctx.drawImage(img, rect.x, rect.y, rect.width, rect.height, 0, 0, rect.width, rect.height);
-        return canvas.toBlob((blob) => blob, "image/png");
     }
 
     /** 销毁 */

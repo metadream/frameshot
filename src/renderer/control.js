@@ -256,13 +256,9 @@ function bindCropEvents() {
             // 绑定快捷键：Enter保存，Esc取消
             const keyHandler = async (e) => {
                 if (e.key === "Enter") {
-                    const blob = await cropper.save();
-                    const buffer = await blob.arrayBuffer();
-                    const savePath = await electron.saveFileDialog(imageMeta.path);
-                    if (savePath) {
-                        await electron.saveCroppedImage(savePath, buffer);
-                        toast("裁剪保存成功");
-                    }
+                    const cropRect = cropper.getCropRect();
+                    const outputFile = await electron.cropImage(imageMeta.path, cropRect);
+                    toast(`裁剪成功: ${outputFile}`);
                     cropper.destroy();
                     cropper = null;
                     document.removeEventListener("keydown", keyHandler);

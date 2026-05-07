@@ -83,10 +83,16 @@ ipcMain.handle("convert-image", async (event, inputFile, outFormat) => {
     return outputFile;
 });
 
-/** 保存裁剪图片 */
-ipcMain.handle("crop-image", (event, filePath, buffer) => {
-    fs.writeFileSync(filePath, Buffer.from(buffer));
-    return true;
+/** 裁剪图片并保存到同级目录 */
+ipcMain.handle("crop-image", async (event, inputFile, cropRect) => {
+    const { x, y, width, height } = cropRect;
+    const parsedPath = path.parse(inputFile);
+    const outputFile = path.join(parsedPath.dir, `${parsedPath.name}_cropped${parsedPath.ext}`);
+    
+    await sharp(inputFile)
+        .extract({ left: x, top: y, width, height })
+        .toFile(outputFile);
+    return outputFile;
 });
 
 /** 将文件移除到回收站 */
