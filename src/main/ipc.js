@@ -68,11 +68,10 @@ ipcMain.handle("get-sibling-images", async (event, file) => {
     );
 });
 
-/** 转换图片格式 */
+/** 转换图片格式并保存 */
 ipcMain.handle("convert-image", async (event, inputFile, outFormat) => {
-    const timestamp = Date.now();
     const parsedPath = path.parse(inputFile);
-    const outputFile = path.join(parsedPath.dir, `${parsedPath.name}_${timestamp}.${outFormat}`);
+    const outputFile = path.join(parsedPath.dir, `${parsedPath.name}_converted.${outFormat}`);
 
     if (outFormat === "png") {
         await sharp(inputFile).png().toFile(outputFile);
@@ -82,6 +81,12 @@ ipcMain.handle("convert-image", async (event, inputFile, outFormat) => {
         throw new Error("不支持的输出格式");
     }
     return outputFile;
+});
+
+/** 保存裁剪图片 */
+ipcMain.handle("crop-image", (event, filePath, buffer) => {
+    fs.writeFileSync(filePath, Buffer.from(buffer));
+    return true;
 });
 
 /** 将文件移除到回收站 */

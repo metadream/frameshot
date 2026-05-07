@@ -1,4 +1,5 @@
 import { ImageViewer } from "./viewer.js";
+import { ImageCropper } from "./cropper.js";
 
 // 界面元素
 const imageElement = document.querySelector("main>img");
@@ -235,10 +236,48 @@ function bindConvertEvents() {
 /** 绑定裁剪菜单事件 */
 function bindCropEvents() {
     const menuItems = document.querySelectorAll("#crop-items>span");
+    let cropper = null;
+
     menuItems.forEach((item) => {
         item.onclick = () => {
+            // 点击已激活的裁剪菜单时销毁
+            if (cropper) {
+                cropper.destroy();
+                cropper = null;
+                return;
+            }
+
             const ratio = item.dataset.ratio;
-            const [width, height] = ratio.split(":").map(Number);
+            const [w, h] = ratio.split(":").map(Number);
+            const container = document.querySelector("main");
+
+            // 创建裁剪工具
+            cropper = new ImageCropper({
+                image: imageElement,
+                container,
+                ratio: w / h,
+            });
+
+            // 绑定快捷键：Enter保存，Esc取消
+            const keyHandler = async (e) => {
+                if (e.key === "Enter") {
+                    const blob = await cropper.save();
+                    const buffer = await blob.arrayBuffer();
+                    const savePath = await electron.saveFileDialog(imageMeta.path);
+                    if (savePath) {
+                        await electron.saveCroppedImage(savePath, buffer);
+                        toast("裁剪保存成功");
+                    }
+                    cropper.destroy();
+                    cropper = null;
+                    document.removeEventListener("keydown", keyHandler);
+                } else if (e.key === "Escape") {
+                    cropper.destroy();
+                    cropper = null;
+                    document.removeEventListener("keydown", keyHandler);
+                }
+            };
+            document.addEventListener("keydown", keyHandler);
         };
     });
 }
