@@ -14,9 +14,8 @@ let imageMeta = null;
 let sortMode = ["name", "asc"];
 
 // 图片预览组件
-const imageViewer = new ImageViewer("main");
+const imageViewer = new ImageViewer("#image-viewer");
 imageViewer.onImageLoaded = () => {
-    console.log(welcome);
     welcome.remove();
     document.querySelector("#refresh-btn").disabled = false;
     document.querySelector("#sort-btn").disabled = false;

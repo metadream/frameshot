@@ -3,17 +3,9 @@ export class ImageViewer {
     transY = 0;
     scale = 1;
 
-    constructor(container, options) {
+    constructor(imgSelector, options) {
         this.options = Object.assign({ maxScale: 20, scaleStep: 0.2 }, options);
-        this.container = typeof container === "string" ? document.querySelector(container) : container;
-        this.container.style.cssText = `
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            user-select: none;`;
-
-        this.image = this.container.querySelector("img");
+        this.image = typeof imgSelector === "string" ? document.querySelector(imgSelector) : imgSelector;
         this.image.style.cssText = `max-width: 100%; max-height: 100%; -webkit-user-drag: none;`;
         this.image.onwheel = (e) => this.scaleImage(e);
         this.image.onpointerdown = (e) => this.dragImages(e);
@@ -22,6 +14,14 @@ export class ImageViewer {
             this.origScale = this.image.naturalWidth / this.image.clientWidth;
             this.checkBoundary();
         };
+
+        this.container = this.image.parentElement;
+        this.container.style.cssText = `
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            user-select: none;`;
 
         this.resetViewport();
         window.addEventListener("resize", () => {
