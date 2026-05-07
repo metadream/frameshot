@@ -1,7 +1,4 @@
-import { ImageViewer } from "./viewer.js";
 import { openImage } from "./control.js";
-
-new ImageViewer("main");
 
 // 非Mac上设置窗体圆角边框
 if (electron.platform !== "darwin") {

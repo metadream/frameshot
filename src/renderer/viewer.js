@@ -29,6 +29,13 @@ export class ImageViewer {
         });
     }
 
+    /** 切换原图 */
+    toggleImage() {
+        this.scale = this.scale > 1 ? 1 : this.origScale;
+        this.transformImage();
+        this.checkBoundary();
+    }
+
     /** 拖动图像 */
     dragImages(e) {
         if (e.button !== 0) return;
@@ -55,15 +62,15 @@ export class ImageViewer {
             this.transX += offsetX;
             this.transY += offsetY;
 
-            // 点击切换原图
-            if (!this.isDragging) {
+            if (this.isDragging) {
+                this.checkBoundary();
+            } else {
+                // 点击切换原图
                 const { width, height } = this.viewport;
                 this.transX = width - this.centerX - e.clientX;
                 this.transY = height - this.centerY - e.clientY;
-                this.scale = this.scale > 1 ? 1 : this.origScale;
-                this.transformImage();
+                this.toggleImage();
             }
-            this.checkBoundary();
         };
         return false;
     }

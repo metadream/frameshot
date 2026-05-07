@@ -1,3 +1,5 @@
+import { ImageViewer } from "./viewer.js";
+
 // 界面元素
 const imageElement = document.querySelector("main>img");
 const sortBtn = document.querySelector("#sort-btn");
@@ -6,6 +8,7 @@ const fileInfo = document.querySelector(".file-info");
 const imageInfo = document.querySelector(".image-info");
 
 // 全局变量
+const imageViewer = new ImageViewer("main");
 let imageIndex = 0;
 let imageItems = null;
 let imageMeta = null;
@@ -38,6 +41,11 @@ bindSortEvents();
 document.addEventListener("keydown", async (e) => {
     e.preventDefault();
     switch (e.key) {
+        // 回车键切换原图
+        case "Enter":
+            imageViewer.toggleImage();
+            break;
+
         // 取消键关闭窗口
         case "Escape":
             electron.closeWindow();
