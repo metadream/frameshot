@@ -273,19 +273,24 @@ export class ImageCropper {
             }
         }
 
-        // 限制最小尺寸，并重新计算位置
-        const minWidth = 20;
-        const minHeight = minWidth / ratio;
+        // 限制最小尺寸，保证保存按钮不被挤出
+        const MIN_INNER = 36;
+        let minW = MIN_INNER,
+            minH = minW / ratio;
+        if (minH < MIN_INNER) {
+            minH = MIN_INNER;
+            minW = minH * ratio;
+        }
 
         let finalWidth = newWidth;
         let finalHeight = newHeight;
 
-        if (newWidth < minWidth || newHeight < minHeight) {
-            if (newWidth < minWidth) {
-                finalWidth = minWidth;
+        if (newWidth < minW || newHeight < minH) {
+            if (newWidth < minW) {
+                finalWidth = minW;
                 finalHeight = finalWidth / ratio;
             } else {
-                finalHeight = minHeight;
+                finalHeight = minH;
                 finalWidth = finalHeight * ratio;
             }
         }
