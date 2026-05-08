@@ -306,10 +306,10 @@ function bindCropEvents() {
                 onSave: async () => {
                     const cropRect = cropper.getCropRect();
                     const outputFile = await electron.cropImage(imageMeta.path, cropRect);
-                    toast(`Cropped: ${outputFile}`);
                     cropper.destroy();
                     cropper = null;
                     document.removeEventListener("keydown", keyHandler);
+                    toast(`Cropped: ${outputFile}`);
                 },
             });
 
