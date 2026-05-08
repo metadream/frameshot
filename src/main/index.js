@@ -56,6 +56,9 @@ if (!gotTheLock) {
                 // 确保 Windows 盘符格式正确
                 if (process.platform === "win32") {
                     filePath = filePath.replace(/^\//, "").replace(/^([A-Za-z])\//, "$1:/");
+                } else if (!filePath.startsWith("/")) {
+                    // 浏览器会将 frameshot:///path 标准化为 frameshot://path（去掉空 authority），补回前导 /
+                    filePath = "/" + filePath;
                 }
 
                 // 检查文件扩展名是否在支持的格式列表中
