@@ -52,19 +52,21 @@ document.querySelector("#refresh-btn").onclick = async () => {
 
 // 全局按键绑定
 document.addEventListener("keydown", async (e) => {
-    e.preventDefault();
     switch (e.key) {
         // 上下方向键切换原图
         case "ArrowUp":
         case "ArrowDown":
+            e.preventDefault();
             imageViewer.toggleImage();
             break;
 
         // 左右方向键切换到上一张/下一张
         case "ArrowLeft":
+            e.preventDefault();
             slideImage(-1);
             break;
         case "ArrowRight":
+            e.preventDefault();
             slideImage(+1);
             break;
 
@@ -74,6 +76,7 @@ document.addEventListener("keydown", async (e) => {
         case "Delete":
             if (e.key === "Backspace" && electron.platform !== "darwin") return;
 
+            e.preventDefault();
             const choice = await electron.openConfirmDialog();
             if (choice) {
                 const success = await electron.trashFile(imageMeta.path);
