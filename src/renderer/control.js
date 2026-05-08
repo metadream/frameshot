@@ -1,6 +1,6 @@
 import { ImageViewer } from "./viewer.js";
 import { ImageCropper } from "./cropper.js";
-import { IMAGE_EXT_REGEX, PROTOCOL } from "../main/formats.js";
+import { IMAGE_EXT_REGEX, UNSUPPORTED_EXT_REGEX, PROTOCOL } from "../main/formats.js";
 
 // 界面元素
 const welcome = document.querySelector("#welcome");
@@ -152,11 +152,12 @@ function activateImage(file) {
     updateTitleBar();
 }
 
-/** 设置图片源 */
+/** 根据图片格式设置协议与图片源 */
 function setImageSource(filePath) {
     let safePath = filePath.replace(/\\/g, "/");
     safePath = safePath.startsWith("/") ? safePath : "/" + safePath;
-    imageElement.src = `${PROTOCOL}://${safePath}`;
+    const protocol = UNSUPPORTED_EXT_REGEX.test(filePath) ? PROTOCOL : "file";
+    imageElement.src = `${protocol}://${safePath}`;
 }
 
 /** 切换前后图片 */

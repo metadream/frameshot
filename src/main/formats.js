@@ -53,4 +53,8 @@ export const IMAGE_FORMATS = [
 
 export const IMAGE_EXTS = IMAGE_FORMATS.map((v) => v.extension.replace(/^\./, ""));
 export const IMAGE_EXT_REGEX = new RegExp(`\\.(${IMAGE_EXTS.join("|")})$`, "i");
+export const UNSUPPORTED_EXT_REGEX = new RegExp(
+    `\\.(${IMAGE_FORMATS.filter((v) => !v.mime).map((v) => v.extension.replace(/^\./, "")).join("|")})$`,
+    "i",
+);
 export const PROTOCOL = "frameshot";
