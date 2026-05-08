@@ -3,6 +3,7 @@ import { supportedFormats } from "./config.js";
 import fs from "fs";
 import path from "path";
 import sharp from "sharp";
+import heicConvert from "heic-convert";
 import "./ipc.js";
 
 const appPath = app.getAppPath();
@@ -65,14 +66,16 @@ if (!gotTheLock) {
                 }
 
                 // 如果格式支持 MIME 类型，则直接读取文件返回
+                const buffer = await fs.promises.readFile(filePath);
                 if (format.mime !== null) {
-                    const buffer = await fs.promises.readFile(filePath);
                     return new Response(buffer, { headers: { "Content-Type": format.mime } });
                 }
 
-                // 否则使用 sharp 转换为 JPEG 格式返回
-                const buffer = await sharp(filePath).jpeg({ quality: 90 }).toBuffer();
-                return new Response(buffer, { headers: { "Content-Type": "image/jpeg" } });
+                // 否则转换为 JPEG 格式返回
+                const output = await (ext === ".heic" || ext === ".heif"
+                    ? heicConvert({ buffer, format: "JPEG", quality: 0.9 })
+                    : sharp(buffer).jpeg({ quality: 90 }).toBuffer());
+                return new Response(output, { headers: { "Content-Type": "image/jpeg" } });
             } catch (err) {
                 console.error("Preview image error:", err);
                 return new Response(null, { status: 404 });

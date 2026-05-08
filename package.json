@@ -19,7 +19,7 @@
         "appId": "frame-shot",
         "fileAssociations": [
             {
-                "ext": [ "avif", "gif", "heic", "jpeg", "jpg", "png", "raw", "svg", "tiff", "webp" ],
+                "ext": [ "jpg", "jpeg", "png", "webp", "gif", "avif", "bmp", "svg", "heic", "heif", "tiff", "raw" ],
                 "name": "Image Document",
                 "description": "Image files",
                 "role": "Viewer"
@@ -45,6 +45,7 @@
         "electron-builder": "^26.0.12"
     },
     "dependencies": {
+        "heic-convert": "^2.1.0",
         "sharp": "^0.34.5"
     }
 }
