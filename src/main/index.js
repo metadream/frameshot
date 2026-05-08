@@ -38,8 +38,9 @@ if (!gotTheLock) {
     app.on("open-file", (event, filePath) => {
         event.preventDefault();
 
-        // 如果应用已启动直接发送给渲染进程
         if (mainWindow) {
+            if (mainWindow.isMinimized()) mainWindow.restore();
+            mainWindow.focus();
             mainWindow.webContents.send("file-opened", filePath);
         } else {
             global.fileToOpen = filePath;
