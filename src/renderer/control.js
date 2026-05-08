@@ -19,7 +19,6 @@ let sortMode = ["name", "asc"];
 // 图片预览组件
 const imageViewer = new ImageViewer("#image-viewer");
 imageElement.addEventListener("load", function () {
-    welcome.remove();
     document.querySelector("#refresh-btn").disabled = false;
     document.querySelector("#sort-btn").disabled = false;
     document.querySelector("#convert-btn").disabled = false;
@@ -126,6 +125,7 @@ document.addEventListener("keydown", async (e) => {
 
 /** 打开图片 */
 export function openImage(filePath) {
+    welcome.remove();
     setImageSource(filePath);
     loadImages(filePath);
 }
