@@ -194,6 +194,7 @@ main {
 .loading {
     display: none;
     position: absolute;
+    z-index: 10;
     top: 50%;
     left: 50%;
     width: 40px;
@@ -204,7 +205,6 @@ main {
     border-radius: 50%;
     animation: spin 0.6s linear infinite;
     opacity: 0.6;
-    z-index: 10;
 }
 
 .loading.show {
