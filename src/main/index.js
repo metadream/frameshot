@@ -97,8 +97,8 @@ function createWindow() {
         icon: appIcon,
         frame: false,
         show: false,
-        width: 900,
-        height: 600,
+        width: 1200,
+        height: 800,
         webPreferences: {
             nodeIntegration: false,
             contextIsolation: true,
@@ -112,8 +112,7 @@ function createWindow() {
         mainWindow.webContents.openDevTools();
     }
 
-    // 默认最大化窗口
-    mainWindow.maximize();
+    mainWindow.show();
 
     // Windows/Linux 双击打开文件通过命令行参数传递
     const files = getFilesFromArgs(process.argv);
