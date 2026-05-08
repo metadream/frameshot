@@ -42,7 +42,7 @@ document.querySelector("#welcome-open-btn").onclick = openFile;
 // 按钮事件：刷新图片列表
 document.querySelector("#refresh-btn").onclick = async () => {
     await loadImageItems(imageMeta.path);
-    toast("刷新成功");
+    toast("Refresh successful");
 };
 
 // 全局按键绑定
@@ -77,7 +77,7 @@ document.addEventListener("keydown", async (e) => {
                     imageItems.splice(imageIndex, 1);
                     slideImage(0);
                 } else {
-                    electron.showErrorBox("删除失败: " + imageMeta.path);
+                    electron.showErrorBox("Delete failed: " + imageMeta.path);
                 }
             }
     }
@@ -120,9 +120,9 @@ function slideImage(direction) {
     updateTitleBar();
 
     if (direction > 0 && imageIndex === imageItems.length - 1) {
-        toast("最后一张图片");
+        toast("Last Image");
     } else if (direction < 0 && imageIndex === 0) {
-        toast("第一张图片");
+        toast("First Image");
     }
 }
 
@@ -227,7 +227,7 @@ function bindConvertEvents() {
         item.onclick = async () => {
             const format = item.dataset.format;
             const outputFile = await electron.convertImage(imageMeta.path, format);
-            toast(`保存成功: ${outputFile}`);
+            toast(`Converted: ${outputFile}`);
         };
     });
 }
@@ -264,7 +264,7 @@ function bindCropEvents() {
                 if (e.key === "Enter") {
                     const cropRect = cropper.getCropRect();
                     const outputFile = await electron.cropImage(imageMeta.path, cropRect);
-                    toast(`裁剪成功: ${outputFile}`);
+                    toast(`Cropped: ${outputFile}`);
                     cropper.destroy();
                     cropper = null;
                     document.removeEventListener("keydown", keyHandler);
