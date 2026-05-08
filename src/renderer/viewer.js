@@ -36,6 +36,11 @@ export class ImageViewer {
         this.checkBoundary();
     }
 
+    /** 缩放图像 */
+    zoom(direction) {
+        this.applyScale(direction > 0 ? 1 : -1);
+    }
+
     /** 拖动图像 */
     dragImages(e) {
         if (e.button !== 0) return;
@@ -74,15 +79,16 @@ export class ImageViewer {
         return false;
     }
 
-    /** 缩放图像 */
+    /** 缩放图像（滚轮） */
     scaleImage(e) {
-        // 防止页面滚动条跟随滚动
         e.preventDefault();
+        this.applyScale(e.wheelDelta > 0 ? 1 : -1);
+    }
 
-        // 缩放图像
+    /** 共用缩放逻辑 */
+    applyScale(direction) {
         const { maxScale, scaleStep } = this.options;
-        const step = e.wheelDelta > 0 ? scaleStep : 0 - scaleStep;
-        this.scale *= 1 + step;
+        this.scale *= 1 + (direction > 0 ? scaleStep : -scaleStep);
         this.scale = Math.max(1, Math.min(this.scale, maxScale));
         this.transformImage();
         this.checkBoundary();
