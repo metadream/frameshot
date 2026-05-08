@@ -26,6 +26,10 @@ imageElement.addEventListener("load", function () {
     document.querySelector("#crop-btn").disabled = false;
     dimensions.innerHTML = `${this.naturalWidth} × ${this.naturalHeight}`;
 });
+imageElement.addEventListener("error", function () {
+    this.removeAttribute("src");
+    toast("Failed to load image");
+});
 
 // 菜单初始化
 initMenus();
