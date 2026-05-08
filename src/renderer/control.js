@@ -141,15 +141,15 @@ async function openFile() {
 /** 加载同级图片 */
 async function loadImages(file) {
     imageItems = await electron.getSiblingImages(file);
-    arrangeImages(file);
+    activateImage(file);
 }
 
-/** 整理图片 */
-function arrangeImages(file) {
-    sortImageItems(); // 排序
+/** 激活当前图片 */
+function activateImage(file) {
+    sortImageItems();
     imageIndex = imageItems.findIndex((f) => f.path === file);
     imageMeta = imageItems[imageIndex];
-    updateTitleBar(); // 更新标题栏信息
+    updateTitleBar();
 }
 
 /** 设置图片源 */
@@ -272,7 +272,7 @@ function bindSortEvents() {
 
             menuItems.forEach((v) => v.querySelector("i").removeAttribute("class"));
             icon.className = sort;
-            arrangeImages(imageMeta.path);
+            activateImage(imageMeta.path);
         };
     });
 }
