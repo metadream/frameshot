@@ -156,6 +156,7 @@ async function loadImageItems(file) {
 
 /** 切换前后图片 */
 function slideImage(direction) {
+    if (imageItems === null || !imageItems.length) return;
     imageIndex += direction;
     if (imageIndex > imageItems.length - 1) {
         imageIndex = 0;
