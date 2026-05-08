@@ -1,13 +1,19 @@
-import { app, BrowserWindow, Menu } from "electron";
+import { app, BrowserWindow, Menu, protocol } from "electron";
+import { supportedFormats } from "./config.js";
 import fs from "fs";
 import path from "path";
+import sharp from "sharp";
 import "./ipc.js";
 
 const appPath = app.getAppPath();
 const appIcon = path.join(appPath, `assets/build/icon.${process.platform === "win32" ? "ico" : "png"}`);
 const preload = path.join(appPath, "src/main/preload.js");
-
 let mainWindow = null;
+
+// 注册自定义协议（必须在 app ready 之前）
+protocol.registerSchemesAsPrivileged([
+    { scheme: "frameshot", privileges: { standard: true, secure: true, supportFetchAPI: true } },
+]);
 
 /** 确保应用始终运行一个实例 */
 const gotTheLock = app.requestSingleInstanceLock();
@@ -36,6 +42,37 @@ if (!gotTheLock) {
 
     // Electron初始化完成时创建主窗口
     app.whenReady().then(() => {
+        // 注册图片预览协议：浏览器不支持的格式通过Sharp解码后返回JPEG
+        protocol.handle("frameshot", async (request) => {
+            try {
+                let filePath = decodeURIComponent(request.url.slice("frameshot://".length));
+
+                // 确保 Windows 盘符格式正确
+                if (process.platform === "win32") {
+                    filePath = filePath.replace(/^\//, "").replace(/^([A-Za-z])\//, "$1:/");
+                }
+
+                // 检查文件扩展名是否在支持的格式列表中
+                const ext = path.extname(filePath).toLowerCase();
+                const format = supportedFormats.find((v) => v.extension === ext);
+                if (!format) {
+                    return new Response("Unsupported format", { status: 415 });
+                }
+
+                // 如果格式支持 MIME 类型，则直接读取文件返回
+                if (format.mime !== null) {
+                    const buffer = await fs.promises.readFile(filePath);
+                    return new Response(buffer, { headers: { "Content-Type": format.mime } });
+                }
+
+                // 否则使用 sharp 转换为 JPEG 格式返回
+                const buffer = await sharp(filePath).jpeg({ quality: 90 }).toBuffer();
+                return new Response(buffer, { headers: { "Content-Type": "image/jpeg" } });
+            } catch (err) {
+                console.error("Preview image error:", err);
+                return new Response(null, { status: 404 });
+            }
+        });
         createWindow();
     });
 }

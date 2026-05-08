@@ -1,5 +1,6 @@
 import { ImageViewer } from "./viewer.js";
 import { ImageCropper } from "./cropper.js";
+import { supportedRegex } from "../main/config.js";
 
 // 界面元素
 const welcome = document.querySelector("#welcome");
@@ -85,8 +86,14 @@ document.addEventListener("keydown", async (e) => {
 
 /** 打开图片 */
 export function openImage(imagePath) {
-    imageElement.src = imagePath;
+    previewImage(imagePath);
     loadImageItems(imagePath);
+}
+
+function previewImage(imagePath) {
+    let safePath = imagePath.replace(/\\/g, "/");
+    safePath = safePath.startsWith("/") ? safePath : "/" + safePath;
+    imageElement.src = `frameshot://${safePath}`;
 }
 
 /** 打开本地图片 */
@@ -114,7 +121,7 @@ document.addEventListener("drop", (e) => {
     document.body.classList.remove("drag-over");
 
     const filePath = electron.getFilePath(e.dataTransfer.files[0]);
-    if (/\.(jpg|jpeg|png|gif|bmp|webp|svg|heic|avif|tiff|raw)$/i.test(filePath)) {
+    if (supportedRegex.test(filePath)) {
         openImage(filePath);
     } else {
         toast("Unsupported file type");
@@ -140,7 +147,7 @@ function slideImage(direction) {
         imageIndex = imageItems.length - 1;
     }
     imageMeta = imageItems[imageIndex];
-    imageElement.src = imageMeta.path;
+    previewImage(imageMeta.path);
     updateTitleBar();
 
     if (direction > 0 && imageIndex === imageItems.length - 1) {

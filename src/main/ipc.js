@@ -1,11 +1,10 @@
 import { app, BrowserWindow, dialog, ipcMain, shell } from "electron";
+import { supportedExts, supportedRegex } from "./config.js";
 import fs from "fs";
 import path from "path";
 import sharp from "sharp";
 
 // Sharp支持的所有图片格式
-const imageFormats = ["jpg", "jpeg", "png", "gif", "bmp", "webp", "svg", "heic", "avif", "tiff", "raw"];
-const imageRegex = new RegExp(`\\.(${imageFormats.join("|")})$`, "i");
 
 /** 原生基础方法 */
 ipcMain.handle("get-file-to-open", () => global.fileToOpen);
@@ -27,7 +26,7 @@ ipcMain.handle("show-error-box", (event, message) => {
 ipcMain.handle("open-file-dialog", () => {
     return dialog.showOpenDialog({
         properties: ["openFile"],
-        filters: [{ name: "Images", extensions: imageFormats }],
+        filters: [{ name: "Images", extensions: supportedExts }],
     });
 });
 
@@ -46,7 +45,7 @@ ipcMain.handle("open-confirm-dialog", () => {
 ipcMain.handle("get-sibling-images", async (event, file) => {
     return fs
         .readdirSync(path.dirname(file), { withFileTypes: true })
-        .filter((entry) => entry.isFile() && imageRegex.test(entry.name))
+        .filter((entry) => entry.isFile() && supportedRegex.test(entry.name))
         .map((entry) => {
             const imagePath = path.join(entry.parentPath, entry.name);
             const ext = path.extname(entry.name).slice(1).toLowerCase();
