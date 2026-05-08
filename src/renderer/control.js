@@ -290,16 +290,22 @@ function bindConvertEvents() {
 
 /** 绑定裁剪菜单事件 */
 function bindCropEvents() {
-    const menuItems = document.querySelectorAll("#crop-items>span");
     let cropper = null;
+    function cleanup() {
+        document.removeEventListener("keydown", keyHandler);
+        if (cropper) {
+            cropper.destroy();
+            cropper = null;
+        }
+    }
+    const keyHandler = (e) => {
+        if (e.key === "Escape") cleanup();
+    };
 
+    const menuItems = document.querySelectorAll("#crop-items>span");
     menuItems.forEach((item) => {
         item.onclick = () => {
-            // 点击已激活的裁剪菜单时销毁
-            if (cropper) {
-                cropper.destroy();
-                cropper = null;
-            }
+            cleanup();
 
             const ratio = item.dataset.ratio;
             const [w, h] = ratio.split(":").map(Number);
@@ -315,21 +321,11 @@ function bindCropEvents() {
                 onSave: async () => {
                     const cropRect = cropper.getCropRect();
                     const outputFile = await electron.cropImage(imageMeta.path, cropRect);
-                    cropper.destroy();
-                    cropper = null;
-                    document.removeEventListener("keydown", keyHandler);
                     toast(`Cropped: ${outputFile}`);
+                    cleanup();
                 },
             });
 
-            // 绑定快捷键：Esc取消
-            const keyHandler = (e) => {
-                if (e.key === "Escape") {
-                    cropper.destroy();
-                    cropper = null;
-                    document.removeEventListener("keydown", keyHandler);
-                }
-            };
             document.addEventListener("keydown", keyHandler);
         };
     });
