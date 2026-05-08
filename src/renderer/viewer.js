@@ -7,13 +7,13 @@ export class ImageViewer {
         this.options = Object.assign({ maxScale: 20, scaleStep: 0.2 }, options);
         this.image = typeof imgSelector === "string" ? document.querySelector(imgSelector) : imgSelector;
         this.image.style.cssText = `max-width: 100%; max-height: 100%; -webkit-user-drag: none;`;
-        this.image.onwheel = (e) => this.scaleImage(e);
-        this.image.onpointerdown = (e) => this.dragImages(e);
-        this.image.onload = (e) => {
-            this.onImageLoaded && this.onImageLoaded();
+
+        this.image.addEventListener("wheel", (e) => this.scaleImage(e));
+        this.image.addEventListener("pointerdown", (e) => this.dragImages(e));
+        this.image.addEventListener("load", (e) => {
             this.origScale = this.image.naturalWidth / this.image.clientWidth;
             this.checkBoundary();
-        };
+        });
 
         this.container = this.image.parentElement;
         this.container.style.cssText = `

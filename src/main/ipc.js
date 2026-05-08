@@ -44,28 +44,21 @@ ipcMain.handle("open-confirm-dialog", () => {
 
 /** 获取同级目录的所有图片 */
 ipcMain.handle("get-sibling-images", async (event, file) => {
-    const files = fs
+    return fs
         .readdirSync(path.dirname(file), { withFileTypes: true })
-        .filter((entry) => entry.isFile() && imageRegex.test(entry.name));
-
-    // 获取图片元数据
-    return await Promise.all(
-        files.map(async (entry) => {
+        .filter((entry) => entry.isFile() && imageRegex.test(entry.name))
+        .map((entry) => {
             const imagePath = path.join(entry.parentPath, entry.name);
-            const { format, width, height } = await sharp(imagePath).metadata();
+            const ext = path.extname(entry.name).slice(1).toLowerCase();
             const { size, mtimeMs } = fs.statSync(imagePath);
             return {
                 name: entry.name,
                 path: imagePath,
                 mtime: mtimeMs,
-                resolution: width * height,
-                format,
-                width,
-                height,
+                format: ext,
                 size,
             };
-        }),
-    );
+        });
 });
 
 /** 转换图片格式并保存 */
@@ -88,10 +81,8 @@ ipcMain.handle("crop-image", async (event, inputFile, cropRect) => {
     const { x, y, width, height } = cropRect;
     const parsedPath = path.parse(inputFile);
     const outputFile = path.join(parsedPath.dir, `${parsedPath.name}_cropped${parsedPath.ext}`);
-    
-    await sharp(inputFile)
-        .extract({ left: x, top: y, width, height })
-        .toFile(outputFile);
+
+    await sharp(inputFile).extract({ left: x, top: y, width, height }).toFile(outputFile);
     return outputFile;
 });
 

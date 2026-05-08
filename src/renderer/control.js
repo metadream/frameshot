@@ -4,8 +4,10 @@ import { ImageCropper } from "./cropper.js";
 // 界面元素
 const welcome = document.querySelector("#welcome");
 const imageElement = document.querySelector("main>img");
-const fileInfo = document.querySelector(".file-info");
-const imageInfo = document.querySelector(".image-info");
+const fileCount = document.querySelector("#file-count");
+const fileName = document.querySelector("#file-name");
+const fileSize = document.querySelector("#file-size");
+const dimensions = document.querySelector("#dimensions");
 
 // 全局变量
 let imageIndex = 0;
@@ -15,13 +17,14 @@ let sortMode = ["name", "asc"];
 
 // 图片预览组件
 const imageViewer = new ImageViewer("#image-viewer");
-imageViewer.onImageLoaded = () => {
+imageElement.addEventListener("load", function () {
     welcome.remove();
     document.querySelector("#refresh-btn").disabled = false;
     document.querySelector("#sort-btn").disabled = false;
     document.querySelector("#convert-btn").disabled = false;
     document.querySelector("#crop-btn").disabled = false;
-};
+    dimensions.innerHTML = `${this.naturalWidth} × ${this.naturalHeight}`;
+});
 
 // 菜单初始化
 initMenus();
@@ -125,9 +128,9 @@ function slideImage(direction) {
 
 /** 更新标题栏信息 */
 function updateTitleBar() {
-    const { name, size, width, height } = imageMeta;
-    fileInfo.innerHTML = `${imageIndex + 1}/${imageItems.length}　|　${name}`;
-    imageInfo.innerHTML = `${width} × ${height}　|　${formatBytes(size)}`;
+    fileCount.innerText = `${imageIndex + 1}/${imageItems.length}`;
+    fileName.innerText = imageMeta.name;
+    fileSize.innerText = formatBytes(imageMeta.size);
 }
 
 /** 图片排序 */

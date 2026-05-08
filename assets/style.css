@@ -83,7 +83,7 @@ header .info-bar {
     color: var(--minor-color);
 }
 
-header .info-bar .file-info {
+header .info-bar #file-name {
     flex: 1;
     white-space: nowrap;
     text-overflow: ellipsis;
