@@ -67,9 +67,9 @@ ipcMain.handle("convert-image", async (event, inputFile, outFormat) => {
     const outputFile = path.join(parsedPath.dir, `${parsedPath.name}_converted.${outFormat}`);
 
     if (outFormat === "png") {
-        await sharp(inputFile).png().toFile(outputFile);
+        await sharp(inputFile).keepMetadata().png().toFile(outputFile);
     } else if (outFormat === "jpg" || outFormat === "jpeg") {
-        await sharp(inputFile).jpeg({ quality: 96 }).toFile(outputFile);
+        await sharp(inputFile).keepMetadata().jpeg({ quality: 96 }).toFile(outputFile);
     } else {
         throw new Error("Unsupported output format");
     }
@@ -82,7 +82,7 @@ ipcMain.handle("crop-image", async (event, inputFile, cropRect) => {
     const parsedPath = path.parse(inputFile);
     const outputFile = path.join(parsedPath.dir, `${parsedPath.name}_cropped${parsedPath.ext}`);
 
-    await sharp(inputFile).extract({ left: x, top: y, width, height }).toFile(outputFile);
+    await sharp(inputFile).keepMetadata().extract({ left: x, top: y, width, height }).toFile(outputFile);
     return outputFile;
 });
 

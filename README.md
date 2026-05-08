@@ -1,11 +1,9 @@
 # FrameShot
 
 - 缩放动画过渡？
-- 提示语英文化；
 - 裁切时还原图片大小；
 - smb test？
 - 应用关闭时如何销毁正在执行的代码
 - 最小化之后，双击图片无法调起
 - 将图片拖入窗体打开
-- electron cache
-- sharp 去除metadata
+- 无法支持heic格式
