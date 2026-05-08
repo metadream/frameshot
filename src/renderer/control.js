@@ -106,6 +106,7 @@ export function openImage(imagePath) {
     loadImageItems(imagePath);
 }
 
+/** 预览图片 */
 function previewImage(imagePath) {
     let safePath = imagePath.replace(/\\/g, "/");
     safePath = safePath.startsWith("/") ? safePath : "/" + safePath;
