@@ -6,7 +6,7 @@ export class ImageViewer {
     constructor(imgSelector, options) {
         this.options = Object.assign({ maxScale: 20, scaleStep: 0.2 }, options);
         this.image = typeof imgSelector === "string" ? document.querySelector(imgSelector) : imgSelector;
-        this.image.style.cssText = `max-width: 100%; max-height: 100%; -webkit-user-drag: none;`;
+        this.image.style.cssText = `max-width: 100%; max-height: 100%; -webkit-user-drag: none; transition: transform 0.2s ease;`;
 
         this.image.addEventListener("wheel", (e) => this.scaleImage(e));
         this.image.addEventListener("pointerdown", (e) => this.dragImages(e));
@@ -45,6 +45,7 @@ export class ImageViewer {
     dragImages(e) {
         if (e.button !== 0) return;
         this.image.style.cursor = "grab";
+        this.image.style.transition = "none";
         this.isDragging = false;
 
         let startX = e.clientX;
@@ -63,6 +64,7 @@ export class ImageViewer {
         document.onpointerup = () => {
             document.onpointermove = null;
             document.onpointerup = null;
+            this.image.style.transition = "transform 0.2s ease";
             this.transX += offsetX;
             this.transY += offsetY;
 
@@ -97,7 +99,8 @@ export class ImageViewer {
     /** 检查位移边界 */
     checkBoundary() {
         this.resetCursor();
-        const { width, height } = this.image.getBoundingClientRect();
+        const width = this.image.clientWidth * this.scale;
+        const height = this.image.clientHeight * this.scale;
         const bound = { x1: 0, x2: 0, y1: 0, y2: 0 };
         const cx = this.viewport.width / 2;
         const cy = this.viewport.height / 2;
