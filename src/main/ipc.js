@@ -109,7 +109,7 @@ ipcMain.on("window-control", (event, action) => {
 
     switch (action) {
         case "close":
-            win.close();
+            app.exit(0);
             break;
         case "minimize":
             win.minimize();
