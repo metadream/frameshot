@@ -9,6 +9,7 @@ import sharp from "sharp";
 /** 原生基础方法 */
 ipcMain.handle("get-file-to-open", () => global.fileToOpen);
 ipcMain.handle("get-app-name", () => app.getName());
+ipcMain.handle("get-app-version", () => app.getVersion());
 ipcMain.handle("get-app-path", () => app.getAppPath());
 ipcMain.handle("open-external", (event, url) => shell.openExternal(url));
 
