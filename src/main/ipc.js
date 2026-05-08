@@ -1,5 +1,5 @@
 import { app, BrowserWindow, dialog, ipcMain, shell } from "electron";
-import { supportedExts, supportedRegex } from "./config.js";
+import { IMAGE_EXTS, IMAGE_EXT_REGEX } from "./formats.js";
 import fs from "fs";
 import path from "path";
 import sharp from "sharp";
@@ -26,7 +26,7 @@ ipcMain.handle("show-error-box", (event, message) => {
 ipcMain.handle("open-file-dialog", () => {
     return dialog.showOpenDialog({
         properties: ["openFile"],
-        filters: [{ name: "Images", extensions: supportedExts }],
+        filters: [{ name: "Images", extensions: IMAGE_EXTS }],
     });
 });
 
@@ -45,7 +45,7 @@ ipcMain.handle("open-confirm-dialog", () => {
 ipcMain.handle("get-sibling-images", async (event, file) => {
     return fs
         .readdirSync(path.dirname(file), { withFileTypes: true })
-        .filter((entry) => entry.isFile() && supportedRegex.test(entry.name))
+        .filter((entry) => entry.isFile() && IMAGE_EXT_REGEX.test(entry.name))
         .map((entry) => {
             const imagePath = path.join(entry.parentPath, entry.name);
             const ext = path.extname(entry.name).slice(1).toLowerCase();

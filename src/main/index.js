@@ -1,5 +1,5 @@
 import { app, BrowserWindow, Menu, protocol } from "electron";
-import { supportedFormats, PROTOCOL } from "./config.js";
+import { IMAGE_FORMATS, PROTOCOL } from "./formats.js";
 import fs from "fs";
 import path from "path";
 import sharp from "sharp";
@@ -60,7 +60,7 @@ if (!gotTheLock) {
 
                 // 检查文件扩展名是否在支持的格式列表中
                 const ext = path.extname(filePath).toLowerCase();
-                const format = supportedFormats.find((v) => v.extension === ext);
+                const format = IMAGE_FORMATS.find((v) => v.extension === ext);
                 if (!format) {
                     return new Response("Unsupported format", { status: 415 });
                 }

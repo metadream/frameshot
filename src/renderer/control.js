@@ -1,6 +1,6 @@
 import { ImageViewer } from "./viewer.js";
 import { ImageCropper } from "./cropper.js";
-import { supportedRegex, PROTOCOL } from "../main/config.js";
+import { IMAGE_EXT_REGEX, PROTOCOL } from "../main/formats.js";
 
 // 界面元素
 const welcome = document.querySelector("#welcome");
@@ -128,7 +128,7 @@ document.addEventListener("drop", (e) => {
     document.body.classList.remove("drag-over");
 
     const filePath = electron.getFilePath(e.dataTransfer.files[0]);
-    if (supportedRegex.test(filePath)) {
+    if (IMAGE_EXT_REGEX.test(filePath)) {
         openImage(filePath);
     } else {
         toast("Unsupported file type");

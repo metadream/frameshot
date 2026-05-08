@@ -5,7 +5,7 @@
     "description": "Image Viewer and Duplicate Finder",
     "author": "Marco Chan",
     "repository": "github:metadream/frame-shot",
-    "copyright": "Copyright (c) 2025",
+    "copyright": "Copyright (c) 2026",
     "license": "MIT",
     "type": "module",
     "main": "src/main/index.js",
