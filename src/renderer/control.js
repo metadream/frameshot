@@ -290,7 +290,6 @@ function bindCropEvents() {
             if (cropper) {
                 cropper.destroy();
                 cropper = null;
-                return;
             }
 
             const ratio = item.dataset.ratio;
