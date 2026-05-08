@@ -207,7 +207,6 @@ function sortImageItems() {
             switch (field) {
                 case "mtime":
                 case "size":
-                case "resolution":
                     result = Number(av) - Number(bv);
                     break;
                 case "format":
