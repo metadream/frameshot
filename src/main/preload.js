@@ -1,4 +1,4 @@
-const { contextBridge, ipcRenderer } = require("electron");
+const { contextBridge, ipcRenderer, webUtils } = require("electron");
 
 contextBridge.exposeInMainWorld("electron", {
     platform: process.platform,
@@ -18,6 +18,7 @@ contextBridge.exposeInMainWorld("electron", {
     openExternal: (url) => ipcRenderer.invoke("open-external", url),
 
     // 文件读写
+    getFilePath: (file) => webUtils.getPathForFile(file),
     getSiblingImages: (folder) => ipcRenderer.invoke("get-sibling-images", folder),
     trashFile: (path) => ipcRenderer.invoke("trash-file", path),
     deleteFile: (path) => ipcRenderer.invoke("delete-file", path),

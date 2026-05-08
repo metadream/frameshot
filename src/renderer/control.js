@@ -97,6 +97,30 @@ async function openFile() {
     }
 }
 
+/** 拖入文件打开 */
+document.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "link";
+});
+document.addEventListener("dragenter", (e) => {
+    e.preventDefault();
+    document.body.classList.add("drag-over");
+});
+document.addEventListener("dragleave", (e) => {
+    document.body.classList.remove("drag-over");
+});
+document.addEventListener("drop", (e) => {
+    e.preventDefault();
+    document.body.classList.remove("drag-over");
+
+    const filePath = electron.getFilePath(e.dataTransfer.files[0]);
+    if (/\.(jpg|jpeg|png|gif|bmp|webp|svg|heic|avif|tiff|raw)$/i.test(filePath)) {
+        openImage(filePath);
+    } else {
+        toast("Unsupported file type");
+    }
+});
+
 /** 加载同级图片 */
 async function loadImageItems(file) {
     imageItems = await electron.getSiblingImages(file);
