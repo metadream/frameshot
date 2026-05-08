@@ -1,5 +1,5 @@
 import { app, BrowserWindow, Menu, protocol } from "electron";
-import { supportedFormats } from "./config.js";
+import { supportedFormats, PROTOCOL } from "./config.js";
 import fs from "fs";
 import path from "path";
 import sharp from "sharp";
@@ -13,7 +13,7 @@ let mainWindow = null;
 
 // 注册自定义协议（必须在 app ready 之前）
 protocol.registerSchemesAsPrivileged([
-    { scheme: "frameshot", privileges: { standard: true, secure: true, supportFetchAPI: true } },
+    { scheme: PROTOCOL, privileges: { standard: true, secure: true, supportFetchAPI: true } },
 ]);
 
 /** 确保应用始终运行一个实例 */
@@ -49,9 +49,9 @@ if (!gotTheLock) {
     // Electron初始化完成时创建主窗口
     app.whenReady().then(() => {
         // 注册图片预览协议：浏览器不支持的格式通过Sharp解码后返回JPEG
-        protocol.handle("frameshot", async (request) => {
+        protocol.handle(PROTOCOL, async (request) => {
             try {
-                let filePath = decodeURIComponent(request.url.slice("frameshot://".length));
+                let filePath = decodeURIComponent(request.url.slice(`${PROTOCOL}://`.length));
 
                 // 确保 Windows 盘符格式正确
                 if (process.platform === "win32") {

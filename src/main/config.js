@@ -53,3 +53,4 @@ export const supportedFormats = [
 
 export const supportedExts = supportedFormats.map((v) => v.extension.replace(/^\./, ""));
 export const supportedRegex = new RegExp(`\\.(${supportedExts.join("|")})$`, "i");
+export const PROTOCOL = "frameshot";

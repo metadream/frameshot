@@ -1,6 +1,6 @@
 import { ImageViewer } from "./viewer.js";
 import { ImageCropper } from "./cropper.js";
-import { supportedRegex } from "../main/config.js";
+import { supportedRegex, PROTOCOL } from "../main/config.js";
 
 // 界面元素
 const welcome = document.querySelector("#welcome");
@@ -100,7 +100,7 @@ export function openImage(imagePath) {
 function previewImage(imagePath) {
     let safePath = imagePath.replace(/\\/g, "/");
     safePath = safePath.startsWith("/") ? safePath : "/" + safePath;
-    imageElement.src = `frameshot://${safePath}`;
+    imageElement.src = `${PROTOCOL}://${safePath}`;
 }
 
 /** 打开本地图片 */
