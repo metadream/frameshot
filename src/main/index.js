@@ -20,11 +20,16 @@ const gotTheLock = app.requestSingleInstanceLock();
 if (!gotTheLock) {
     app.quit();
 } else {
-    // 如果尝试启动第二个实例，则显示第一个
-    app.on("second-instance", () => {
+    // 如果尝试启动第二个实例，则显示第一个并传递参数
+    app.on("second-instance", (event, argv) => {
         if (mainWindow) {
             if (mainWindow.isMinimized()) mainWindow.restore();
             mainWindow.focus();
+
+            const files = getFilesFromArgs(argv);
+            if (files.length > 0) {
+                mainWindow.webContents.send("file-opened", files[0]);
+            }
         }
     });
 
