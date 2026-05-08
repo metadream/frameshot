@@ -5,7 +5,7 @@ A minimal image viewer with zoom, crop, and format conversion, built on Electron
 ## Features
 
 - **View & Navigate** — Open images via file dialog, drag-and-drop, or file association. Arrow keys to switch, scroll to zoom.
-- **Crop** — Preset aspect ratios (1:1, 3:2, 4:3, 16:9, etc.). Drag to reposition, drag corners to resize. Enter to save.
+- **Crop** — Preset aspect ratios (1:1, 3:2, 4:3, 16:9, etc.). Drag to reposition, drag corners to resize. Click the save icon to save.
 - **Convert** — Convert to JPEG or PNG with a single click.
 - **Delete** — Delete to trash, auto-advance to next image.
 - **HEIC/RAW support** — Decodes HEIC, HEIF, TIFF, and RAW via Sharp + heic-convert for formats not natively supported by the browser.
@@ -14,11 +14,12 @@ A minimal image viewer with zoom, crop, and format conversion, built on Electron
 
 | Action | Input |
 |--------|-------|
-| Open file | `Ctrl+O` / Drop image onto window |
+| Open file | Open or Drop image onto window |
 | Switch image | `←` `→` |
-| Toggle original size | `↑` `↓` |
-| Zoom | Scroll wheel |
-| Crop (aspect ratio) | Crop menu → drag box → `Enter` to save |
+| Zoom In/Out | `↑` `↓` |
+| Zoom In/Out | Scroll wheel |
+| Toggle original size | `Enter` |
+| Crop (aspect ratio) | Crop menu → drag box → click save icon |
 | Cancel crop | `Esc` |
 | Delete image | `Delete` (Win/Linux) / `Backspace` (Mac) |
 
