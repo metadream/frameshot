@@ -78,12 +78,15 @@ export class ImageCropper {
         };
     }
     initCropBox() {
-        const imgLeft = this.image.offsetLeft;
-        const imgTop = this.image.offsetTop;
-        const imgWidth = this.image.offsetWidth;
-        const imgHeight = this.image.offsetHeight;
-        const containerWidth = this.container.clientWidth;
-        const containerHeight = this.container.clientHeight;
+        const imgRect = this.image.getBoundingClientRect();
+        const containerRect = this.container.getBoundingClientRect();
+
+        const imgLeft = imgRect.left - containerRect.left;
+        const imgTop = imgRect.top - containerRect.top;
+        const imgWidth = imgRect.width;
+        const imgHeight = imgRect.height;
+        const containerWidth = containerRect.width;
+        const containerHeight = containerRect.height;
 
         // 计算图片在可视区内的可见区域
         const visibleLeft = Math.max(0, imgLeft);
@@ -157,16 +160,24 @@ export class ImageCropper {
         let left = this.startRect.left + dx;
         let top = this.startRect.top + dy;
 
-        // 限制边界
-        const imgLeft = this.image.offsetLeft;
-        const imgTop = this.image.offsetTop;
-        const imgWidth = this.image.offsetWidth;
-        const imgHeight = this.image.offsetHeight;
+        const imgRect = this.image.getBoundingClientRect();
+        const containerRect = this.container.getBoundingClientRect();
+
+        const imgLeft = imgRect.left - containerRect.left;
+        const imgTop = imgRect.top - containerRect.top;
+        const imgWidth = imgRect.width;
+        const imgHeight = imgRect.height;
         const cropWidth = parseFloat(this.cropBox.style.width);
         const cropHeight = parseFloat(this.cropBox.style.height);
 
-        left = Math.max(imgLeft, Math.min(left, imgLeft + imgWidth - cropWidth));
-        top = Math.max(imgTop, Math.min(top, imgTop + imgHeight - cropHeight));
+        // 同时受图片边界和可视区边界约束（取交集，即更严格的那个）
+        const minLeft = Math.max(imgLeft, 0);
+        const maxLeft = Math.min(imgLeft + imgWidth - cropWidth, containerRect.width - cropWidth);
+        const minTop = Math.max(imgTop, 0);
+        const maxTop = Math.min(imgTop + imgHeight - cropHeight, containerRect.height - cropHeight);
+
+        left = Math.max(minLeft, Math.min(left, maxLeft));
+        top = Math.max(minTop, Math.min(top, maxTop));
 
         this.cropBox.style.left = `${left}px`;
         this.cropBox.style.top = `${top}px`;
@@ -202,29 +213,31 @@ export class ImageCropper {
         let newWidth = this.resizeDir === "se" || this.resizeDir === "ne" ? width + dx : width - dx;
         let newHeight = newWidth / ratio;
 
-        // 限制边界：计算最大允许尺寸
-        const imgLeft = this.image.offsetLeft;
-        const imgTop = this.image.offsetTop;
-        const imgWidth = this.image.offsetWidth;
-        const imgHeight = this.image.offsetHeight;
+        // 限制边界：计算最大允许尺寸（同时受图片和可视区约束）
+        const imgRect = this.image.getBoundingClientRect();
+        const containerRect = this.container.getBoundingClientRect();
+        const imgLeft = imgRect.left - containerRect.left;
+        const imgTop = imgRect.top - containerRect.top;
+        const imgWidth = imgRect.width;
+        const imgHeight = imgRect.height;
 
         let maxWidth, maxHeight;
         switch (this.resizeDir) {
             case "se":
-                maxWidth = imgLeft + imgWidth - anchorX;
-                maxHeight = imgTop + imgHeight - anchorY;
+                maxWidth = Math.min(imgLeft + imgWidth - anchorX, containerRect.width - anchorX);
+                maxHeight = Math.min(imgTop + imgHeight - anchorY, containerRect.height - anchorY);
                 break;
             case "sw":
-                maxWidth = anchorX - imgLeft;
-                maxHeight = imgTop + imgHeight - anchorY;
+                maxWidth = Math.min(anchorX - imgLeft, anchorX);
+                maxHeight = Math.min(imgTop + imgHeight - anchorY, containerRect.height - anchorY);
                 break;
             case "ne":
-                maxWidth = imgLeft + imgWidth - anchorX;
-                maxHeight = anchorY - imgTop;
+                maxWidth = Math.min(imgLeft + imgWidth - anchorX, containerRect.width - anchorX);
+                maxHeight = Math.min(anchorY - imgTop, anchorY);
                 break;
             case "nw":
-                maxWidth = anchorX - imgLeft;
-                maxHeight = anchorY - imgTop;
+                maxWidth = Math.min(anchorX - imgLeft, anchorX);
+                maxHeight = Math.min(anchorY - imgTop, anchorY);
                 break;
         }
 
@@ -277,12 +290,14 @@ export class ImageCropper {
         }
 
         // 再次检查边界（因为最小尺寸限制后可能超出边界）
-        if (newLeft < imgLeft) newLeft = imgLeft;
-        if (newTop < imgTop) newTop = imgTop;
+        const minLeft = Math.max(imgLeft, 0);
+        const minTop = Math.max(imgTop, 0);
+        if (newLeft < minLeft) newLeft = minLeft;
+        if (newTop < minTop) newTop = minTop;
 
         // 统一约束：确保宽和高同时满足边界，避免顺序约束导致的累积误差
-        const maxW = imgLeft + imgWidth - newLeft;
-        const maxH = imgTop + imgHeight - newTop;
+        const maxW = Math.min(imgLeft + imgWidth - newLeft, containerRect.width - newLeft);
+        const maxH = Math.min(imgTop + imgHeight - newTop, containerRect.height - newTop);
         if (finalWidth > maxW || finalHeight > maxH) {
             if (maxW / ratio <= maxH) {
                 finalWidth = maxW;
@@ -318,10 +333,13 @@ export class ImageCropper {
 
     /** 获取原图裁剪区域（精确保持比例，无±1px误差） */
     getCropRect() {
-        const imgLeft = this.image.offsetLeft;
-        const imgTop = this.image.offsetTop;
-        const imgDisplayWidth = this.image.offsetWidth;
-        const imgDisplayHeight = this.image.offsetHeight;
+        const imgRect = this.image.getBoundingClientRect();
+        const containerRect = this.container.getBoundingClientRect();
+
+        const imgLeft = imgRect.left - containerRect.left;
+        const imgTop = imgRect.top - containerRect.top;
+        const imgDisplayWidth = imgRect.width;
+        const imgDisplayHeight = imgRect.height;
 
         const cropLeft = parseFloat(this.cropBox.style.left);
         const cropTop = parseFloat(this.cropBox.style.top);
