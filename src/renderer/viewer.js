@@ -71,8 +71,8 @@ export class ImageViewer {
             } else {
                 // 点击切换原图
                 const { width, height } = this.viewport;
-                this.transX = width - this.centerX - e.clientX;
-                this.transY = height - this.centerY - e.clientY;
+                this.transX = width / 2 - e.clientX;
+                this.transY = height / 2 - e.clientY;
                 this.toggleImage();
             }
         };
@@ -99,13 +99,15 @@ export class ImageViewer {
         this.resetCursor();
         const { width, height } = this.image.getBoundingClientRect();
         const bound = { x1: 0, x2: 0, y1: 0, y2: 0 };
+        const cx = this.viewport.width / 2;
+        const cy = this.viewport.height / 2;
 
         if (width > this.viewport.width) {
-            bound.x1 = width / 2 - this.centerX;
+            bound.x1 = width / 2 - cx;
             bound.x2 = bound.x1 - (width - this.viewport.width);
         }
         if (height > this.viewport.height) {
-            bound.y1 = height / 2 - this.centerY;
+            bound.y1 = height / 2 - cy;
             bound.y2 = bound.y1 - (height - this.viewport.height);
         }
 
@@ -131,12 +133,9 @@ export class ImageViewer {
         }
     }
 
-    /** 重置容器和图像中心点 */
+    /** 重置视口尺寸 */
     resetViewport() {
         this.viewport = this.container.getBoundingClientRect();
-        const imgRect = this.image.getBoundingClientRect();
-        this.centerX = imgRect.x - this.viewport.x + imgRect.width / 2;
-        this.centerY = imgRect.y - this.viewport.y + imgRect.height / 2;
     }
 
     /** 重置图像 */
