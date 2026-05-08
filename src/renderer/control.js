@@ -53,11 +53,20 @@ document.querySelector("#refresh-btn").onclick = async () => {
 // 全局按键绑定
 document.addEventListener("keydown", async (e) => {
     switch (e.key) {
-        // 上下方向键切换原图
-        case "ArrowUp":
-        case "ArrowDown":
+        // 回车键切换原图
+        case "Enter":
             e.preventDefault();
             imageViewer.toggleImage();
+            break;
+
+        // 上下方向键缩放
+        case "ArrowUp":
+            e.preventDefault();
+            imageViewer.zoom(1);
+            break;
+        case "ArrowDown":
+            e.preventDefault();
+            imageViewer.zoom(-1);
             break;
 
         // 左右方向键切换到上一张/下一张
@@ -295,18 +304,19 @@ function bindCropEvents() {
                 ratio: w / h,
                 ratioWidth: w,
                 ratioHeight: h,
-            });
-
-            // 绑定快捷键：Enter保存，Esc取消
-            const keyHandler = async (e) => {
-                if (e.key === "Enter") {
+                onSave: async () => {
                     const cropRect = cropper.getCropRect();
                     const outputFile = await electron.cropImage(imageMeta.path, cropRect);
                     toast(`Cropped: ${outputFile}`);
                     cropper.destroy();
                     cropper = null;
                     document.removeEventListener("keydown", keyHandler);
-                } else if (e.key === "Escape") {
+                },
+            });
+
+            // 绑定快捷键：Esc取消
+            const keyHandler = (e) => {
+                if (e.key === "Escape") {
                     cropper.destroy();
                     cropper = null;
                     document.removeEventListener("keydown", keyHandler);

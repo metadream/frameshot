@@ -1,10 +1,11 @@
 export class ImageCropper {
-    constructor({ image, container, ratio = 1, ratioWidth, ratioHeight }) {
+    constructor({ image, container, ratio = 1, ratioWidth, ratioHeight, onSave }) {
         this.image = image;
         this.container = container;
         this.ratio = ratio;
         this.ratioWidth = ratioWidth;
         this.ratioHeight = ratioHeight;
+        this.onSave = onSave;
         this.cropBox = null;
         this.layer = null;
         this.isDragging = false;
@@ -49,6 +50,27 @@ export class ImageCropper {
 
         this.layer.appendChild(this.cropBox);
         this.container.appendChild(this.layer);
+
+        // 保存按钮（固定在裁剪框左上角）
+        if (this.onSave) {
+            const btn = document.createElement("button");
+            btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>`;
+            btn.style.cssText = `
+                position: absolute; top: 4px; left: 4px; z-index: 999;
+                width: 24px; height: 24px; padding: 0;
+                background: rgba(0,0,0,0.35); color: #fff;
+                border: 0; border-radius: 4px;
+                cursor: pointer; display: flex; align-items: center; justify-content: center;
+                opacity: 0.65; transition: opacity 0.15s;`;
+            btn.onmouseenter = () => {
+                btn.style.opacity = "1";
+            };
+            btn.onmouseleave = () => {
+                btn.style.opacity = "0.7";
+            };
+            btn.onclick = this.onSave;
+            this.cropBox.appendChild(btn);
+        }
 
         // 初始化裁剪框位置和大小
         this.initCropBox();
