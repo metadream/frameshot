@@ -46,9 +46,33 @@ document.querySelector("#welcome-open-btn").onclick = openFile;
 
 // 按钮事件：刷新图片列表
 document.querySelector("#refresh-btn").onclick = async () => {
-    await loadImageItems(imageMeta.path);
+    await loadImages(imageMeta.path);
     toast("Refresh successful");
 };
+
+// 拖入文件打开
+document.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "link";
+});
+document.addEventListener("dragenter", (e) => {
+    e.preventDefault();
+    document.body.classList.add("drag-over");
+});
+document.addEventListener("dragleave", (e) => {
+    document.body.classList.remove("drag-over");
+});
+document.addEventListener("drop", (e) => {
+    e.preventDefault();
+    document.body.classList.remove("drag-over");
+
+    const filePath = electron.getFilePath(e.dataTransfer.files[0]);
+    if (IMAGE_EXT_REGEX.test(filePath)) {
+        openImage(filePath);
+    } else {
+        toast("Unsupported file type");
+    }
+});
 
 // 全局按键绑定
 document.addEventListener("keydown", async (e) => {
@@ -101,16 +125,9 @@ document.addEventListener("keydown", async (e) => {
 });
 
 /** 打开图片 */
-export function openImage(imagePath) {
-    previewImage(imagePath);
-    loadImageItems(imagePath);
-}
-
-/** 预览图片 */
-function previewImage(imagePath) {
-    let safePath = imagePath.replace(/\\/g, "/");
-    safePath = safePath.startsWith("/") ? safePath : "/" + safePath;
-    imageElement.src = `${PROTOCOL}://${safePath}`;
+export function openImage(filePath) {
+    setImageSource(filePath);
+    loadImages(filePath);
 }
 
 /** 打开本地图片 */
@@ -121,51 +138,42 @@ async function openFile() {
     }
 }
 
-/** 拖入文件打开 */
-document.addEventListener("dragover", (e) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = "link";
-});
-document.addEventListener("dragenter", (e) => {
-    e.preventDefault();
-    document.body.classList.add("drag-over");
-});
-document.addEventListener("dragleave", (e) => {
-    document.body.classList.remove("drag-over");
-});
-document.addEventListener("drop", (e) => {
-    e.preventDefault();
-    document.body.classList.remove("drag-over");
-
-    const filePath = electron.getFilePath(e.dataTransfer.files[0]);
-    if (IMAGE_EXT_REGEX.test(filePath)) {
-        openImage(filePath);
-    } else {
-        toast("Unsupported file type");
-    }
-});
-
 /** 加载同级图片 */
-async function loadImageItems(file) {
+async function loadImages(file) {
     imageItems = await electron.getSiblingImages(file);
-    sortImageItems(); // 排序
+    arrangeImages(file);
+}
 
+/** 整理图片 */
+function arrangeImages(file) {
+    sortImageItems(); // 排序
     imageIndex = imageItems.findIndex((f) => f.path === file);
     imageMeta = imageItems[imageIndex];
     updateTitleBar(); // 更新标题栏信息
 }
 
+/** 设置图片源 */
+function setImageSource(filePath) {
+    let safePath = filePath.replace(/\\/g, "/");
+    safePath = safePath.startsWith("/") ? safePath : "/" + safePath;
+    imageElement.src = `${PROTOCOL}://${safePath}`;
+}
+
 /** 切换前后图片 */
 function slideImage(direction) {
-    if (imageItems === null || !imageItems.length) return;
+    if (imageItems === null || !imageItems.length) {
+        return;
+    }
+
     imageIndex += direction;
     if (imageIndex > imageItems.length - 1) {
         imageIndex = 0;
     } else if (imageIndex < 0) {
         imageIndex = imageItems.length - 1;
     }
+
     imageMeta = imageItems[imageIndex];
-    previewImage(imageMeta.path);
+    setImageSource(imageMeta.path);
     updateTitleBar();
 
     if (direction > 0 && imageIndex === imageItems.length - 1) {
@@ -264,7 +272,7 @@ function bindSortEvents() {
 
             menuItems.forEach((v) => v.querySelector("i").removeAttribute("class"));
             icon.className = sort;
-            sortImageItems();
+            arrangeImages(imageMeta.path);
         };
     });
 }
