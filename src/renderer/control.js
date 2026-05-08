@@ -4,6 +4,7 @@ import { IMAGE_EXT_REGEX, UNSUPPORTED_EXT_REGEX, PROTOCOL } from "../main/format
 
 // 界面元素
 const welcome = document.querySelector("#welcome");
+const loading = document.querySelector("#loading");
 const imageElement = document.querySelector("main>img");
 const fileCount = document.querySelector("#file-count");
 const fileName = document.querySelector("#file-name");
@@ -19,6 +20,7 @@ let sortMode = ["name", "asc"];
 // 图片预览组件
 const imageViewer = new ImageViewer("#image-viewer");
 imageElement.addEventListener("load", function () {
+    loading.classList.remove("show");
     document.querySelector("#refresh-btn").disabled = false;
     document.querySelector("#sort-btn").disabled = false;
     document.querySelector("#convert-btn").disabled = false;
@@ -26,6 +28,7 @@ imageElement.addEventListener("load", function () {
     dimensions.innerHTML = `${this.naturalWidth} × ${this.naturalHeight}`;
 });
 imageElement.addEventListener("error", function () {
+    loading.classList.remove("show");
     this.removeAttribute("src");
     toast("Failed to load image");
 });
@@ -158,6 +161,7 @@ function setImageSource(filePath) {
     safePath = safePath.startsWith("/") ? safePath : "/" + safePath;
     const protocol = UNSUPPORTED_EXT_REGEX.test(filePath) ? PROTOCOL : "file";
     imageElement.src = `${protocol}://${safePath}`;
+    loading.classList.add("show");
 }
 
 /** 切换前后图片 */
