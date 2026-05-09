@@ -12,11 +12,16 @@ const fileName = document.querySelector("#file-name");
 const fileSize = document.querySelector("#file-size");
 const dimensions = document.querySelector("#dimensions");
 
+// 图片预览组件
+const imageViewer = new ImageViewer("#image-viewer");
+
 // 全局变量
-let imageIndex = 0;
-let imageItems = null;
-let imageMeta = null;
-let sortMode = ["name", "asc"];
+let imageItems = null; // 图片列表
+let imageMeta = null; // 当前图片元数据
+let imageIndex = 0; // 当前图片索引
+let sortMode = ["name", "asc"]; // 排序模式
+let cropper = null; // 裁剪工具
+let activeRatio = null; // 当前裁剪比例
 
 // 菜单初始化
 initMenus();
@@ -24,8 +29,7 @@ bindSortEvents();
 bindConvertEvents();
 bindCropEvents();
 
-// 图片预览组件
-const imageViewer = new ImageViewer("#image-viewer");
+// 图片加载事件
 imageElement.addEventListener("load", function () {
     loading.classList.remove("show");
     document.querySelector("#refresh-btn").disabled = false;
@@ -168,6 +172,7 @@ function slideImage(direction) {
         return;
     }
 
+    cleanupCrop();
     imageIndex += direction;
     if (imageIndex > imageItems.length - 1) {
         imageIndex = 0;
@@ -248,30 +253,13 @@ function bindConvertEvents() {
 
 /** 绑定裁剪菜单事件 */
 function bindCropEvents() {
-    let cropper = null;
-    let activeRatio = null;
-
-    function cleanup() {
-        document.removeEventListener("keydown", keyHandler);
-        menuItems.forEach((el) => (el.textContent = el.dataset.ratio));
-        activeRatio = null;
-
-        if (cropper) {
-            cropper.destroy();
-            cropper = null;
-        }
-    }
-
-    const keyHandler = (e) => {
-        if (e.key === "Escape") cleanup();
-    };
-
     const menuItems = document.querySelectorAll("#crop-items>span");
     menuItems.forEach((item) => {
         item.onclick = () => {
             let [w, h] = item.dataset.ratio.split(":").map(Number);
             const isToggled = cropper && activeRatio && activeRatio.w === w && activeRatio.h === h;
-            cleanup();
+            cleanupCrop();
+            menuItems.forEach((el) => (el.textContent = el.dataset.ratio));
 
             if (isToggled) {
                 [w, h] = [h, w];
@@ -289,11 +277,26 @@ function bindCropEvents() {
                     const cropRect = cropper.getCropRect();
                     const outputFile = await electron.cropImage(imageMeta.path, cropRect);
                     toast(`Cropped: ${outputFile}`);
-                    cleanup();
+                    cleanupCrop();
                 },
             });
 
-            document.addEventListener("keydown", keyHandler);
+            document.addEventListener("keydown", cropEscHandler);
         };
     });
+}
+
+// 裁剪取消事件
+function cropEscHandler(e) {
+    if (e.key === "Escape") cleanupCrop();
+}
+
+// 清理裁剪状态
+function cleanupCrop() {
+    document.removeEventListener("keydown", cropEscHandler);
+    activeRatio = null;
+    if (cropper) {
+        cropper.destroy();
+        cropper = null;
+    }
 }
