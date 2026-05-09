@@ -39,11 +39,6 @@ body {
     transition: background 0.3s;
 }
 
-body.rounded-border {
-    border: var(--border-color) 1px solid;
-    border-radius: 10px;
-}
-
 body.drag-over {
     background: #f5f9ff;
 }
