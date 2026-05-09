@@ -105,7 +105,9 @@ function createWindow() {
         mainWindow.webContents.openDevTools();
     }
 
-    mainWindow.show();
+    mainWindow.once("ready-to-show", () => {
+        mainWindow.show();
+    });
 
     // Windows/Linux 双击打开文件通过命令行参数传递
     const files = getFilesFromArgs(process.argv);

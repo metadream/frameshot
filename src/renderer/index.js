@@ -14,4 +14,6 @@ electron.onFileOpened(async (event, fileToOpen) => {
 const fileToOpen = await electron.getFileToOpen();
 if (fileToOpen) {
     openImage(fileToOpen);
+} else {
+    document.querySelector("#welcome").classList.add("show");
 }
