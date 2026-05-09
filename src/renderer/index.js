@@ -1,8 +1,7 @@
 import { openImage } from "./control.js";
 
 // 显示应用名称和版本
-document.querySelector("#file-count").innerText =
-    `${await electron.getAppName()} v${await electron.getAppVersion()}`;
+document.querySelector("#file-count").innerText = `${await electron.getAppName()} v${await electron.getAppVersion()}`;
 
 // 非Mac上设置窗体圆角边框
 if (electron.platform !== "darwin") {
