@@ -1,5 +1,5 @@
 import { app, BrowserWindow, Menu, protocol } from "electron";
-import { IMAGE_FORMATS, PROTOCOL } from "./formats.js";
+import { PROTOCOL, getSupportedFormat, toFileSystemPath } from "./protocol.js";
 import fs from "fs";
 import path from "path";
 import sharp from "sharp";
@@ -52,19 +52,11 @@ if (!gotTheLock) {
         // 注册图片预览协议：浏览器不支持的格式通过Sharp解码后返回JPEG
         protocol.handle(PROTOCOL, async (request) => {
             try {
-                let filePath = decodeURIComponent(request.url.slice(`${PROTOCOL}://`.length));
-
-                // 确保 Windows 盘符格式正确
-                if (process.platform === "win32") {
-                    filePath = filePath.replace(/^\//, "").replace(/^([A-Za-z])\//, "$1:/");
-                } else if (!filePath.startsWith("/")) {
-                    // 浏览器会将 frameshot:///path 标准化为 frameshot://path（去掉空 authority），补回前导 /
-                    filePath = "/" + filePath;
-                }
+                const filePath = toFileSystemPath(request.url);
+                const ext = path.extname(filePath);
+                const format = getSupportedFormat(ext);
 
                 // 检查文件扩展名是否在支持的格式列表中
-                const ext = path.extname(filePath).toLowerCase();
-                const format = IMAGE_FORMATS.find((v) => v.extension === ext);
                 if (!format) {
                     return new Response("Unsupported format", { status: 415 });
                 }

@@ -1,10 +1,8 @@
 import { app, BrowserWindow, dialog, ipcMain, shell } from "electron";
-import { IMAGE_EXTS, IMAGE_EXT_REGEX } from "./formats.js";
+import { SUPPORTED_EXTS, isSupportedExt } from "./protocol.js";
 import fs from "fs";
 import path from "path";
 import sharp from "sharp";
-
-// Sharp支持的所有图片格式
 
 /** 原生基础方法 */
 ipcMain.handle("get-file-to-open", () => global.fileToOpen);
@@ -27,7 +25,7 @@ ipcMain.handle("show-error-box", (event, message) => {
 ipcMain.handle("open-file-dialog", () => {
     return dialog.showOpenDialog({
         properties: ["openFile"],
-        filters: [{ name: "Images", extensions: IMAGE_EXTS }],
+        filters: [{ name: "Images", extensions: SUPPORTED_EXTS }],
     });
 });
 
@@ -46,7 +44,7 @@ ipcMain.handle("open-confirm-dialog", () => {
 ipcMain.handle("get-sibling-images", async (event, file) => {
     return fs
         .readdirSync(path.dirname(file), { withFileTypes: true })
-        .filter((entry) => entry.isFile() && IMAGE_EXT_REGEX.test(entry.name))
+        .filter((entry) => entry.isFile() && isSupportedExt(entry.name))
         .map((entry) => {
             const imagePath = path.join(entry.parentPath, entry.name);
             const ext = path.extname(entry.name).slice(1).toLowerCase();

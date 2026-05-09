@@ -1,6 +1,6 @@
 import { ImageViewer } from "./viewer.js";
 import { ImageCropper } from "./cropper.js";
-import { IMAGE_EXT_REGEX, UNSUPPORTED_EXT_REGEX, PROTOCOL } from "../main/formats.js";
+import { isSupportedExt, toProtocolUrl } from "../main/protocol.js";
 
 // 界面元素
 const welcome = document.querySelector("#welcome");
@@ -69,7 +69,7 @@ document.addEventListener("drop", (e) => {
     document.body.classList.remove("drag-over");
 
     const filePath = electron.getFilePath(e.dataTransfer.files[0]);
-    if (IMAGE_EXT_REGEX.test(filePath)) {
+    if (isSupportedExt(filePath)) {
         openImage(filePath);
     } else {
         toast("Unsupported file type");
@@ -157,10 +157,7 @@ function activateImage(file) {
 
 /** 根据图片格式设置协议与图片源 */
 function setImageSource(filePath) {
-    let safePath = filePath.replace(/\\/g, "/");
-    safePath = safePath.startsWith("/") ? safePath : "/" + safePath;
-    const protocol = UNSUPPORTED_EXT_REGEX.test(filePath) ? PROTOCOL : "file";
-    imageElement.src = `${protocol}://${safePath}`;
+    imageElement.src = toProtocolUrl(filePath);
     loading.classList.add("show");
 }
 

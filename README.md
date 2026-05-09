@@ -29,9 +29,9 @@ A minimal image viewer with zoom, crop, and format conversion, built on Electron
 src/
 ├── main/
 │   ├── index.js        # Entry point, window creation, custom protocol
-│   ├── formats.js      # Image format definitions & constants
 │   ├── ipc.js          # IPC handlers (open, convert, crop, delete, etc.)
-│   └── preload.js      # Context bridge API
+│   ├── preload.js      # Context bridge API
+│   └── protocol.js     # Image protocol handling
 ├── renderer/
 │   ├── index.js        # Renderer entry, handles file-opened event
 │   ├── control.js      # Core logic: open, navigate, sort, crop binding
