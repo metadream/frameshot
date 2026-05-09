@@ -2,6 +2,8 @@
 
 A minimal image viewer with zoom, crop, and format conversion, built on Electron.
 
+![Screenshot](assets/build/screenshot.png)
+
 ## Features
 
 - **View & Navigate** — Open images via file dialog, drag-and-drop, or file association. Arrow keys to switch, scroll to zoom.
