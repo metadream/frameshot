@@ -21,7 +21,6 @@ let imageMeta = null; // 当前图片元数据
 let imageIndex = 0; // 当前图片索引
 let sortMode = ["name", "asc"]; // 排序模式
 let cropper = null; // 裁剪工具
-let activeRatio = null; // 当前裁剪比例
 
 // 菜单初始化
 initMenus();
@@ -257,17 +256,11 @@ function bindCropEvents() {
     menuItems.forEach((item) => {
         item.onclick = () => {
             let [w, h] = item.dataset.ratio.split(":").map(Number);
-            const isToggled = cropper && activeRatio && activeRatio.w === w && activeRatio.h === h;
-            cleanupCrop();
-            menuItems.forEach((el) => (el.textContent = el.dataset.ratio));
-
-            if (isToggled) {
-                [w, h] = [h, w];
-                item.textContent = `${w}:${h}`;
-            }
-            activeRatio = { w, h };
+            item.textContent = `${h}:${w}`;
+            item.dataset.ratio = `${h}:${w}`;
 
             // 创建裁剪工具
+            cleanupCrop();
             cropper = new ImageCropper({
                 image: imageElement,
                 container: document.querySelector("main"),
@@ -294,7 +287,6 @@ function cropEscHandler(e) {
 // 清理裁剪状态
 function cleanupCrop() {
     document.removeEventListener("keydown", cropEscHandler);
-    activeRatio = null;
     if (cropper) {
         cropper.destroy();
         cropper = null;
