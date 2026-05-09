@@ -88,6 +88,7 @@ function createWindow() {
     mainWindow = new BrowserWindow({
         icon: appIcon,
         frame: false,
+        roundedCorners: true,
         show: false,
         width: 1200,
         height: 800,
