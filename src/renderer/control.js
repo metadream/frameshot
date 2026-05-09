@@ -249,13 +249,19 @@ function bindConvertEvents() {
 /** 绑定裁剪菜单事件 */
 function bindCropEvents() {
     let cropper = null;
+    let activeRatio = null;
+
     function cleanup() {
         document.removeEventListener("keydown", keyHandler);
+        menuItems.forEach((el) => (el.textContent = el.dataset.ratio));
+        activeRatio = null;
+
         if (cropper) {
             cropper.destroy();
             cropper = null;
         }
     }
+
     const keyHandler = (e) => {
         if (e.key === "Escape") cleanup();
     };
@@ -263,16 +269,20 @@ function bindCropEvents() {
     const menuItems = document.querySelectorAll("#crop-items>span");
     menuItems.forEach((item) => {
         item.onclick = () => {
+            let [w, h] = item.dataset.ratio.split(":").map(Number);
+            const isToggled = cropper && activeRatio && activeRatio.w === w && activeRatio.h === h;
             cleanup();
 
-            const ratio = item.dataset.ratio;
-            const [w, h] = ratio.split(":").map(Number);
-            const container = document.querySelector("main");
+            if (isToggled) {
+                [w, h] = [h, w];
+                item.textContent = `${w}:${h}`;
+            }
+            activeRatio = { w, h };
 
             // 创建裁剪工具
             cropper = new ImageCropper({
                 image: imageElement,
-                container,
+                container: document.querySelector("main"),
                 ratioWidth: w,
                 ratioHeight: h,
                 onSave: async () => {
