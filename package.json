@@ -17,6 +17,7 @@
     },
     "build": {
         "appId": "com.arraywork.frameshot",
+        "artifactName": "${productName}-v${version}-${os}-${arch}.${ext}",
         "fileAssociations": [
             {
                 "ext": [ "jpg", "jpeg", "png", "webp", "gif", "avif", "bmp", "svg", "heic", "heif", "tiff", "raw" ],
