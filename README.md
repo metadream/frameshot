@@ -1,6 +1,13 @@
 # FrameShot
 
-A minimal image viewer with zoom, crop, and format conversion, built on Electron.
+<p>
+  <img src="https://img.shields.io/github/v/release/metadream/frameshot" alt="Version">
+  <img src="https://img.shields.io/github/license/metadream/frameshot" alt="License">
+  <img src="https://img.shields.io/badge/platform-Windows%20|%20macOS%20|%20Linux-lightgrey" alt="Platform">
+  <img src="https://img.shields.io/github/stars/metadream/frameshot" alt="Stars">
+</p>
+
+A minimal image viewer with zoom, crop, and format conversion, built on Electron. Supports **Windows** · **macOS** · **Linux**. Download from [GitHub Releases](https://github.com/metadream/frameshot/releases).
 
 ![Screenshot](assets/build/screenshot.png)
 
@@ -51,6 +58,8 @@ src/
 ## Develop
 
 ```bash
+git clone https://github.com/metadream/frameshot.git
+cd frameshot
 npm install
 npm start
 ```
