@@ -29,6 +29,11 @@
             "target": [ "nsis" ],
             "icon": "assets/build/icon.ico"
         },
+        "nsis": {
+            "oneClick": false,
+            "perMachine": true,
+            "allowToChangeInstallationDirectory": true
+        },
         "linux": {
             "target": [ "deb" ],
             "icon": "assets/build/icon.png",
