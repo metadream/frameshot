@@ -73,8 +73,8 @@ if (!gotTheLock) {
                     : sharp(buffer).jpeg({ quality: 90 }).toBuffer());
                 return new Response(output, { headers: { "Content-Type": "image/jpeg" } });
             } catch (err) {
-                console.error("Preview image error:", err);
-                return new Response(null, { status: 404 });
+                console.error("Convert image error:", err);
+                return new Response("Convert image error:", { status: 500 });
             }
         });
         createWindow();
