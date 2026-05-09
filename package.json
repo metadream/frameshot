@@ -1,10 +1,10 @@
 {
-    "name": "frame-shot",
+    "name": "frameshot",
     "productName": "FrameShot",
     "version": "2.0.0",
     "description": "A minimal image viewer with zoom, crop, and format conversion, built on Electron.",
-    "author": "Marco Chan",
-    "repository": "github:metadream/frame-shot",
+    "author": "Marco Chan <x@zerg.cc>",
+    "repository": "github:metadream/frameshot",
     "copyright": "Copyright (c) 2026",
     "license": "MIT",
     "type": "module",
@@ -16,7 +16,7 @@
         "build:mac": "electron-builder -m"
     },
     "build": {
-        "appId": "frame-shot",
+        "appId": "frameshot",
         "fileAssociations": [
             {
                 "ext": [ "jpg", "jpeg", "png", "webp", "gif", "avif", "bmp", "svg", "heic", "heif", "tiff", "raw" ],
