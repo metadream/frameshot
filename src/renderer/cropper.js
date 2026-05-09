@@ -1,10 +1,10 @@
 export class ImageCropper {
-    constructor({ image, container, ratio = 1, ratioWidth, ratioHeight, onSave }) {
+    constructor({ image, container, ratioWidth, ratioHeight, onSave }) {
         this.image = image;
         this.container = container;
-        this.ratio = ratio;
         this.ratioWidth = ratioWidth;
         this.ratioHeight = ratioHeight;
+        this.ratio = ratioWidth / ratioHeight;
         this.onSave = onSave;
         this.cropBox = null;
         this.layer = null;
@@ -99,6 +99,7 @@ export class ImageCropper {
             }
         };
     }
+
     initCropBox() {
         const imgRect = this.image.getBoundingClientRect();
         const containerRect = this.container.getBoundingClientRect();

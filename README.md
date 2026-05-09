@@ -36,7 +36,8 @@ src/
 │   ├── index.js        # Renderer entry, handles file-opened event
 │   ├── control.js      # Core logic: open, navigate, sort, crop binding
 │   ├── viewer.js       # ImageViewer class: zoom, pan, toggle original
-│   └── cropper.js      # ImageCropper class: crop UI, resize handles, boundary
+│   ├── cropper.js      # ImageCropper class: crop UI, resize handles, boundary
+│   └── utils.js        # Utility functions
 ├── assets/
 │   ├── style.css
 │   ├── icons/          # SVG toolbar icons

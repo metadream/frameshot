@@ -273,7 +273,6 @@ function bindCropEvents() {
             cropper = new ImageCropper({
                 image: imageElement,
                 container,
-                ratio: w / h,
                 ratioWidth: w,
                 ratioHeight: h,
                 onSave: async () => {
