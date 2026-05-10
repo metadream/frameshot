@@ -423,12 +423,23 @@ export class ImageCropper {
             finalHeight = Math.round(rawHeight);
         }
 
-        return {
-            x: Math.round((cropLeft - imgLeft) * scaleX),
-            y: Math.round((cropTop - imgTop) * scaleY),
-            width: finalWidth,
-            height: finalHeight,
-        };
+        let x = Math.round((cropLeft - imgLeft) * scaleX);
+        let y = Math.round((cropTop - imgTop) * scaleY);
+        let w = finalWidth;
+        let h = finalHeight;
+
+        const nx = this.image.naturalWidth;
+        const ny = this.image.naturalHeight;
+        x = Math.max(0, Math.min(x, nx - 1));
+        y = Math.max(0, Math.min(y, ny - 1));
+        w = Math.min(w, nx - x);
+        h = Math.min(h, ny - y);
+
+        if (w <= 0 || h <= 0) {
+            return { x: 0, y: 0, width: nx, height: ny };
+        }
+
+        return { x, y, width: w, height: h };
     }
 
     /** 销毁 */
