@@ -78,9 +78,18 @@ ipcMain.handle("convert-image", async (event, inputFile, outFormat) => {
 ipcMain.handle("crop-image", async (event, inputFile, cropRect) => {
     const { x, y, width, height } = cropRect;
     const parsedPath = path.parse(inputFile);
-    const outputFile = path.join(parsedPath.dir, `${parsedPath.name}_cropped${parsedPath.ext}`);
+    const ext = parsedPath.ext.toLowerCase();
+    const outputFile = path.join(parsedPath.dir, `${parsedPath.name}_cropped${ext}`);
 
-    await sharp(inputFile).keepMetadata().extract({ left: x, top: y, width, height }).toFile(outputFile);
+    let pipeline = sharp(inputFile).keepMetadata().extract({ left: x, top: y, width, height });
+    if (ext === ".jpg" || ext === ".jpeg") {
+        pipeline = pipeline.jpeg({ quality: 96 });
+    } else if (ext === ".webp") {
+        pipeline = pipeline.webp({ quality: 96 });
+    } else if (ext === ".png") {
+        pipeline = pipeline.png();
+    }
+    await pipeline.toFile(outputFile);
     return outputFile;
 });
 
