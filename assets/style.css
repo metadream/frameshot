@@ -77,6 +77,7 @@ header .info-bar {
     display: flex;
     gap: 20px;
     color: var(--minor-color);
+    min-width: 0;
 }
 
 header .info-bar #file-name {
@@ -84,6 +85,18 @@ header .info-bar #file-name {
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
+}
+
+header .info-bar #file-count,
+header .info-bar #dimensions,
+header .info-bar #file-size {
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+header .menu-icons {
+    flex-shrink: 0;
+    background: #fff;
 }
 
 header button {

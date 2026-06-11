@@ -1,7 +1,7 @@
 {
     "name": "frameshot",
     "productName": "FrameShot",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "description": "A minimal image viewer with zoom, crop, and format conversion, built on Electron.",
     "author": "Marco Chan <x@zerg.cc>",
     "repository": "github:metadream/frameshot",
