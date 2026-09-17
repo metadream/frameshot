@@ -3,7 +3,7 @@ import { PROTOCOL, getSupportedFormat, toFileSystemPath } from "./protocol.js";
 import fs from "fs";
 import path from "path";
 import sharp from "sharp";
-import heicConvert from "heic-convert";
+import { decodeHeifToJpeg, isHeifExt } from "./decode.js";
 import "./ipc.js";
 
 const appPath = app.getAppPath();
@@ -68,9 +68,9 @@ if (!gotTheLock) {
                 }
 
                 // 否则转换为 JPEG 格式返回
-                const output = await (ext === ".heic" || ext === ".heif"
-                    ? heicConvert({ buffer, format: "JPEG", quality: 0.9 })
-                    : sharp(buffer).jpeg({ quality: 90 }).toBuffer());
+                const output = await (isHeifExt(ext)
+                    ? decodeHeifToJpeg(buffer)
+                    : sharp(buffer).jpeg({ quality: 96 }).toBuffer());
                 return new Response(output, { headers: { "Content-Type": "image/jpeg" } });
             } catch (err) {
                 console.error("Convert image error:", err);

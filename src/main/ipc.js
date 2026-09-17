@@ -1,8 +1,8 @@
 import { app, BrowserWindow, dialog, ipcMain, shell } from "electron";
 import { SUPPORTED_EXTS, isSupportedExt } from "./protocol.js";
+import { convertImage, cropImage, isHeifExt } from "./decode.js";
 import fs from "fs";
 import path from "path";
-import sharp from "sharp";
 
 /** 原生基础方法 */
 ipcMain.handle("get-file-to-open", () => global.fileToOpen);
@@ -63,34 +63,15 @@ ipcMain.handle("get-sibling-images", async (event, file) => {
 ipcMain.handle("convert-image", async (event, inputFile, outFormat) => {
     const parsedPath = path.parse(inputFile);
     const outputFile = path.join(parsedPath.dir, `${parsedPath.name}_converted.${outFormat}`);
-
-    if (outFormat === "png") {
-        await sharp(inputFile).keepMetadata().png().toFile(outputFile);
-    } else if (outFormat === "jpg" || outFormat === "jpeg") {
-        await sharp(inputFile).keepMetadata().jpeg({ quality: 96 }).toFile(outputFile);
-    } else {
-        throw new Error("Unsupported output format");
-    }
-    return outputFile;
+    return convertImage(inputFile, outFormat, outputFile);
 });
 
 /** 裁剪图片并保存到同级目录 */
 ipcMain.handle("crop-image", async (event, inputFile, cropRect) => {
-    const { x, y, width, height } = cropRect;
     const parsedPath = path.parse(inputFile);
     const ext = parsedPath.ext.toLowerCase();
-    const outputFile = path.join(parsedPath.dir, `${parsedPath.name}_cropped${ext}`);
-
-    let pipeline = sharp(inputFile).keepMetadata().extract({ left: x, top: y, width, height });
-    if (ext === ".jpg" || ext === ".jpeg") {
-        pipeline = pipeline.jpeg({ quality: 96 });
-    } else if (ext === ".webp") {
-        pipeline = pipeline.webp({ quality: 96 });
-    } else if (ext === ".png") {
-        pipeline = pipeline.png();
-    }
-    await pipeline.toFile(outputFile);
-    return outputFile;
+    const outputFile = path.join(parsedPath.dir, `${parsedPath.name}_cropped${isHeifExt(ext) ? ".jpg" : ext}`);
+    return cropImage(inputFile, cropRect, outputFile);
 });
 
 /** 将文件移除到回收站 */
