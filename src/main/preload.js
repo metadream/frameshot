@@ -13,7 +13,7 @@ contextBridge.exposeInMainWorld("electron", {
     getAppVersion: () => ipcRenderer.invoke("get-app-version"),
     getAppPath: () => ipcRenderer.invoke("get-app-path"),
     openFileDialog: () => ipcRenderer.invoke("open-file-dialog"),
-    openConfirmDialog: () => ipcRenderer.invoke("open-confirm-dialog"),
+    openConfirmDialog: (file) => ipcRenderer.invoke("open-confirm-dialog", file),
     showErrorBox: (message) => ipcRenderer.invoke("show-error-box", message),
     showMessageBox: (message) => ipcRenderer.invoke("show-message-box", message),
     openExternal: (url) => ipcRenderer.invoke("open-external", url),

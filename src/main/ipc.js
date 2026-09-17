@@ -1,4 +1,5 @@
 import { app, BrowserWindow, dialog, ipcMain, shell } from "electron";
+import { execFileSync } from "child_process";
 import { SUPPORTED_EXTS, isSupportedExt } from "./protocol.js";
 import { convertImage, cropImage, isHeifExt } from "./decode.js";
 import fs from "fs";
@@ -21,22 +22,26 @@ ipcMain.handle("show-error-box", (event, message) => {
     dialog.showErrorBox("Error Message", message);
 });
 
+/** 原生确认对话框，网络卷提示将永久删除 */
+ipcMain.handle("open-confirm-dialog", (event, file) => {
+    const network = isNetworkVolume(file);
+    return dialog.showMessageBoxSync({
+        type: "question",
+        title: "Confirmation",
+        message: network
+            ? "This file is on a network volume. It will be permanently deleted without recycle bin. Continue?"
+            : "Are you sure to move this image to the recycle bin?",
+        buttons: ["No", "Yes"],
+        defaultId: 1,
+        cancelId: 0,
+    });
+});
+
 /** 原生文件选择对话框 (图片文件单选) */
 ipcMain.handle("open-file-dialog", () => {
     return dialog.showOpenDialog({
         properties: ["openFile"],
         filters: [{ name: "Images", extensions: SUPPORTED_EXTS }],
-    });
-});
-
-/** 原生确认对话框 */
-ipcMain.handle("open-confirm-dialog", () => {
-    return dialog.showMessageBoxSync({
-        type: "question",
-        title: "Confirmation",
-        message: "Are you sure to delete this image?",
-        buttons: ["No", "Yes"],
-        defaultId: 1,
     });
 });
 
@@ -74,13 +79,18 @@ ipcMain.handle("crop-image", async (event, inputFile, cropRect) => {
     return cropImage(inputFile, cropRect, outputFile);
 });
 
-/** 将文件移除到回收站 */
+/** 移入回收站；网络卷无回收站时退回彻底删除 */
 ipcMain.handle("trash-file", async (event, file) => {
     try {
         await shell.trashItem(file);
         return true;
     } catch (e) {
-        return false;
+        try {
+            if (fs.existsSync(file)) fs.unlinkSync(file);
+            return true;
+        } catch (err) {
+            return false;
+        }
     }
 });
 
@@ -108,3 +118,37 @@ ipcMain.on("window-control", (event, action) => {
             break;
     }
 });
+
+/** 网络文件系统类型集合（无本地回收站语义） */
+const NETWORK_FS = new Set(["smbfs", "cifs", "nfs", "nfs4", "afpfs"]);
+
+/** 判断文件是否位于网络文件系统（如 SMB）上 */
+function isNetworkVolume(file) {
+    try {
+        let best = null;
+        for (const line of listMounts().split("\n")) {
+            const match = line.match(/^.*?\son\s(.+?)\s\(([^,()]+)/);
+            if (!match) continue;
+            const point = match[1];
+            const type = match[2].toLowerCase();
+            if (file === point || file.startsWith(point + "/")) {
+                if (!best || point.length > best.point.length) best = { point, type };
+            }
+        }
+        return best ? NETWORK_FS.has(best.type) : false;
+    } catch (e) {
+        return false;
+    }
+}
+
+/** 执行 mount 命令获取挂载点列表（内部分隔字符避免空白挂载点） */
+function listMounts() {
+    for (const cmd of ["/sbin/mount", "/bin/mount", "mount"]) {
+        try {
+            return execFileSync(cmd, { encoding: "utf8", timeout: 5000 });
+        } catch (e) {
+            // 尝试下一个命令
+        }
+    }
+    return "";
+}

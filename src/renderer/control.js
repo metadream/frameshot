@@ -116,7 +116,7 @@ document.addEventListener("keydown", async (e) => {
             if (e.key === "Backspace" && electron.platform !== "darwin") return;
 
             e.preventDefault();
-            const choice = await electron.openConfirmDialog();
+            const choice = await electron.openConfirmDialog(imageMeta.path);
             if (choice) {
                 const success = await electron.trashFile(imageMeta.path);
                 if (success) {
