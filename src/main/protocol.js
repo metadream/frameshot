@@ -61,5 +61,7 @@ export function toProtocolUrl(path) {
     path = path.replace(/\\/g, "/");
     path = path.startsWith("/") ? path : "/" + path;
     const protocol = BROWSER_UNSUPPORTED_REGX.test(path) ? PROTOCOL : "file";
-    return `${protocol}://${path}`;
+    // 逐段 URL 编码，避免 #、%、?、&、空格等字符破坏 URL 结构
+    const encoded = path.split("/").map(encodeURIComponent).join("/");
+    return `${protocol}://${encoded}`;
 }
