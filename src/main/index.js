@@ -3,7 +3,7 @@ import { PROTOCOL, getSupportedFormat, toFileSystemPath } from "./protocol.js";
 import fs from "fs";
 import path from "path";
 import sharp from "sharp";
-import { decodeHeifToJpeg, isHeifExt } from "./decode.js";
+import { decodeHeifToJpegCached, isHeifExt } from "./decode.js";
 import "./ipc.js";
 
 const appPath = app.getAppPath();
@@ -62,15 +62,16 @@ if (!gotTheLock) {
                 }
 
                 // 如果格式支持 MIME 类型，则直接读取文件返回
-                const buffer = await fs.promises.readFile(filePath);
                 if (format.mime !== null) {
-                    return new Response(buffer, { headers: { "Content-Type": format.mime } });
+                    return new Response(await fs.promises.readFile(filePath), {
+                        headers: { "Content-Type": format.mime },
+                    });
                 }
 
-                // 否则转换为 JPEG 格式返回
+                // 否则转换为 JPEG 格式返回（HEIC 走内存 + 磁盘解码缓存）
                 const output = await (isHeifExt(ext)
-                    ? decodeHeifToJpeg(buffer)
-                    : sharp(buffer).jpeg({ quality: 96 }).toBuffer());
+                    ? decodeHeifToJpegCached(filePath, path.join(app.getPath("userData"), "heif-cache"))
+                    : sharp(await fs.promises.readFile(filePath)).jpeg({ quality: 96 }).toBuffer());
                 return new Response(output, { headers: { "Content-Type": "image/jpeg" } });
             } catch (err) {
                 console.error("Convert image error:", err);
